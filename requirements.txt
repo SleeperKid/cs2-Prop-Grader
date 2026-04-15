@@ -1,3 +1,6 @@
 streamlit
 pandas
 groq
+plotly
+numpy
+scipy
