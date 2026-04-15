@@ -39,12 +39,13 @@ def get_implied_prob(odds):
 # ==========================================
 # 📥 DATA & SESSION STATE
 # ==========================================
-if 'h2h_val' not in st.session_state: st.session_state.h2h_val = 1.0
-if 'tier_val' not in st.session_state: st.session_state.tier_val = 1.0
-if 'map_val' not in st.session_state: st.session_state.map_val = 1.0
-if 'int_val' not in st.session_state: st.session_state.int_val = 1.0
-if 'weight_advice' not in st.session_state: st.session_state.weight_advice = None
-if 'analysis_results' not in st.session_state: st.session_state.analysis_results = None
+states = {
+    'h2h_val': 1.0, 'tier_val': 1.0, 'map_val': 1.0, 'int_val': 1.0,
+    'weight_advice': None, 'analysis_results': None,
+    'opp_rank_val': "N/A", 'expected_maps_val': "TBD", 'opening_val': "50%"
+}
+for key, val in states.items():
+    if key not in st.session_state: st.session_state[key] = val
 
 @st.cache_data
 def load_vault():
@@ -61,33 +62,43 @@ with st.sidebar:
     st.header("⚙️ Model Intelligence")
     
     st.subheader("🤖 AI Weight Advisor")
+    st.caption("AI will analyze your 'Deep Context' inputs to adjust sliders.")
+    
     if st.button("GET AI SLIDER ADVICE"):
         api_key = st.secrets.get("GROQ_API_KEY")
         if not api_key:
             st.error("API Key missing in Secrets.")
         else:
             client = Groq(api_key=api_key)
-            with st.spinner("AI analyzing matchup..."):
-                # Use current inputs for context
-                prompt = f"Act as a pro betting analyst. Matchup Context: Elite Tournament. Give me 4 weights (H2H, Tier, Map, Int) between 0.85 and 1.15. Format: H2H: [X] | Tier: [X] | Map: [X] | Int: [X]. Follow with a 1-sentence justification."
+            with st.spinner("AI analyzing deep context..."):
+                # UPGRADED PROMPT: Feeds the UI inputs to the AI
+                prompt = f"""
+                Act as an Esports Betting Syndicate Analyst.
+                Player: {st.session_state.get('p_tag_input', 'Unknown')}
+                Opponent Rank: {st.session_state.opp_rank_val}
+                Projected Maps: {st.session_state.expected_maps_val}
+                Opening Duel Rate: {st.session_state.opening_val}
+
+                TASK: Output 4 Weights (0.85-1.15) for our model.
+                FORMAT: H2H: [X] | Tier: [X] | Map: [X] | Int: [X]
+                FOLLOWED BY: A 2-sentence 'Cheat Sheet' explanation.
+                """
                 completion = client.chat.completions.create(model="llama-3.3-70b-versatile", messages=[{"role": "user", "content": prompt}])
                 advice = completion.choices[0].message.content
                 st.session_state.weight_advice = advice
                 
-                # Regex to move the sliders automatically
+                # Regex to move the sliders
                 found_weights = re.findall(r"([0-1]\.\d+)", advice)
                 if len(found_weights) >= 4:
                     st.session_state.h2h_val = float(found_weights[0])
                     st.session_state.tier_val = float(found_weights[1])
                     st.session_state.map_val = float(found_weights[2])
                     st.session_state.int_val = float(found_weights[3])
-                    st.toast("🎯 Sliders Synced!", icon="✅")
+                    st.toast("🎯 Sliders Synced to Context!", icon="✅")
 
-    # SIDEBAR CHEAT SHEET / EXPLANATION
+    # SIDEBAR CHEAT SHEET
     if st.session_state.weight_advice:
-        st.markdown(f'<div class="advice-box"><b>AI Cheat Sheet:</b><br>{st.session_state.weight_advice}</div>', unsafe_allow_html=True)
-    else:
-        st.info("Click 'Get AI Slider Advice' to populate the cheat sheet.")
+        st.markdown(f'<div class="advice-box"><b>AI Slider Cheat Sheet:</b><br>{st.session_state.weight_advice}</div>', unsafe_allow_html=True)
 
     st.divider()
     h2h_w = st.slider("H2H Advantage", 0.80, 1.20, key="h2h_val", step=0.05)
@@ -102,23 +113,30 @@ st.title("🎯 Prop Grader Elite")
 col_l, col_r = st.columns([1, 1.2], gap="large")
 
 with col_l:
-    st.subheader("📋 Prop Details")
+    st.subheader("📋 Prop & Context")
     game_choice = st.radio("Game", ["CS2", "Valorant"], horizontal=True)
     db_players = df[df['Game'] == game_choice]['Player'].tolist() if not df.empty else []
     
     selected_name = st.selectbox("Database Search", ["Manual Entry"] + db_players)
     
+    # Auto-fill Logic
     if selected_name != "Manual Entry":
         p_row = df[df['Player'] == selected_name].iloc[0]
-        p_tag = st.text_input("Player Tag", value=p_row['Player'])
+        p_tag = st.text_input("Player Tag", value=p_row['Player'], key="p_tag_input")
         l10_raw = st.text_area("L10 Stats", value=str(p_row['L10']))
         base_kpr = st.number_input("Base KPR", value=float(p_row['BaseKPR']))
-        team_name = p_row['Team']
+        st.session_state.opp_rank_val = str(p_row.get('Rank', "N/A"))
+        st.session_state.expected_maps_val = str(p_row.get('ExpectedMaps', "TBD"))
     else:
-        p_tag = st.text_input("Player Tag", value="donk")
+        p_tag = st.text_input("Player Tag", value="donk", key="p_tag_input")
         l10_raw = st.text_area("L10 Stats", value="46, 33, 45, 42, 30")
         base_kpr = st.number_input("Base KPR", value=0.90)
-        team_name = "Spirit"
+
+    # NEW: CONTEXTUAL DATA SECTION
+    with st.expander("🧠 Deep Context (Feeds AI Advisor)", expanded=True):
+        st.text_input("Opponent World Rank", key="opp_rank_val")
+        st.text_input("Projected Maps", key="expected_maps_val")
+        st.text_input("Opening Duel Success %", key="opening_val")
 
     c1, c2 = st.columns(2)
     with c1:
@@ -147,7 +165,7 @@ if st.button("RUN ELITE ANALYSIS"):
         if cv > 0.25: units = max(0.5, units - 0.5)
         
         st.session_state.analysis_results = {
-            "p_tag": p_tag, "team": team_name, "side": m_side, "line": m_line, "grade": grade,
+            "p_tag": p_tag, "side": m_side, "line": m_line, "grade": grade,
             "color": color, "flat": flat, "units": units, "proj": proj, "edge": edge, 
             "hit_rate": hit_rate * 100, "cv": cv, "game": game_choice
         }
@@ -176,7 +194,6 @@ with col_r:
         m2.metric("Edge", f"{res['edge']:+.1f}%")
         m3.metric("L10 Hit", f"{res['hit_rate']:.0f}%")
 
-        # SOCIAL MEDIA SHARE CARD CHECKBOX
         if st.checkbox("📸 Generate Social Share Card"):
             card_html = f"""
             <div style="background-color: #0e1117; border: 3px solid {res["flat"]}; border-radius: 20px; padding: 30px; max-width: 450px; color: white; margin: 10px auto; text-align: center;">
