@@ -1,0 +1,26 @@
+<<<<<<< HEAD
+streamlit
+pandas
+plotly
+numpy
+scipy
+python-dotenv
+groq
+vlrdevapi
+selenium
+webdriver-manager
+beautifulsoup4
+=======
+streamlit
+pandas
+plotly
+numpy
+scipy
+python-dotenv
+groq
+vlrdevapi
+selenium
+webdriver-manager
+beautifulsoup4
+>>>>>>> 5b70f84 (Local master version with fixes)
+lxml
