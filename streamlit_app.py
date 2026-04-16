@@ -71,8 +71,7 @@ with st.sidebar:
             with st.spinner("AI analyzing deep context..."):
                 prompt = f"""
                 Act as an Esports Betting Syndicate Analyst.
-                Matchup: {st.session_state.m_context_val}
-                Player: {st.session_state.p_tag_val}
+                Matchup: {st.session_state.m_context_val} | Player: {st.session_state.p_tag_val}
                 Context: Rank: {st.session_state.opp_rank_val} | Maps: {st.session_state.expected_maps_val}
                 Deep Stats: Opening: {st.session_state.opening_val} | Map1: {st.session_state.map1_kpr} | Map2: {st.session_state.map2_kpr}
                 TASK: Output 4 Weights (0.85-1.15).
@@ -161,7 +160,7 @@ if st.button("RUN ELITE ANALYSIS"):
         model_prob = (1 - prob_under) * 100 if m_side == "Over" else prob_under * 100
         edge = model_prob - get_implied_prob(m_odds)
         
-        # TIGHTENED CONFIDENCE ENGINE
+        # 📈 REFINED CONFIDENCE ENGINE
         conf = min(max(((abs(edge) * 2) + (hit_rate * 0.4) - (cv * 120)), 0), 100)
         
         grade, color, flat, units = get_grade_details(edge)
@@ -176,78 +175,68 @@ if st.button("RUN ELITE ANALYSIS"):
         st.error(f"Analysis Error: {e}")
 
 # ==========================================
-# 📊 OUTPUTS & RENDERED SHARE CARD
+# 📊 OUTPUTS & SHARE CARD
 # ==========================================
 with col_r:
     if st.session_state.analysis_results:
         res = st.session_state.analysis_results
-        
-        # UI Setup
-        p_name = res.get("p_tag", "Unknown").upper()
+        p_name_up = res.get("p_tag", "Unknown").upper()
         m_info = res.get("matchup", "N/A")
-        side = res.get("side", "Over")
-        line = res.get("line", 0.0)
-        arrow = "▲" if side == "Over" else "▼"
-        arrow_color = "#00FF00" if side == "Over" else "#FF4500"
+        side_up = res.get("side", "Over")
+        line_val = res.get("line", 0.0)
+        proj_val = res.get("proj", 0.0)
+        arrow_sym = "▲" if side_up == "Over" else "▼"
+        arrow_hex = "#00FF00" if side_up == "Over" else "#FF4500"
         grade_grad = res.get('color', 'linear-gradient(135deg, #161b22, #0e1117)')
         grade_flat = res.get('flat', '#58a6ff')
         
         st.markdown(f"""
             <div class="grade-card" style="background: {grade_grad}; color: white;">
-                <div style="font-size: 28px; font-weight: 900;">{p_name}</div>
+                <div style="font-size: 28px; font-weight: 900;">{p_name_up}</div>
                 <div style="font-size: 14px; opacity: 0.8;">{m_info}</div>
-                <div style="font-size: 24px; margin-top: 10px; color: {arrow_color}; font-weight: 900;">{arrow} {side.upper()} {line}</div>
+                <div style="font-size: 24px; margin-top: 10px; color: {arrow_hex}; font-weight: 900;">{arrow_sym} {side_up.upper()} {line_val}</div>
                 <h1 class="grade-text">{res.get('grade', '?')}</h1>
                 <div style="font-size: 20px; font-weight: bold;">{res.get('units', 0)} UNIT PLAY</div>
             </div>
             """, unsafe_allow_html=True)
         
         m1, m2, m3, m4 = st.columns(4)
-        m1.metric("Projected", f"{res.get('proj', 0):.1f}")
+        m1.metric("Projected", f"{proj_val:.1f}")
         m2.metric("Edge", f"{res.get('edge', 0):+.1f}%")
         m3.metric("L10 Hit", f"{res.get('hit_rate', 0):.0f}%")
         m4.metric("Conf", f"{res.get('conf', 0):.0f}%")
 
-        st.divider()
         if st.checkbox("📸 Generate Social Share Card"):
-            container = st.empty()
-            
-            # PREMIUM GRADIENT SHARE CARD
-            share_html = f"""
-            <div style="background: linear-gradient(145deg, #0e1117 0%, #1c2128 100%); border: 3px solid {grade_flat}; border-radius: 20px; padding: 30px; max-width: 480px; color: white; margin: 10px auto; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.6); font-family: 'Inter', sans-serif;">
-                
+            # We call st.markdown directly within the checkbox logic to avoid magic strings
+            st.markdown(f"""
+            <div style="background: linear-gradient(145deg, #0e1117 0%, #1c2128 100%); border: 3px solid {grade_flat}; border-radius: 20px; padding: 30px; max-width: 480px; color: white; margin: 10px auto; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.6); font-family: sans-serif;">
                 <div style="border-bottom: 2px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 20px;">
                     <div style="font-size: 10px; color: #adbac7; text-transform: uppercase; letter-spacing: 3px;">{res.get('game', 'CS2')} PROP ANALYSIS</div>
-                    <h2 style="margin: 5px 0; font-size: 38px; font-weight: 900; letter-spacing: -1px;">{p_name}</h2>
+                    <h2 style="margin: 5px 0; font-size: 38px; font-weight: 900; letter-spacing: -1px;">{p_name_up}</h2>
                     <div style="color: #58a6ff; font-size: 15px; font-weight: 600;">{m_info}</div>
                 </div>
-                
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; text-align: left;">
                     <div style="flex: 1;">
                         <div style="font-size: 13px; color: #adbac7; font-weight: bold;">THE LINE</div>
-                        <div style="font-size: 60px; font-weight: 900; line-height: 0.9; margin: 8px 0; letter-spacing: -2px;">{line}</div>
-                        <div style="font-size: 30px; font-weight: 900; color: {arrow_color};">{arrow} {side.upper()}</div>
+                        <div style="font-size: 60px; font-weight: 900; line-height: 0.9; margin: 8px 0; letter-spacing: -2px;">{line_val}</div>
+                        <div style="font-size: 30px; font-weight: 900; color: {arrow_hex};">{arrow_sym} {side_up.upper()}</div>
                     </div>
                     <div style="flex: 1; text-align: right;">
                         <div style="font-size: 13px; color: #adbac7; font-weight: bold;">MODEL GRADE</div>
                         <div style="font-size: 115px; font-weight: 900; background: {grade_grad}; -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 0.8;">{res.get('grade', '?')}</div>
                     </div>
                 </div>
-
-                <div style="background: {grade_grad}; border-radius: 12px; padding: 18px; margin-bottom: 25px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);">
+                <div style="background: {grade_grad}; border-radius: 12px; padding: 18px; margin-bottom: 25px;">
                     <div style="font-size: 36px; font-weight: 900; letter-spacing: -1px;">{res.get('units', 0)} UNIT PLAY</div>
                 </div>
-
                 <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; border-top: 2px solid rgba(255,255,255,0.1); padding-top: 20px;">
-                    <div><div style="font-size: 10px; color: #adbac7; font-weight: bold;">PROJ</div><div style="font-size: 18px; font-weight: 900;">{res.get('proj', 0):.1f}</div></div>
+                    <div><div style="font-size: 10px; color: #adbac7; font-weight: bold;">PROJ</div><div style="font-size: 18px; font-weight: 900;">{proj_val:.1f}</div></div>
                     <div><div style="font-size: 10px; color: #adbac7; font-weight: bold;">EDGE</div><div style="font-size: 18px; font-weight: 900; color: {grade_flat};">{res.get('edge', 0):+.1f}%</div></div>
                     <div><div style="font-size: 10px; color: #adbac7; font-weight: bold;">L10 HIT</div><div style="font-size: 18px; font-weight: 900;">{res.get('hit_rate', 0):.0f}%</div></div>
                     <div><div style="font-size: 10px; color: #adbac7; font-weight: bold;">CONF</div><div style="font-size: 18px; font-weight: 900;">{res.get('conf', 0):.0f}%</div></div>
                 </div>
-
                 <div style="margin-top: 30px; font-size: 11px; color: #adbac7; text-transform: uppercase; letter-spacing: 4px; font-weight: 800; opacity: 0.7;">
                     ANALYSIS BY <span style="color: white;">SLEEPER D. KID</span>
                 </div>
             </div>
-            """
-            container.markdown(share_html, unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
