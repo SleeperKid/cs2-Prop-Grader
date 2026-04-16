@@ -1,6 +1,6 @@
-Player,Game,Team,BaseKPR,L10,ExpectedMaps
-apex,CS2,Vitality,0.68,7,TBD
-ropz,CS2,Vitality,0.74,"11, 12, 7, 7, 1, 9",TBD
-zywoo,CS2,Vitality,0.84,"11, 10, 8, 19, 10, 7, 12",TBD
-flamez,CS2,Vitality,0.7,"15, 10, 17, 8, 8, 7",TBD
-mezii,CS2,Vitality,0.69,"6, 8, 9, 14, 9, 7",TBD
+Player,Team,BaseKPR,L10,Game
+apex,Vitality,0.68,"25, 20, 19, 25, 22, 26, 33, 19, 23, 25",CS2
+ropz,Vitality,0.74,"33, 19, 25, 46, 32, 38, 32, 30, 34, 43",CS2
+zywoo,Vitality,0.84,"34, 39, 45, 31, 28, 45, 42, 37, 28, 36",CS2
+flamez,Vitality,0.7,"37, 34, 34, 25, 37, 36, 58, 38, 27, 38",CS2
+mezii,Vitality,0.69,"23, 27, 28, 30, 26, 36, 26, 13, 29, 30",CS2
