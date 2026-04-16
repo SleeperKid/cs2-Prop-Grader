@@ -1,0 +1,23 @@
+{
+  "maps": {
+    "Mirage": "High-visibility duels, long sightlines. Favors precision/AWP. High HS potential.",
+    "Inferno": "Cluttered, utility-heavy. High spray frequency through smoke. Lower HS potential.",
+    "Nuke": "CT-Sided. Verticality. High intensity rotations. Favors defensive crosshair placement.",
+    "Ancient": "High foliage, medium-range duels. Favors aggressive entry-pathing and high-KPR riflers.",
+    "Anubis": "Wide-open mid, high-speed rotations. Favors raw Kills over tactical headshots.",
+    "Dust 2": "Aim-duel capital. Extremely long sightlines. Massive boost for AWPers and precision riflers.",
+    "Vertigo": "Close-quarters, ramp-centric duels. High trade-kill frequency. High intensity."
+  },
+  "team_styles": {
+    "Team Spirit": "Aggressive Entry/Methodical Support hybrid. Powered by aggressive entry-fragging (donk) and methodical AWPing (sh1ro). High-intensity system.",
+    "Team Vitality": "Structured individualistic dominance. Led by the elite ZywOo. High-precision system with deep tactical pedigree.",
+    "G2 Esports": "Flashy/Fearless Aggression. fearless entry-fragging (malbsMd) with anchor stability (HeavyGod) and patient sniping.",
+    "NAVI": "Disciplined Methodical System. Highly structured play with youth talent revitalizing firepower alongside w0nderful and b1t.",
+    "FaZe Clan": "Tactical Individualistic. Relies on individual clutches (frozen, broky) and karrigan's mid-round tactical 'magic'.",
+    "FURIA": "Tactical Brazilian Aggression. Transitioned to a more structured, veteran-led tactical style under FalleN."
+  },
+  "roles": {
+    "Rifler": "Primary engagement player. High volume of headshots and entry duels.",
+    "AWPer": "Sniper role. Focuses on center-of-mass kills. Naturally lower Headshot % but high survival."
+  }
+}
