@@ -5,7 +5,6 @@ from scipy.stats import norm
 import os
 from groq import Groq
 import re
-from datetime import datetime
 
 # ==========================================
 # 🎨 ELITE UI STYLING
@@ -19,7 +18,6 @@ st.markdown("""
     .grade-card { padding: 30px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); text-align: center; margin-bottom: 20px; }
     .grade-text { font-size: 90px; font-weight: 900; margin: 0; line-height: 1; }
     .advice-box { background: #1c2128; padding: 15px; border-radius: 10px; border: 1px solid #30363d; font-size: 0.85rem; color: #58a6ff; margin-bottom: 10px; }
-    .scout-report-box { background: #161b22; padding: 20px; border-radius: 15px; border-left: 5px solid #58a6ff; font-style: italic; color: #adbac7; margin-bottom: 20px; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -39,10 +37,12 @@ def get_implied_prob(odds):
 # ==========================================
 # 📥 DATA & SESSION STATE
 # ==========================================
+# Added 'last_player' to track selection changes
 states = {
     'h2h_val': 1.0, 'tier_val': 1.0, 'map_val': 1.0, 'int_val': 1.0,
     'weight_advice': None, 'analysis_results': None,
-    'opp_rank_val': "N/A", 'expected_maps_val': "TBD", 'opening_val': "50%"
+    'opp_rank_val': "N/A", 'expected_maps_val': "TBD", 'opening_val': "50%",
+    'last_player': None, 'p_tag_val': "donk", 'l10_val': "46, 33, 45", 'kpr_val': 0.90
 }
 for key, val in states.items():
     if key not in st.session_state: st.session_state[key] = val
@@ -51,7 +51,7 @@ for key, val in states.items():
 def load_vault():
     if os.path.exists("daily_stats.csv"):
         return pd.read_csv("daily_stats.csv")
-    return pd.DataFrame(columns=["Player", "Game", "Team", "BaseKPR", "L10", "ExpectedMaps"])
+    return pd.DataFrame(columns=["Player", "Game", "Team", "BaseKPR", "L10", "ExpectedMaps", "Rank"])
 
 df = load_vault()
 
@@ -61,9 +61,6 @@ df = load_vault()
 with st.sidebar:
     st.header("⚙️ Model Intelligence")
     
-    st.subheader("🤖 AI Weight Advisor")
-    st.caption("AI will analyze your 'Deep Context' inputs to adjust sliders.")
-    
     if st.button("GET AI SLIDER ADVICE"):
         api_key = st.secrets.get("GROQ_API_KEY")
         if not api_key:
@@ -71,10 +68,9 @@ with st.sidebar:
         else:
             client = Groq(api_key=api_key)
             with st.spinner("AI analyzing deep context..."):
-                # UPGRADED PROMPT: Feeds the UI inputs to the AI
                 prompt = f"""
                 Act as an Esports Betting Syndicate Analyst.
-                Player: {st.session_state.get('p_tag_input', 'Unknown')}
+                Player: {st.session_state.p_tag_val}
                 Opponent Rank: {st.session_state.opp_rank_val}
                 Projected Maps: {st.session_state.expected_maps_val}
                 Opening Duel Rate: {st.session_state.opening_val}
@@ -87,18 +83,16 @@ with st.sidebar:
                 advice = completion.choices[0].message.content
                 st.session_state.weight_advice = advice
                 
-                # Regex to move the sliders
                 found_weights = re.findall(r"([0-1]\.\d+)", advice)
                 if len(found_weights) >= 4:
                     st.session_state.h2h_val = float(found_weights[0])
                     st.session_state.tier_val = float(found_weights[1])
                     st.session_state.map_val = float(found_weights[2])
                     st.session_state.int_val = float(found_weights[3])
-                    st.toast("🎯 Sliders Synced to Context!", icon="✅")
+                    st.toast("🎯 Sliders Synced!", icon="✅")
 
-    # SIDEBAR CHEAT SHEET
     if st.session_state.weight_advice:
-        st.markdown(f'<div class="advice-box"><b>AI Slider Cheat Sheet:</b><br>{st.session_state.weight_advice}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="advice-box"><b>AI Cheat Sheet:</b><br>{st.session_state.weight_advice}</div>', unsafe_allow_html=True)
 
     st.divider()
     h2h_w = st.slider("H2H Advantage", 0.80, 1.20, key="h2h_val", step=0.05)
@@ -119,21 +113,24 @@ with col_l:
     
     selected_name = st.selectbox("Database Search", ["Manual Entry"] + db_players)
     
-    # Auto-fill Logic
-    if selected_name != "Manual Entry":
-        p_row = df[df['Player'] == selected_name].iloc[0]
-        p_tag = st.text_input("Player Tag", value=p_row['Player'], key="p_tag_input")
-        l10_raw = st.text_area("L10 Stats", value=str(p_row['L10']))
-        base_kpr = st.number_input("Base KPR", value=float(p_row['BaseKPR']))
-        st.session_state.opp_rank_val = str(p_row.get('Rank', "N/A"))
-        st.session_state.expected_maps_val = str(p_row.get('ExpectedMaps', "TBD"))
-    else:
-        p_tag = st.text_input("Player Tag", value="donk", key="p_tag_input")
-        l10_raw = st.text_area("L10 Stats", value="46, 33, 45, 42, 30")
-        base_kpr = st.number_input("Base KPR", value=0.90)
+    # FIX: Only overwrite session state if a DIFFERENT player is selected
+    if selected_name != st.session_state.last_player:
+        if selected_name != "Manual Entry":
+            p_row = df[df['Player'] == selected_name].iloc[0]
+            st.session_state.p_tag_val = str(p_row['Player'])
+            st.session_state.l10_val = str(p_row['L10'])
+            st.session_state.kpr_val = float(p_row['BaseKPR'])
+            st.session_state.opp_rank_val = str(p_row.get('Rank', "N/A"))
+            st.session_state.expected_maps_val = str(p_row.get('ExpectedMaps', "TBD"))
+        st.session_state.last_player = selected_name
+        st.rerun() # Refresh to populate the text boxes immediately
 
-    # NEW: CONTEXTUAL DATA SECTION
+    p_tag = st.text_input("Player Tag", key="p_tag_val")
+    l10_raw = st.text_area("L10 Stats", key="l10_val")
+    base_kpr = st.number_input("Base KPR", key="kpr_val", step=0.01)
+
     with st.expander("🧠 Deep Context (Feeds AI Advisor)", expanded=True):
+        # These are now stable and won't reset when you leave the box
         st.text_input("Opponent World Rank", key="opp_rank_val")
         st.text_input("Projected Maps", key="expected_maps_val")
         st.text_input("Opening Duel Success %", key="opening_val")
