@@ -83,7 +83,6 @@ with st.sidebar:
                 advice = completion.choices[0].message.content
                 st.session_state.weight_advice = advice
                 
-                # Regex to move the sliders automatically
                 found_weights = re.findall(r"([0-1]\.\d+)", advice)
                 if len(found_weights) >= 4:
                     st.session_state.h2h_val = float(found_weights[0])
@@ -153,7 +152,7 @@ if st.button("RUN ELITE ANALYSIS"):
         mean_v = np.mean(vals)
         stdev = max(np.std(vals, ddof=1) if len(vals) > 1 else 1.0, 1.0)
         cv = stdev / mean_v 
-        hit_rate = sum(1 for v in vals if (v > m_line if m_side == "Over" else v < m_line)) / len(vals)
+        hit_rate = (sum(1 for v in vals if (v > m_line if m_side == "Over" else v < m_line)) / len(vals)) * 100
         
         mapping = {"Maps 1 & 2": 2.0, "Map 1 Only": 1.0, "Full Match": 2.5}
         proj = (base_kpr * 21.5 * mapping.get(m_scope, 2.0)) * h2h_w * rank_w * map_w * int_w
@@ -161,16 +160,17 @@ if st.button("RUN ELITE ANALYSIS"):
         prob_under = norm.cdf(m_line, loc=proj, scale=stdev)
         model_prob = (1 - prob_under) * 100 if m_side == "Over" else prob_under * 100
         edge = model_prob - get_implied_prob(m_odds)
-        conf = min(max(((abs(edge) * 3) + (100 - (cv * 100))), 0), 100)
+        
+        # TIGHTENED CONFIDENCE ENGINE
+        conf = min(max(((abs(edge) * 2) + (hit_rate * 0.4) - (cv * 120)), 0), 100)
         
         grade, color, flat, units = get_grade_details(edge)
         if cv > 0.25: units = max(0.5, units - 0.5)
         
-        # Defensive storage using res.get() logic
         st.session_state.analysis_results = {
             "p_tag": p_tag, "matchup": match_ctx, "side": m_side, "line": m_line, "grade": grade,
             "color": color, "flat": flat, "units": units, "proj": proj, "edge": edge, 
-            "hit_rate": hit_rate * 100, "conf": conf, "game": game_choice
+            "hit_rate": hit_rate, "conf": conf, "game": game_choice
         }
     except Exception as e:
         st.error(f"Analysis Error: {e}")
@@ -182,16 +182,18 @@ with col_r:
     if st.session_state.analysis_results:
         res = st.session_state.analysis_results
         
-        # Dashboard UI
+        # UI Setup
         p_name = res.get("p_tag", "Unknown").upper()
         m_info = res.get("matchup", "N/A")
         side = res.get("side", "Over")
         line = res.get("line", 0.0)
         arrow = "▲" if side == "Over" else "▼"
         arrow_color = "#00FF00" if side == "Over" else "#FF4500"
+        grade_grad = res.get('color', 'linear-gradient(135deg, #161b22, #0e1117)')
+        grade_flat = res.get('flat', '#58a6ff')
         
         st.markdown(f"""
-            <div class="grade-card" style="background: {res.get('color', '#333')}; color: white;">
+            <div class="grade-card" style="background: {grade_grad}; color: white;">
                 <div style="font-size: 28px; font-weight: 900;">{p_name}</div>
                 <div style="font-size: 14px; opacity: 0.8;">{m_info}</div>
                 <div style="font-size: 24px; margin-top: 10px; color: {arrow_color}; font-weight: 900;">{arrow} {side.upper()} {line}</div>
@@ -206,45 +208,46 @@ with col_r:
         m3.metric("L10 Hit", f"{res.get('hit_rate', 0):.0f}%")
         m4.metric("Conf", f"{res.get('conf', 0):.0f}%")
 
-        # 📸 THE SOCIAL SHARE CARD
         st.divider()
         if st.checkbox("📸 Generate Social Share Card"):
-            grade_hex = res.get('flat', '#58a6ff')
-            proj_val = res.get('proj', 0.0)
-            edge_val = res.get('edge', 0.0)
-            
-            # Use a localized container to prevent magic text printing
             container = st.empty()
             
-            # Rendered HTML Graphic
+            # PREMIUM GRADIENT SHARE CARD
             share_html = f"""
-            <div style="background-color: #0e1117; border: 3px solid {grade_hex}; border-radius: 20px; padding: 30px; max-width: 480px; color: white; margin: 10px auto; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: sans-serif;">
-                <div style="border-bottom: 1px solid #30363d; padding-bottom: 15px; margin-bottom: 20px;">
-                    <div style="font-size: 10px; color: #adbac7; text-transform: uppercase; letter-spacing: 2px;">{res.get('game', 'CS2')} PROP ANALYSIS</div>
-                    <h2 style="margin: 5px 0; font-size: 36px; font-weight: 900;">{p_name}</h2>
-                    <div style="color: #58a6ff; font-size: 14px; font-weight: bold;">{m_info}</div>
+            <div style="background: linear-gradient(145deg, #0e1117 0%, #1c2128 100%); border: 3px solid {grade_flat}; border-radius: 20px; padding: 30px; max-width: 480px; color: white; margin: 10px auto; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.6); font-family: 'Inter', sans-serif;">
+                
+                <div style="border-bottom: 2px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 20px;">
+                    <div style="font-size: 10px; color: #adbac7; text-transform: uppercase; letter-spacing: 3px;">{res.get('game', 'CS2')} PROP ANALYSIS</div>
+                    <h2 style="margin: 5px 0; font-size: 38px; font-weight: 900; letter-spacing: -1px;">{p_name}</h2>
+                    <div style="color: #58a6ff; font-size: 15px; font-weight: 600;">{m_info}</div>
                 </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; text-align: left;">
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; text-align: left;">
                     <div style="flex: 1;">
-                        <div style="font-size: 12px; color: #adbac7;">THE LINE</div>
-                        <div style="font-size: 55px; font-weight: 900; line-height: 1; margin: 5px 0;">{line}</div>
-                        <div style="font-size: 28px; font-weight: 900; color: {arrow_color};">{arrow} {side.upper()}</div>
+                        <div style="font-size: 13px; color: #adbac7; font-weight: bold;">THE LINE</div>
+                        <div style="font-size: 60px; font-weight: 900; line-height: 0.9; margin: 8px 0; letter-spacing: -2px;">{line}</div>
+                        <div style="font-size: 30px; font-weight: 900; color: {arrow_color};">{arrow} {side.upper()}</div>
                     </div>
                     <div style="flex: 1; text-align: right;">
-                        <div style="font-size: 12px; color: #adbac7;">MODEL GRADE</div>
-                        <div style="font-size: 110px; font-weight: 900; color: {grade_hex}; line-height: 0.8;">{res.get('grade', '?')}</div>
+                        <div style="font-size: 13px; color: #adbac7; font-weight: bold;">MODEL GRADE</div>
+                        <div style="font-size: 115px; font-weight: 900; background: {grade_grad}; -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 0.8;">{res.get('grade', '?')}</div>
                     </div>
                 </div>
-                <div style="background: {grade_hex}20; border-radius: 12px; padding: 15px; border: 1px solid {grade_hex}40; margin-bottom: 20px;">
-                    <div style="font-size: 32px; font-weight: 900;">{res.get('units', 0)} UNIT PLAY</div>
+
+                <div style="background: {grade_grad}; border-radius: 12px; padding: 18px; margin-bottom: 25px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);">
+                    <div style="font-size: 36px; font-weight: 900; letter-spacing: -1px;">{res.get('units', 0)} UNIT PLAY</div>
                 </div>
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; border-top: 1px solid #30363d; padding-top: 20px;">
-                    <div><div style="font-size: 9px; color: #adbac7;">PROJ</div><div style="font-size: 16px; font-weight: bold;">{proj_val:.1f}</div></div>
-                    <div><div style="font-size: 9px; color: #adbac7;">EDGE</div><div style="font-size: 16px; font-weight: bold; color: {grade_hex};">{edge_val:+.1f}%</div></div>
-                    <div><div style="font-size: 9px; color: #adbac7;">L10 HIT</div><div style="font-size: 16px; font-weight: bold;">{res.get('hit_rate', 0):.0f}%</div></div>
-                    <div><div style="font-size: 9px; color: #adbac7;">CONF</div><div style="font-size: 16px; font-weight: bold;">{res.get('conf', 0):.0f}%</div></div>
+
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; border-top: 2px solid rgba(255,255,255,0.1); padding-top: 20px;">
+                    <div><div style="font-size: 10px; color: #adbac7; font-weight: bold;">PROJ</div><div style="font-size: 18px; font-weight: 900;">{res.get('proj', 0):.1f}</div></div>
+                    <div><div style="font-size: 10px; color: #adbac7; font-weight: bold;">EDGE</div><div style="font-size: 18px; font-weight: 900; color: {grade_flat};">{res.get('edge', 0):+.1f}%</div></div>
+                    <div><div style="font-size: 10px; color: #adbac7; font-weight: bold;">L10 HIT</div><div style="font-size: 18px; font-weight: 900;">{res.get('hit_rate', 0):.0f}%</div></div>
+                    <div><div style="font-size: 10px; color: #adbac7; font-weight: bold;">CONF</div><div style="font-size: 18px; font-weight: 900;">{res.get('conf', 0):.0f}%</div></div>
                 </div>
-                <div style="margin-top: 25px; font-size: 10px; color: #adbac7; text-transform: uppercase; letter-spacing: 3px;">ANALYSIS BY <b>SLEEPER D. KID</b></div>
+
+                <div style="margin-top: 30px; font-size: 11px; color: #adbac7; text-transform: uppercase; letter-spacing: 4px; font-weight: 800; opacity: 0.7;">
+                    ANALYSIS BY <span style="color: white;">SLEEPER D. KID</span>
+                </div>
             </div>
             """
             container.markdown(share_html, unsafe_allow_html=True)
