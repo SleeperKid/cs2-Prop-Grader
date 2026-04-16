@@ -1,189 +1,205 @@
+import gspread
+from gspread_dataframe import set_with_dataframe
+from google.oauth2.service_account import Credentials
 import pandas as pd
+import numpy as np
+import re
+import os
 from seleniumbase import SB
 from bs4 import BeautifulSoup
-import time
-import os
-import subprocess
-import random
-import json
-import re
 
 # ==========================================
-# 📋 CONFIG & CLOUD SYNC
+# 🛡️ THE UPLOADER ENGINE
 # ==========================================
-
-CACHE_FILE = "team_cache.json"
-
-def load_cache():
-    if os.path.exists(CACHE_FILE):
-        with open(CACHE_FILE, "r") as f: return json.load(f)
-    return {}
-
-def save_cache(cache):
-    with open(CACHE_FILE, "w") as f: json.dump(cache, f, indent=4)
-
-def load_watchlist():
-    if not os.path.exists("targets.txt"):
-        print("❌ targets.txt not found!")
-        return []
-    with open("targets.txt", "r") as file:
-        return list(dict.fromkeys([line.strip() for line in file if line.strip()]))
-
-def push_to_cloud():
-    """Syncs the latest CSV and Cache to GitHub."""
-    print("   ☁️ Syncing to GitHub...")
-    try:
-        # Standardizing remote to your SleeperKid repo
-        subprocess.run('git add daily_stats.csv team_cache.json', shell=True, check=True)
-        subprocess.run('git commit -m "🤖 Surgical Vault Update" || echo "No changes"', shell=True, check=True)
-        subprocess.run('git push origin main', shell=True, check=True)
-        print("      ✅ Sync Complete.")
-    except Exception as e: 
-        print(f"      [!] Git Error: {e}")
-
-# ==========================================
-# 🎯 RECOVERY-FIRST SCRAPING ENGINE
-# ==========================================
-
-def get_player_stats(sb, player_url, player_name):
-    """Refined version of your working engine."""
-    print(f"   ▶ Syncing {player_name}...")
-    
-    url_parts = player_url.split('/')
-    try:
-        p_id, p_slug = url_parts[-2], url_parts[-1]
-    except: return 0.75, "" 
-
-    base_kpr, l10_totals = 0.75, []
+def upload_to_vault(df, worksheet_name):
+    """Pushes local scraped data directly to Google Sheets"""
+    if df.empty:
+        print(f"⚠️ [CLOUD] No data found to upload for {worksheet_name}.")
+        return
 
     try:
-        # --- NAVIGATE TO STATS ---
-        sb.uc_open_with_reconnect(f"https://www.hltv.org/stats/players/{p_id}/{p_slug}", reconnect_time=5)
-        if "Verify you are human" in sb.get_page_source():
-            sb.uc_gui_click_captcha() 
-
-        soup = BeautifulSoup(sb.get_page_source(), 'lxml')
-        for row in soup.find_all('div', class_='stats-row'):
-            if "Kills / round" in row.text:
-                base_kpr = float(row.find_all('span')[-1].text.strip())
-                break
-
-        # --- NAVIGATE TO MATCHES ---
-        sb.uc_open_with_reconnect(f"https://www.hltv.org/stats/players/matches/{p_id}/{p_slug}", reconnect_time=4)
-        soup = BeautifulSoup(sb.get_page_source(), 'lxml')
-        table = soup.find('table', class_=lambda c: c and 'stats-table' in c)
+        scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
+        # Ensure service_account.json is in your project folder
+        creds = Credentials.from_service_account_file("service_account.json", scopes=scope)
+        client = gspread.authorize(creds)
         
-        if table:
-            rows = table.find('tbody').find_all('tr')
-            all_maps = []
-            
-            for row in rows:
-                tds = row.find_all('td')
-                if len(tds) < 5: continue
-                
-                # Dynamic K-D Search (Your working logic)
-                kd_text = ""
-                for td in tds[4:]:
-                    val = td.text.strip()
-                    if re.match(r'^\d+\s*-\s*\d+$', val):
-                        kd_text = val
-                        break
-                
-                if not kd_text: continue
-                # Match grouping using the series link
-                match_link = tds[4].find('a', href=True) or tds[2].find('a', href=True)
-                series_id = match_link['href'].split('/')[-2] if match_link else "unknown"
-                
-                try:
-                    kills = int(kd_text.split('-')[0].strip())
-                    all_maps.append({'k': kills, 'series': series_id})
-                except: continue
-
-            # --- SERIES GROUPING (Your working logic) ---
-            match_groups = []
-            if all_maps:
-                curr_series, temp_grp = None, []
-                for m in all_maps:
-                    if m['series'] != curr_series:
-                        if temp_grp: match_groups.append(temp_grp)
-                        temp_grp, curr_series = [m['k']], m['series']
-                    else: temp_grp.append(m['k'])
-                if temp_grp: match_groups.append(temp_grp)
-
-            # --- MAP 1+2 LOGIC (Your working logic) ---
-            for grp in match_groups[:10]:
-                chrono = grp[::-1] # Newest-to-Oldest becomes Oldest-to-Newest
-                if len(chrono) >= 2:
-                    # Chrono[0] = Map 1, Chrono[1] = Map 2
-                    l10_totals.append(str(chrono[0] + chrono[1]))
-                # Optional: Handle BO1s if desired, currently skips them if < 2 maps
-                    
+        # Open 'PropVault' and the specific worksheet tab
+        spreadsheet = client.open("PropVault") 
+        worksheet = spreadsheet.worksheet(worksheet_name)
+        
+        worksheet.clear()
+        set_with_dataframe(worksheet, df)
+        print(f"🚀 [CLOUD SUCCESS] {len(df)} players synced to {worksheet_name}!")
     except Exception as e:
-        print(f"      [!] Skipping {player_name}: {e}")
-
-    # Return exactly 2 values to fix the ValueError
-    return base_kpr, ", ".join(l10_totals)
+        print(f"❌ [CLOUD ERROR] Failed to upload to {worksheet_name}: {e}")
 
 # ==========================================
-# 🚀 MAIN EXECUTION
+# 🎮 VALORANT ENGINE (V36 RE-LOCKED)
 # ==========================================
+def get_val_stats(sb, p_id, p_tag, p_url):
+    try:
+        sb.uc_open_with_reconnect(f"{p_url}/?timespan=all", reconnect_time=4)
+        sb.sleep(5)
+        soup = BeautifulSoup(sb.get_page_source(), 'lxml')
+        all_html = soup.get_text() + " " + str(soup.find_all(True))
+        
+        # Team & Agents
+        base_team = "Free Agent"
+        team_anchor = soup.find('a', href=re.compile(r'/team/'))
+        if team_anchor:
+            raw_team = team_anchor.get_text(separator=" ").strip()
+            base_team = re.split(r'joined|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec', raw_team)[0].strip()
 
-def build_daily_vault():
-    teams = load_watchlist()
-    if not teams: return
-    
-    cache = load_cache()
-    all_data = []
+        known_agents = ["Neon", "Jett", "Raze", "Sova", "Skye", "Fade", "Breach", "Omen", "Viper", "Cypher", "Killjoy", "Tejo"]
+        agent_found = [a for a in known_agents if re.search(a, all_html, re.IGNORECASE)]
+        top_agents = ", ".join(agent_found[:3])
 
-    with SB(uc=True, incognito=True, headless=False) as sb:
-        for team in teams:
-            team_clean = team.replace("CS2: ", "").strip()
-            print(f"\n🕵️‍♂️ Targeting {team_clean}...")
+        # KPR Extraction
+        kpr = 0.80
+        table = soup.find('table', class_='wf-table')
+        if table:
+            headers = [th.text.strip().upper() for th in table.find('thead').find_all('th')]
+            if "KPR" in headers:
+                kpr_idx = headers.index("KPR")
+                for row in table.find('tbody').find_all('tr'):
+                    cols = row.find_all('td')
+                    if len(cols) > kpr_idx:
+                        try:
+                            val = float(cols[kpr_idx].text.strip())
+                            if val > 0.6: kpr = val; break
+                        except: continue
 
-            if team_clean in cache:
-                team_url = cache[team_clean]
-            else:
-                sb.uc_open_with_reconnect(f"https://www.hltv.org/search?query={team_clean}", reconnect_time=4)
-                soup = BeautifulSoup(sb.get_page_source(), 'lxml')
-                links = soup.find_all('a', href=lambda h: h and "/team/" in h)
-                
-                if not links: continue
-                
-                # Filter out academy/female teams
-                target_path = links[0]['href']
-                for l in links:
-                    if "academy" not in l.text.lower() and "female" not in l.text.lower():
-                        target_path = l['href']
-                        break
-                
-                team_url = "https://www.hltv.org" + target_path
-                cache[team_clean] = team_url
-                save_cache(cache)
-
-            sb.uc_open_with_reconnect(team_url, reconnect_time=3)
-            p_tags = BeautifulSoup(sb.get_page_source(), 'lxml').select('div.bodyshot-team.g-grid a.col-custom')
+        # Match History (Map 1+2 Fix)
+        sb.uc_open_with_reconnect(f"https://www.vlr.gg/player/matches/{p_id}/{p_tag}", reconnect_time=4)
+        sb.sleep(4)
+        match_links = [f"https://www.vlr.gg{a['href']}" for a in 
+                       BeautifulSoup(sb.get_page_source(), 'lxml').select('a.wf-card.m-item')][:12]
+        
+        l10_list = []
+        for m_link in match_links:
+            if len(l10_list) >= 10: break
+            sb.uc_open_with_reconnect(m_link, reconnect_time=4)
+            m_soup = BeautifulSoup(sb.get_page_source(), 'lxml')
             
-            for tag in p_tags:
-                p_url = "https://www.hltv.org" + tag['href']
-                # Surgical nickname extraction
-                p_name = tag.get('title', '').split("'")[-2] if "'" in tag.get('title', '') else tag['href'].split('/')[-1]
-                
-                # Fix: Catching exactly 2 values
-                k, l10 = get_player_stats(sb, p_url, p_name)
-                
-                if l10:
-                    all_data.append({
-                        "Player": p_name, "Team": team_clean, 
-                        "BaseKPR": k, "L10": l10, "Game": "CS2"
-                    })
-                    print(f"      ✅ Success: {p_name}")
+            map_containers = []
+            for container in m_soup.find_all('div', class_='vm-stats-game'):
+                txt = container.get_text().upper()
+                if any(x in txt for x in ["OVERALL", "SERIES", "SUMMARY"]): continue
+                if container.find('div', class_='map'): map_containers.append(container)
 
-            # Push to GitHub after every team for safety
-            if all_data:
-                pd.DataFrame(all_data).to_csv("daily_stats.csv", index=False)
-                push_to_cloud()
+            def extract_k(cont):
+                for r in cont.find_all('tr'):
+                    if p_id in str(r) or p_tag.lower() in r.text.lower():
+                        cell = r.find('td', class_='mod-vlr-kills')
+                        return int(re.split(r'[\n-]', cell.text.strip())[0].strip()) if cell else 0
+                return 0
 
-    print("\n✅ Vault Updated & Synced!")
+            if len(map_containers) >= 2:
+                l10_list.append(extract_k(map_containers[0]) + extract_k(map_containers[1]))
+
+        expected = kpr * 26
+        avg_actual = np.mean(l10_list) if l10_list else 0
+        edge = round(((avg_actual - expected) / expected * 100), 1) if expected > 0 else 0
+
+        return {"Player": p_tag, "Game": "Valorant", "Team": base_team, "Agents": top_agents, 
+                "KPR": kpr, "L10": ", ".join(map(str, l10_list)), "Edge %": edge}
+    except Exception as e:
+        print(f"      [!] VAL Error: {e}")
+        return None
+
+# ==========================================
+# 🎮 CS2 ENGINE (V35 VERIFIED)
+# ==========================================
+def get_cs2_stats(sb, p_id, p_tag, p_url):
+    try:
+        sb.uc_open_with_reconnect(p_url, reconnect_time=4)
+        sb.sleep(4)
+        soup = BeautifulSoup(sb.get_page_source(), 'lxml')
+        kpr = 0.82
+        stat_label = soup.find(string=re.compile("Kills per round"))
+        if stat_label:
+            val_elem = stat_label.find_parent().find_next(['b', 'span', 'div'])
+            if val_elem: 
+                m = re.search(r"\d+\.\d+", val_elem.text)
+                if m: kpr = float(m.group())
+
+        # Match History (Consolidated Grouping)
+        matches_url = f"https://www.hltv.org/stats/players/matches/{p_id}/{p_tag.lower()}"
+        sb.uc_open_with_reconnect(matches_url, reconnect_time=4)
+        sb.sleep(6)
+        m_soup = BeautifulSoup(sb.get_page_source(), 'lxml')
+        rows = m_soup.select('.stats-table tbody tr')
+        match_groups = {}
+        for row in rows:
+            cols = row.find_all('td')
+            if len(cols) < 5: continue
+            date, opp_raw = cols[0].text.strip(), cols[2].text.strip()
+            opp_clean = re.sub(r'\s*\(\d+\)', '', opp_raw.replace("vs ", "")).strip()
+            kills = int(cols[4].text.strip().split('-')[0].strip())
+            match_key = f"{date}_{opp_clean}"
+            if match_key not in match_groups: match_groups[match_key] = []
+            match_groups[match_key].append(kills)
+
+        l10_list = []
+        for m_key in match_groups:
+            k_list = match_groups[m_key]
+            if len(k_list) >= 2:
+                m1_k, m2_k = k_list[-1], k_list[-2]
+                l10_list.append(m1_k + m2_k)
+                print(f"      ✅ Hit Series: {m_key} ({m1_k} + {m2_k} = {m1_k + m2_k})")
+            if len(l10_list) >= 10: break
+
+        expected = kpr * 24
+        avg_actual = np.mean(l10_list) if l10_list else 0
+        edge = round(((avg_actual - expected) / expected * 100), 1) if expected > 0 else 0
+
+        return {"Player": p_tag, "Game": "CS2", "KPR": kpr, 
+                "L10": ", ".join(map(str, l10_list)), "Edge %": edge}
+    except Exception as e:
+        print(f"      [!] CS2 Error: {e}")
+        return None
+
+# ==========================================
+# 🚀 MASTER EXECUTION (V38 COMPLETE)
+# ==========================================
+def run_master_miner():
+    print("🚀 Launching V38 Master Miner: Cloud-Linked Mode")
+    with SB(uc=True, headless=False, incognito=True) as sb:
+        try:
+            with open("targets.txt", "r") as f:
+                raw_targets = [line.strip() for line in f if line.strip()]
+            targets = sorted(raw_targets, key=lambda x: x.split(":")[0], reverse=True)
+        except Exception as e:
+            print(f"❌ Target Error: {e}"); return
+
+        val_results, cs_results = [], []
+        last_prefix = None
+
+        for entry in targets:
+            prefix, data = entry.split(": ")
+            if last_prefix and prefix != last_prefix:
+                print(f"🛑 Domain Cooldown ({last_prefix} -> {prefix})..."); sb.sleep(10)
+
+            p_id, p_tag, p_url = data.split("|")
+            print(f"📡 Mining {p_tag}...")
+            
+            res = get_val_stats(sb, p_id, p_tag, p_url) if prefix == "VAL" else get_cs2_stats(sb, p_id, p_tag, p_url)
+            if res:
+                val_results.append(res) if prefix == "VAL" else cs_results.append(res)
+            last_prefix = prefix
+
+        # Final Sync
+        print("\n☁️  Initiating Cloud Vault Synchronization...")
+        if val_results:
+            df_v = pd.DataFrame(val_results)
+            df_v.to_csv("val_daily_stats.csv", index=False)
+            upload_to_vault(df_v, "VAL_DATA")
+        if cs_results:
+            df_c = pd.DataFrame(cs_results)
+            df_c.to_csv("cs_daily_stats.csv", index=False)
+            upload_to_vault(df_c, "CS2_DATA")
+        
+        print("\n🏆 Session Complete. Data is Live!")
 
 if __name__ == "__main__":
-    build_daily_vault()
+    run_master_miner()

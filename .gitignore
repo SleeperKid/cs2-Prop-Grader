@@ -1,2 +1,13 @@
+# Data
+*.csv
+val_daily_stats.csv
+cs_daily_stats.csv
+val_test.py 
+daily_stats.csv
+
+# Secrets & Environment
 .env
-venv/
+.streamlit/secrets.toml
+__pycache__/
+.venv/
+service_account.json
