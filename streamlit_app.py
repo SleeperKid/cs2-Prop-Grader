@@ -124,6 +124,11 @@ with st.sidebar:
 # 🎯 MAIN ANALYZER
 # ==========================================
 st.title("🎯 Prop Grader Elite")
+
+# --- ADD THIS LINE HERE ---
+df = load_vault() # This creates the 'df' variable for the lines below
+# --------------------------
+
 col_l, col_r = st.columns([1, 1.2], gap="large")
 
 with col_l:
@@ -138,13 +143,18 @@ with col_l:
     with role_col: 
         if game_choice == "CS2": st.radio("Player Role", ["Rifler", "AWPer"], horizontal=True, key="role_val")
 
+    # Now 'df' is defined, so these lines will work perfectly
     db_players = df[df['Game'] == game_choice]['Player'].tolist() if not df.empty else []
     selected_name = st.selectbox("Database Search", ["Manual Entry"] + db_players)
+    
     if selected_name != st.session_state.last_player:
         if selected_name != "Manual Entry":
             p_row = df[df['Player'] == selected_name].iloc[0]
-            st.session_state.p_tag_val, st.session_state.l10_val, st.session_state.kpr_val = str(p_row['Player']), str(p_row['L10']), float(p_row['BaseKPR'])
-            st.session_state.m_context_val, st.session_state.opp_rank_val = f"{p_row['Team']} vs ", str(p_row.get('Rank', "N/A"))
+            st.session_state.p_tag_val = str(p_row['Player'])
+            st.session_state.l10_val = str(p_row['L10'])
+            st.session_state.kpr_val = float(p_row['BaseKPR'])
+            st.session_state.m_context_val = f"{p_row['Team']} vs "
+            st.session_state.opp_rank_val = str(p_row.get('Rank', "N/A"))
             st.session_state.expected_maps_val = str(p_row.get('ExpectedMaps', "TBD"))
         st.session_state.last_player = selected_name
         st.rerun()
