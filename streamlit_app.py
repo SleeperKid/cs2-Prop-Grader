@@ -37,11 +37,12 @@ def get_implied_prob(odds):
 # ==========================================
 # 📥 DATA & SESSION STATE
 # ==========================================
-# Added 'last_player' to track selection changes
 states = {
     'h2h_val': 1.0, 'tier_val': 1.0, 'map_val': 1.0, 'int_val': 1.0,
     'weight_advice': None, 'analysis_results': None,
-    'opp_rank_val': "N/A", 'expected_maps_val': "TBD", 'opening_val': "50%",
+    'm_context_val': "Team vs Opponent", 'opp_rank_val': "N/A", 
+    'expected_maps_val': "TBD", 'opening_val': "50%",
+    'map1_kpr': "0.00", 'map2_kpr': "0.00", # New Map KPR fields
     'last_player': None, 'p_tag_val': "donk", 'l10_val': "46, 33, 45", 'kpr_val': 0.90
 }
 for key, val in states.items():
@@ -56,7 +57,7 @@ def load_vault():
 df = load_vault()
 
 # ==========================================
-# ⚙️ SIDEBAR: AI ADVISOR & CHEAT SHEET
+# ⚙️ SIDEBAR: AI ADVISOR
 # ==========================================
 with st.sidebar:
     st.header("⚙️ Model Intelligence")
@@ -68,14 +69,15 @@ with st.sidebar:
         else:
             client = Groq(api_key=api_key)
             with st.spinner("AI analyzing deep context..."):
+                # UPGRADED PROMPT: Includes Matchup and Map-specific KPRs
                 prompt = f"""
                 Act as an Esports Betting Syndicate Analyst.
+                Matchup: {st.session_state.m_context_val}
                 Player: {st.session_state.p_tag_val}
-                Opponent Rank: {st.session_state.opp_rank_val}
-                Projected Maps: {st.session_state.expected_maps_val}
-                Opening Duel Rate: {st.session_state.opening_val}
+                Context: Opponent Rank: {st.session_state.opp_rank_val} | Projected Maps: {st.session_state.expected_maps_val}
+                Deep Stats: Opening Duels: {st.session_state.opening_val} | Map 1 KPR: {st.session_state.map1_kpr} | Map 2 KPR: {st.session_state.map2_kpr}
 
-                TASK: Output 4 Weights (0.85-1.15) for our model.
+                TASK: Output 4 Weights (0.85-1.15) for our model based on how these factors interact.
                 FORMAT: H2H: [X] | Tier: [X] | Map: [X] | Int: [X]
                 FOLLOWED BY: A 2-sentence 'Cheat Sheet' explanation.
                 """
@@ -113,27 +115,33 @@ with col_l:
     
     selected_name = st.selectbox("Database Search", ["Manual Entry"] + db_players)
     
-    # FIX: Only overwrite session state if a DIFFERENT player is selected
+    # Auto-fill Matchup with Player Team
     if selected_name != st.session_state.last_player:
         if selected_name != "Manual Entry":
             p_row = df[df['Player'] == selected_name].iloc[0]
             st.session_state.p_tag_val = str(p_row['Player'])
             st.session_state.l10_val = str(p_row['L10'])
             st.session_state.kpr_val = float(p_row['BaseKPR'])
+            st.session_state.m_context_val = f"{p_row['Team']} vs " # Defaults player's team
             st.session_state.opp_rank_val = str(p_row.get('Rank', "N/A"))
             st.session_state.expected_maps_val = str(p_row.get('ExpectedMaps', "TBD"))
         st.session_state.last_player = selected_name
-        st.rerun() # Refresh to populate the text boxes immediately
+        st.rerun()
 
     p_tag = st.text_input("Player Tag", key="p_tag_val")
+    # New Matchup Field
+    matchup = st.text_input("Matchup Context (Team vs Team)", key="m_context_val")
     l10_raw = st.text_area("L10 Stats", key="l10_val")
     base_kpr = st.number_input("Base KPR", key="kpr_val", step=0.01)
 
     with st.expander("🧠 Deep Context (Feeds AI Advisor)", expanded=True):
-        # These are now stable and won't reset when you leave the box
         st.text_input("Opponent World Rank", key="opp_rank_val")
         st.text_input("Projected Maps", key="expected_maps_val")
         st.text_input("Opening Duel Success %", key="opening_val")
+        # New Map KPR inputs
+        k_col1, k_col2 = st.columns(2)
+        k_col1.text_input("Map 1 Projected KPR", key="map1_kpr")
+        k_col2.text_input("Map 2 Projected KPR", key="map2_kpr")
 
     c1, c2 = st.columns(2)
     with c1:
@@ -162,7 +170,7 @@ if st.button("RUN ELITE ANALYSIS"):
         if cv > 0.25: units = max(0.5, units - 0.5)
         
         st.session_state.analysis_results = {
-            "p_tag": p_tag, "side": m_side, "line": m_line, "grade": grade,
+            "p_tag": p_tag, "matchup": matchup, "side": m_side, "line": m_line, "grade": grade,
             "color": color, "flat": flat, "units": units, "proj": proj, "edge": edge, 
             "hit_rate": hit_rate * 100, "cv": cv, "game": game_choice
         }
@@ -180,7 +188,8 @@ with col_r:
         st.markdown(f"""
             <div class="grade-card" style="background: {res["color"]}; color: white;">
                 <div style="font-size: 28px; font-weight: 900;">{res["p_tag"].upper()}</div>
-                <div style="font-size: 18px;">{arrow} {res["side"].upper()} {res["line"]}</div>
+                <div style="font-size: 14px; opacity: 0.8;">{res["matchup"]}</div>
+                <div style="font-size: 18px; margin-top: 10px;">{arrow} {res["side"].upper()} {res["line"]}</div>
                 <h1 class="grade-text">{res["grade"]}</h1>
                 <div style="font-size: 20px; font-weight: bold;">{res["units"]} UNIT PLAY</div>
             </div>
@@ -192,9 +201,11 @@ with col_r:
         m3.metric("L10 Hit", f"{res['hit_rate']:.0f}%")
 
         if st.checkbox("📸 Generate Social Share Card"):
+            # UPGRADED CARD: Matchup added to the card
             card_html = f"""
             <div style="background-color: #0e1117; border: 3px solid {res["flat"]}; border-radius: 20px; padding: 30px; max-width: 450px; color: white; margin: 10px auto; text-align: center;">
                 <h2 style="margin: 0; font-size: 32px;">{res["p_tag"].upper()}</h2>
+                <div style="font-size: 14px; color: #58a6ff; margin-bottom: 10px;">{res["matchup"]}</div>
                 <div style="color: {res["flat"]}; font-size: 100px; font-weight: 900; line-height: 1;">{res["grade"]}</div>
                 <div style="font-size: 24px; font-weight: bold;">{arrow} {res["side"].upper()} {res["line"]}</div>
                 <div style="background: {res["flat"]}30; padding: 10px; margin-top: 15px; border-radius: 10px;">
