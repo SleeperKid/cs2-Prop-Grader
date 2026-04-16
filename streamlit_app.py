@@ -75,7 +75,6 @@ with st.sidebar:
                 Player: {st.session_state.p_tag_val}
                 Context: Rank: {st.session_state.opp_rank_val} | Maps: {st.session_state.expected_maps_val}
                 Deep Stats: Opening: {st.session_state.opening_val} | Map1: {st.session_state.map1_kpr} | Map2: {st.session_state.map2_kpr}
-
                 TASK: Output 4 Weights (0.85-1.15).
                 FORMAT: H2H: [X] | Tier: [X] | Map: [X] | Int: [X]
                 FOLLOWED BY: A 2-sentence 'Cheat Sheet' explanation.
@@ -127,7 +126,7 @@ with col_l:
         st.rerun()
 
     p_tag = st.text_input("Player Tag", key="p_tag_val")
-    matchup = st.text_input("Matchup Context", key="m_context_val")
+    matchup_text = st.text_input("Matchup Context", key="m_context_val")
     l10_raw = st.text_area("L10 Stats", key="l10_val")
     base_kpr = st.number_input("Base KPR", key="kpr_val", step=0.01)
 
@@ -161,17 +160,15 @@ if st.button("RUN ELITE ANALYSIS"):
         prob_under = norm.cdf(m_line, loc=proj, scale=stdev)
         model_prob = (1 - prob_under) * 100 if m_side == "Over" else prob_under * 100
         edge = model_prob - get_implied_prob(m_odds)
-        
-        # NEW: Confidence Calculation
         conf = min(max(((abs(edge) * 3) + (100 - (cv * 100))), 0), 100)
         
         grade, color, flat, units = get_grade_details(edge)
         if cv > 0.25: units = max(0.5, units - 0.5)
         
         st.session_state.analysis_results = {
-            "p_tag": p_tag, "matchup": matchup, "side": m_side, "line": m_line, "grade": grade,
+            "p_tag": p_tag, "matchup": matchup_text, "side": m_side, "line": m_line, "grade": grade,
             "color": color, "flat": flat, "units": units, "proj": proj, "edge": edge, 
-            "hit_rate": hit_rate * 100, "conf": conf, "cv": cv, "game": game_choice
+            "hit_rate": hit_rate * 100, "conf": conf, "game": game_choice
         }
     except Exception as e:
         st.error(f"Analysis Error: {e}")
@@ -182,22 +179,19 @@ if st.button("RUN ELITE ANALYSIS"):
 with col_r:
     if st.session_state.analysis_results:
         res = st.session_state.analysis_results
+        p_name_up = res.get("p_tag", "Unknown").upper()
+        match_up = res.get("matchup", "N/A")
+        side_up = res.get("side", "Over")
+        line_val = res.get("line", 0.0)
+        arrow_sym = "▲" if side_up == "Over" else "▼"
+        arrow_hex = "#00FF00" if side_up == "Over" else "#FF4500"
         
-        # Data Preparation
-        p_name = res.get("p_tag", "Unknown").upper()
-        match_info = res.get("matchup", "N/A")
-        side = res.get("side", "Over")
-        line = res.get("line", 0.0)
-        arrow = "▲" if side == "Over" else "▼"
-        arrow_color = "#00FF00" if side == "Over" else "#FF4500"
-        grade_color = res.get('flat', '#58a6ff')
-        
-        # 1. Main Dashboard UI (Live Site)
+        # UI Grade Card
         st.markdown(f"""
             <div class="grade-card" style="background: {res.get('color', '#333')}; color: white;">
-                <div style="font-size: 28px; font-weight: 900;">{p_name}</div>
-                <div style="font-size: 14px; opacity: 0.8;">{match_info}</div>
-                <div style="font-size: 24px; margin-top: 10px; color: {arrow_color}; font-weight: 900;">{arrow} {side.upper()} {line}</div>
+                <div style="font-size: 28px; font-weight: 900;">{p_name_up}</div>
+                <div style="font-size: 14px; opacity: 0.8;">{match_up}</div>
+                <div style="font-size: 24px; margin-top: 10px; color: {arrow_hex}; font-weight: 900;">{arrow_sym} {side_up.upper()} {line_val}</div>
                 <h1 class="grade-text">{res.get('grade', '?')}</h1>
                 <div style="font-size: 20px; font-weight: bold;">{res.get('units', 0)} UNIT PLAY</div>
             </div>
@@ -209,45 +203,37 @@ with col_r:
         m3.metric("L10 Hit", f"{res.get('hit_rate', 0):.0f}%")
         m4.metric("Conf", f"{res.get('conf', 0):.0f}%")
 
-        # 2. THE SOCIAL SHARE CARD (The Screenshot Version)
-        st.divider()
         if st.checkbox("📸 Generate Social Share Card"):
-            # We use st.markdown with unsafe_allow_html=True to RENDER the code
+            grade_hex = res.get('flat', '#58a6ff')
+            edge_val = res.get('edge', 0)
+            
             card_html = f"""
-            <div style="background-color: #0e1117; border: 3px solid {grade_color}; border-radius: 20px; padding: 30px; max-width: 480px; color: white; margin: 10px auto; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: sans-serif;">
-                
+            <div style="background-color: #0e1117; border: 3px solid {grade_hex}; border-radius: 20px; padding: 30px; max-width: 480px; color: white; margin: 10px auto; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: sans-serif;">
                 <div style="border-bottom: 1px solid #30363d; padding-bottom: 15px; margin-bottom: 20px;">
                     <div style="font-size: 10px; color: #adbac7; text-transform: uppercase; letter-spacing: 2px;">{res.get('game', 'CS2')} PROP ANALYSIS</div>
-                    <h2 style="margin: 5px 0; font-size: 36px; font-weight: 900;">{p_name}</h2>
-                    <div style="color: #58a6ff; font-size: 14px; font-weight: bold;">{match_info}</div>
+                    <h2 style="margin: 5px 0; font-size: 36px; font-weight: 900;">{p_name_up}</h2>
+                    <div style="color: #58a6ff; font-size: 14px; font-weight: bold;">{match_up}</div>
                 </div>
-                
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; text-align: left;">
                     <div style="flex: 1;">
                         <div style="font-size: 12px; color: #adbac7;">THE LINE</div>
-                        <div style="font-size: 55px; font-weight: 900; line-height: 1; margin: 5px 0;">{line}</div>
-                        <div style="font-size: 28px; font-weight: 900; color: {arrow_color};">{arrow} {side.upper()}</div>
+                        <div style="font-size: 55px; font-weight: 900; line-height: 1; margin: 5px 0;">{line_val}</div>
+                        <div style="font-size: 28px; font-weight: 900; color: {arrow_hex};">{arrow_sym} {side_up.upper()}</div>
                     </div>
                     <div style="flex: 1; text-align: right;">
                         <div style="font-size: 12px; color: #adbac7;">MODEL GRADE</div>
-                        <div style="font-size: 110px; font-weight: 900; color: {grade_color}; line-height: 0.8;">{res.get('grade', '?')}</div>
+                        <div style="font-size: 110px; font-weight: 900; color: {grade_hex}; line-height: 0.8;">{res.get('grade', '?')}</div>
                     </div>
                 </div>
-
-                <div style="background: {grade_color}20; border-radius: 12px; padding: 15px; border: 1px solid {grade_color}40; margin-bottom: 20px;">
+                <div style="background: {grade_hex}20; border-radius: 12px; padding: 15px; border: 1px solid {grade_hex}40; margin-bottom: 20px;">
                     <div style="font-size: 32px; font-weight: 900;">{res.get('units', 0)} UNIT PLAY</div>
                 </div>
-
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; border-top: 1px solid #30363d; padding-top: 20px;">
-                    <div><div style="font-size: 10px; color: #adbac7;">EDGE</div><div style="font-size: 18px; font-weight: bold; color: {grade_color};">{res.get('edge', 0):+.1f}%</div></div>
+                    <div><div style="font-size: 10px; color: #adbac7;">EDGE</div><div style="font-size: 18px; font-weight: bold; color: {grade_hex};">{edge_val:+.1f}%</div></div>
                     <div><div style="font-size: 10px; color: #adbac7;">L10 HIT</div><div style="font-size: 18px; font-weight: bold;">{res.get('hit_rate', 0):.0f}%</div></div>
                     <div><div style="font-size: 10px; color: #adbac7;">CONF</div><div style="font-size: 18px; font-weight: bold;">{res.get('conf', 0):.0f}%</div></div>
                 </div>
-
-                <div style="margin-top: 25px; font-size: 10px; color: #adbac7; text-transform: uppercase; letter-spacing: 3px;">
-                    ANALYSIS BY <b>SLEEPER D. KID</b>
-                </div>
+                <div style="margin-top: 25px; font-size: 10px; color: #adbac7; text-transform: uppercase; letter-spacing: 3px;">ANALYSIS BY <b>SLEEPER D. KID</b></div>
             </div>
             """
-            # This line MUST have unsafe_allow_html=True
             st.markdown(card_html, unsafe_allow_html=True)
