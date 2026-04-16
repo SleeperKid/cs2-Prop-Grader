@@ -1,6 +1,6 @@
 Player,Game,Team,BaseKPR,L10,ExpectedMaps
-apex,CS2,Team Vitality,0.75,7,TBD
-ropz,CS2,Team Vitality,0.75,"11, 12, 7",TBD
-zywoo,CS2,Team Vitality,0.75,"11, 10, 8, 19",TBD
-flamez,CS2,Team Vitality,0.75,"15, 10, 17",TBD
-mezii,CS2,Team Vitality,0.75,"6, 8, 9",TBD
+apex,CS2,Vitality,0.68,7,TBD
+ropz,CS2,Vitality,0.74,"11, 12, 7, 7, 1, 9",TBD
+zywoo,CS2,Vitality,0.84,"11, 10, 8, 19, 10, 7, 12",TBD
+flamez,CS2,Vitality,0.7,"15, 10, 17, 8, 8, 7",TBD
+mezii,CS2,Vitality,0.69,"6, 8, 9, 14, 9, 7",TBD
