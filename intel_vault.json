@@ -21,8 +21,18 @@
     "Team Liquid": "Firepower Hybrid. siuhy European structure mixed with NA veteran experience.",
     "Team Falcons": "Superstar Firepower Core. Led by NiKo and m0NESY. High-risk individualistic playstyle.",
     "Aurora": "Turkish Aim-Heavy. MAJ3R system focuses on XANTARES/woxic explosive entry capabilities.",
-    "PARIVISION": "Jame-Style Defensive. Ultra-methodical with a heavy 'save-culture.' Very low-variance."
-  },
+    "PARIVISION": "Jame-Style Defensive. Ultra-methodical with a heavy 'save-culture.' Very low-variance.",
+    "Cloud9": "Tier 2 Firepower Rebuild. Relies on raw rifling talent and high-variance aggression. Prone to mid-round collapses.",
+    "Eternal Fire": "Elite Aimers / High Pace. Turkish core with extremely high HS potential. Aggressive T-sides and chaotic map control.",
+    "Complexity": "NA Grit / Trade Focused. Strong site-entry execution. Relies on EliGE's veteran spacing and aggressive positioning.",
+    "BIG": "German Tactical Discipline. High utility efficiency but lower raw firepower. Predictable but very consistent defensive setups.",
+    "HEROIC": "Innovative Tactical Aggression. High frequency of stack-holds and creative utility. High intensity in close-quarters maps.",
+    "GamerLegion": "Tactical Underdogs. Excel at exploiting map-specific timings and utility gaps. Lower raw firepower but high strategic ceiling.",
+    "Imperial": "Aggressive Brazilian Momentum. Heavy focus on entry-fragging and emotional momentum. High variance between maps.",
+    "9Pandas": "Calculated Aggression. Strong CT-side holds and methodical utility usage. Rounds often go deep into the clock.",
+    "Metizport": "High-Tempo European 'Scout' Style. Hyper-aggressive entries and unpredictable rotations. High-risk, high-reward.",
+    "Sashi": "Fast-Paced Trading. Focuses on overwhelm-tactics and high-frequency duels. High intensity in regional qualifiers."
+},
   "roles": {
     "Rifler": "Primary engagement player. High volume of headshots and entry duels.",
     "AWPer": "Sniper role. Focuses on center-of-mass kills. Naturally lower Headshot % but high survival."
