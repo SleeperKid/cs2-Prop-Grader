@@ -49,47 +49,68 @@ def load_vault():
 df = load_vault()
 
 # ==========================================
-# ⚙️ SIDEBAR: THE ENHANCED AI ADVISOR
+# ⚙️ SIDEBAR: THE ENHANCED AI ADVISOR (V3)
 # ==========================================
 with st.sidebar:
     st.header("⚙️ Model Intelligence")
+    
     if st.button("GET AI SLIDER ADVICE"):
         api_key = st.secrets.get("GROQ_API_KEY")
-        if not api_key: st.error("API Key missing.")
+        if not api_key:
+            st.error("API Key missing.")
         else:
             client = Groq(api_key=api_key)
-            # Pull Intel from the JSON Brain
+            
+            # Logic to split the matchup name
+            match_parts = st.session_state.m_context_val.split(' vs ')
+            p_team = match_parts[0] if len(match_parts) > 0 else "Unknown"
+            o_team = match_parts[1] if len(match_parts) > 1 else "the Opponent"
+            
+            # Pull Intel from JSON
             map_name = st.session_state.expected_maps_val.split(',')[0].strip()
             map_data = INTEL.get("maps", {}).get(map_name, "Standard map dynamics.")
-            role_data = INTEL.get("roles", {}).get(st.session_state.role_val, "")
             
-            with st.spinner("Consulting Intelligence Vault..."):
+            with st.spinner("Calculating Deterministic Weights..."):
+                # PROMPT: Explicitly labeling roles to prevent confusion
                 prompt = f"""
-                Act as an Esports Betting Syndicate Analyst.
-                MATCH: {st.session_state.m_context_val} | ROLE: {st.session_state.role_val} ({role_data})
-                MAP INTEL: {map_name} ({map_data})
-                PROP: {st.session_state.stat_type_val}
+                Act as a Professional Esports Betting Model.
                 
-                DATA: Rank: {st.session_state.opp_rank_val} | Map1 Rate: {st.session_state.map1_rate} | Map2 Rate: {st.session_state.map2_rate}
+                CONTEXT:
+                - PLAYER: {st.session_state.p_tag_val}
+                - PLAYER_TEAM: {p_team}
+                - OPPONENT_TEAM: {o_team}
+                - OPPONENT_TEAM_WORLD_RANK: {st.session_state.opp_rank_val}
                 
-                TASK: Output 4 Weights (0.85-1.15) for H2H, Tier, Map, and Intensity based on the Expert Map Intel.
-                FORMAT: H2H: [X] | Tier: [X] | Map: [X] | Int: [X]
+                MATCH DATA:
+                - PROP_TYPE: {st.session_state.stat_type_val}
+                - PLAYER_ROLE: {st.session_state.role_val}
+                - MAP_INTEL: {map_name} - {map_data}
+                - DEEP_STATS: Map1 Rate: {st.session_state.map1_rate} | Map2 Rate: {st.session_state.map2_rate} | Opening Duels: {st.session_state.opening_val}
+
+                TASK:
+                1. Assign 4 Weights (0.85 to 1.15) for our grading model.
+                2. Be logical: If Opponent Rank is lower (stronger team), increase 'Tier' weight.
+                3. Follow this format exactly: H2H: [X] | Tier: [X] | Map: [X] | Int: [X]
+                
+                Output ONLY the weights and a 1-sentence justification.
                 """
-                completion = client.chat.completions.create(model="llama-3.3-70b-versatile", messages=[{"role": "user", "content": prompt}])
+                
+                # TEMPERATURE 0: Ensures the same result every click
+                completion = client.chat.completions.create(
+                    model="llama-3.3-70b-versatile", 
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0
+                )
+                
                 st.session_state.weight_advice = completion.choices[0].message.content
                 found_weights = re.findall(r"([0-1]\.\d+)", st.session_state.weight_advice)
+                
                 if len(found_weights) >= 4:
-                    st.session_state.h2h_val, st.session_state.tier_val, st.session_state.map_val, st.session_state.int_val = [float(x) for x in found_weights[:4]]
-                    st.toast("🎯 Sliders Synced to Vault!", icon="✅")
-
-    if st.session_state.weight_advice:
-        st.markdown(f'<div class="advice-box"><b>Vault Intelligence:</b><br>{st.session_state.weight_advice}</div>', unsafe_allow_html=True)
-
-    st.divider()
-    st.slider("H2H Advantage", 0.80, 1.20, key="h2h_val", step=0.05)
-    st.slider("Opponent Tier", 0.80, 1.20, key="tier_val", step=0.05)
-    st.slider("Map Fit", 0.80, 1.20, key="map_val", step=0.05)
-    st.slider("Match Intensity", 0.70, 1.10, key="int_val", step=0.05)
+                    st.session_state.h2h_val = float(found_weights[0])
+                    st.session_state.tier_val = float(found_weights[1])
+                    st.session_state.map_val = float(found_weights[2])
+                    st.session_state.int_val = float(found_weights[3])
+                    st.toast("🎯 Sliders Locked!", icon="✅")
 
 # ==========================================
 # 🎯 MAIN ANALYZER (Rest of code remains consistent with your Elite build)
