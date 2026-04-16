@@ -87,11 +87,21 @@ with st.sidebar:
                 """
                 completion = client.chat.completions.create(model="llama-3.3-70b-versatile", messages=[{"role": "user", "content": prompt}], temperature=0.2)
                 st.session_state.weight_advice = completion.choices[0].message.content
+                
+                # Extract numbers using regex
                 found_weights = re.findall(r"([0-1]\.\d+)", st.session_state.weight_advice)
+                
                 if len(found_weights) >= 4:
-                    st.session_state.h2h_val, st.session_state.tier_val, st.session_state.map_val, st.session_state.int_val = [float(x) for x in found_weights[:4]]
-                    st.toast("🎯 Sliders Synced!", icon="✅")
-
+                    # SAFETY CLAMPING: Ensures values stay within slider bounds
+                    # H2H, Tier, and Map are 0.80 - 1.20
+                    st.session_state.h2h_val = min(max(float(found_weights[0]), 0.80), 1.20)
+                    st.session_state.tier_val = min(max(float(found_weights[1]), 0.80), 1.20)
+                    st.session_state.map_val = min(max(float(found_weights[2]), 0.80), 1.20)
+                    
+                    # Intensity is 0.70 - 1.10
+                    st.session_state.int_val = min(max(float(found_weights[3]), 0.70), 1.10)
+                    
+                    st.toast("🎯 Sliders Clamped & Synced!", icon="✅")
     if st.session_state.weight_advice: st.markdown(f'<div class="advice-box"><b>Vault Intelligence:</b><br>{st.session_state.weight_advice}</div>', unsafe_allow_html=True)
     st.divider()
     h2h_w = st.slider("H2H Advantage", 0.80, 1.20, key="h2h_val", step=0.05)
