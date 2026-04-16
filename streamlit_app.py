@@ -234,7 +234,7 @@ with col_r:
                 </div>
 
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; border-top: 1px solid #30363d; padding-top: 20px;">
-                    <div><div style="font-size: 10px; color: #adbac7;">EDGE</div><div style="font-size: 18px; font-weight: bold; color: {res.get('flat', '#58a6ff')};">+{res.get('edge', 0):+.1f}%</div></div>
+                    <div><div style="font-size: 10px; color: #adbac7;">EDGE</div><div style="font-size: 18px; font-weight: bold; color: {res.get('flat', '#58a6ff')};">{res.get('edge', 0):+.1f}%</div></div>
                     <div><div style="font-size: 10px; color: #adbac7;">L10 HIT</div><div style="font-size: 18px; font-weight: bold;">{res.get('hit_rate', 0):.0f}%</div></div>
                     <div><div style="font-size: 10px; color: #adbac7;">CONF</div><div style="font-size: 18px; font-weight: bold;">{res.get('conf', 0):.0f}%</div></div>
                 </div>
