@@ -183,14 +183,16 @@ with col_r:
     if st.session_state.analysis_results:
         res = st.session_state.analysis_results
         
-        # Formatting for display
+        # Data Preparation
         p_name = res.get("p_tag", "Unknown").upper()
         match_info = res.get("matchup", "N/A")
         side = res.get("side", "Over")
         line = res.get("line", 0.0)
         arrow = "▲" if side == "Over" else "▼"
         arrow_color = "#00FF00" if side == "Over" else "#FF4500"
+        grade_color = res.get('flat', '#58a6ff')
         
+        # 1. Main Dashboard UI (Live Site)
         st.markdown(f"""
             <div class="grade-card" style="background: {res.get('color', '#333')}; color: white;">
                 <div style="font-size: 28px; font-weight: 900;">{p_name}</div>
@@ -207,34 +209,37 @@ with col_r:
         m3.metric("L10 Hit", f"{res.get('hit_rate', 0):.0f}%")
         m4.metric("Conf", f"{res.get('conf', 0):.0f}%")
 
+        # 2. THE SOCIAL SHARE CARD (The Screenshot Version)
+        st.divider()
         if st.checkbox("📸 Generate Social Share Card"):
-            # ENHANCED SHARE CARD: Branding, Confidence, and Arrow
+            # We use st.markdown with unsafe_allow_html=True to RENDER the code
             card_html = f"""
-            <div style="background-color: #0e1117; border: 3px solid {res.get('flat', '#58a6ff')}; border-radius: 20px; padding: 30px; max-width: 480px; color: white; margin: 10px auto; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+            <div style="background-color: #0e1117; border: 3px solid {grade_color}; border-radius: 20px; padding: 30px; max-width: 480px; color: white; margin: 10px auto; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: sans-serif;">
+                
                 <div style="border-bottom: 1px solid #30363d; padding-bottom: 15px; margin-bottom: 20px;">
                     <div style="font-size: 10px; color: #adbac7; text-transform: uppercase; letter-spacing: 2px;">{res.get('game', 'CS2')} PROP ANALYSIS</div>
                     <h2 style="margin: 5px 0; font-size: 36px; font-weight: 900;">{p_name}</h2>
                     <div style="color: #58a6ff; font-size: 14px; font-weight: bold;">{match_info}</div>
                 </div>
                 
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <div style="text-align: left;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; text-align: left;">
+                    <div style="flex: 1;">
                         <div style="font-size: 12px; color: #adbac7;">THE LINE</div>
                         <div style="font-size: 55px; font-weight: 900; line-height: 1; margin: 5px 0;">{line}</div>
                         <div style="font-size: 28px; font-weight: 900; color: {arrow_color};">{arrow} {side.upper()}</div>
                     </div>
-                    <div style="text-align: right;">
+                    <div style="flex: 1; text-align: right;">
                         <div style="font-size: 12px; color: #adbac7;">MODEL GRADE</div>
-                        <div style="font-size: 110px; font-weight: 900; color: {res.get('flat', '#58a6ff')}; line-height: 0.8;">{res.get('grade', '?')}</div>
+                        <div style="font-size: 110px; font-weight: 900; color: {grade_color}; line-height: 0.8;">{res.get('grade', '?')}</div>
                     </div>
                 </div>
 
-                <div style="background: {res.get('flat', '#58a6ff')}20; border-radius: 12px; padding: 15px; border: 1px solid {res.get('flat', '#58a6ff')}40;">
+                <div style="background: {grade_color}20; border-radius: 12px; padding: 15px; border: 1px solid {grade_color}40; margin-bottom: 20px;">
                     <div style="font-size: 32px; font-weight: 900;">{res.get('units', 0)} UNIT PLAY</div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; border-top: 1px solid #30363d; padding-top: 20px;">
-                    <div><div style="font-size: 10px; color: #adbac7;">EDGE</div><div style="font-size: 18px; font-weight: bold; color: {res.get('flat', '#58a6ff')};">{res.get('edge', 0):+.1f}%</div></div>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; border-top: 1px solid #30363d; padding-top: 20px;">
+                    <div><div style="font-size: 10px; color: #adbac7;">EDGE</div><div style="font-size: 18px; font-weight: bold; color: {grade_color};">{res.get('edge', 0):+.1f}%</div></div>
                     <div><div style="font-size: 10px; color: #adbac7;">L10 HIT</div><div style="font-size: 18px; font-weight: bold;">{res.get('hit_rate', 0):.0f}%</div></div>
                     <div><div style="font-size: 10px; color: #adbac7;">CONF</div><div style="font-size: 18px; font-weight: bold;">{res.get('conf', 0):.0f}%</div></div>
                 </div>
@@ -244,4 +249,5 @@ with col_r:
                 </div>
             </div>
             """
+            # This line MUST have unsafe_allow_html=True
             st.markdown(card_html, unsafe_allow_html=True)
