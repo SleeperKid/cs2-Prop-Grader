@@ -55,11 +55,11 @@ states = {
 for key, val in states.items():
     if key not in st.session_state: st.session_state[key] = val
 
-@st.cache_data
+@st.cache_data(ttl=3600) # Auto-expires every hour
 def load_vault():
-    if os.path.exists("daily_stats.csv"): return pd.read_csv("daily_stats.csv")
+    if os.path.exists("daily_stats.csv"): 
+        return pd.read_csv("daily_stats.csv")
     return pd.DataFrame(columns=["Player", "Game", "Team", "BaseKPR", "L10", "ExpectedMaps", "Rank"])
-df = load_vault()
 
 # ==========================================
 # ⚙️ SIDEBAR: THE AI ADVISOR (DET.)
@@ -113,6 +113,12 @@ with st.sidebar:
     rank_w = st.slider("Opponent Tier", 0.80, 1.20, key="tier_val", step=0.05)
     map_w = st.slider("Map Fit", 0.80, 1.20, key="map_val", step=0.05)
     int_w = st.slider("Match Intensity", 0.70, 1.10, key="int_val", step=0.05)
+
+    st.divider()
+    if st.sidebar.button("♻️ Refresh Vault Data"):
+        st.cache_data.clear() # Clears memory
+        st.toast("Database Refreshed from GitHub!", icon="🔄")
+        st.rerun()
 
 # ==========================================
 # 🎯 MAIN ANALYZER
