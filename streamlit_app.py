@@ -83,19 +83,25 @@ with st.sidebar:
             
             with st.spinner(f"Analyzing {st.session_state.tourney_val}..."):
                 prompt = f"""
-                Act as a Cold, Professional Esports Betting Analyst. Temp 0.0.
+                Act as a Cold, Professional Esports Betting Analyst. Temp 0.1.
                 MATCHUP: {p_team} vs {o_team} (Rank: {st.session_state.opp_rank_val})
-                TOURNAMENT: {st.session_state.tourney_val} ({tourney_data})
+                TOURNAMENT: {st.session_state.tourney_val} ({INTEL.get('tournaments', {}).get(st.session_state.tourney_val)})
                 PROP: {st.session_state.stat_type_val} | ROLE: {st.session_state.role_val}
-                INTEL: Map 1: {m1} ({INTEL.get('maps', {}).get(m1)}) | Map 2: {m2} ({INTEL.get('maps', {}).get(m2)})
-                STYLES: {p_team}: {INTEL.get('team_styles', {}).get(p_team)} | {o_team}: {INTEL.get('team_styles', {}).get(o_team)}
+
+                STRATEGIC CONTEXT:
+                - {p_team}: {INTEL.get('team_styles', {}).get(p_team)}
+                - {o_team}: {INTEL.get('team_styles', {}).get(o_team)}
+                - ARCHETYPES: {INTEL.get('strat_archetypes', {})}
+
+                MAP INTEL: {m1}: {INTEL.get('maps', {}).get(m1)} | {m2}: {INTEL.get('maps', {}).get(m2)}
 
                 TASK:
                 1. Assign 4 Weights (0.85-1.15) for H2H, Tier, Map, and Intensity.
-                2. Explain how the {st.session_state.tourney_val} level impacts playstyle variance.
-                3. FORMAT: H2H: [X] | Tier: [X] | Map: [X] | Int: [X]
-                
-                Zero creative language. 2-sentence max reasoning.
+                2. If teams are 'Economic Disciplinarians', penalize 'Intensity' for 'Over' props (less duels).
+                3. If teams are 'Force-Buy Aggressors', boost 'Intensity' (more duels/attrition).
+                4. FORMAT: H2H: [X] | Tier: [X] | Map: [X] | Int: [X]
+
+                Zero creative language. 3-sentence max reasoning.
                 """
                 completion = client.chat.completions.create(model="llama-3.3-70b-versatile", messages=[{"role": "user", "content": prompt}], temperature=0.0)
                 st.session_state.weight_advice = completion.choices[0].message.content
@@ -135,8 +141,19 @@ with col_l:
     st.subheader("📋 Prop & Context")
     game_choice = st.radio("Game", ["CS2", "Valorant"], horizontal=True)
     
-    # NEW TOURNEY SELECTOR
-    tourney_choice = st.selectbox("Tournament Tier", ["S-Tier (Major/Cologne)", "A-Tier (Pro League/Online)", "B-Tier (Regional/Qualifiers)"], key="tourney_val")
+    # Updated Tournament Selector
+    tourney_options = [
+        "S-Tier (Elite)",
+        "A-Tier (International)",
+        "Regional/Season Games",
+        "Qualifiers & Grassroots"
+    ]
+
+    tourney_choice = st.selectbox(
+        "Tournament Tier",
+        options=tourney_options,
+        key="tourney_val"
+    )
 
     cat_col, role_col = st.columns(2)
     with cat_col: stat_type = st.radio("Stat Category", ["Kills", "Headshots"] if game_choice == "CS2" else ["Kills"], horizontal=True, key="stat_type_val")

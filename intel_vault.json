@@ -1,45 +1,34 @@
 {
+  "tournaments": {
+    "S-Tier (Elite)": "Maximum pressure. Save-heavy meta. Lower variance for stars. Round counts 24+.",
+    "A-Tier (International)": "High skill. Aggressive CT limit-testing. Ideal for 'Over' props on entry fraggers.",
+    "Regional/Season Games": "The 'Grind' Meta. Wide skill gaps. Top seeds often farm stats. High 'Over' potential.",
+    "Qualifiers & Grassroots": "Chaos meta. High variance, aim-duel focus. Poor consistency (CV)."
+  },
   "maps": {
-    "Mirage": "Balanced aim-duel map. High-precision sightlines favor AWPers and high-HS riflers.",
-    "Inferno": "Utility-heavy and narrow. High spray frequency. Lowers HS potential but boosts raw Kills.",
-    "Nuke": "CT-Sided verticality. Quick rotations. Favors tactical crosshair placement and high intensity.",
-    "Ancient": "Jungle-themed. High foliage. Favor aggressive entry pathing and high-KPR firepower.",
-    "Anubis": "Wide-open mid and fast rotations. T-Sided bias favors raw aggression.",
-    "Dust 2": "The aim-duel capital. Longest sightlines in the pool. Massive boost for AWPers.",
-    "Overpass": "Highly tactical. Long-range sightlines mixed with tight park chokes. High complexity."
+    "Mirage": "High-exec map. Clean horizontal sightlines favor consistent HS% for riflers. predictable angles.",
+    "Nuke": "High verticality. Complex crosshair placement makes HS% more volatile. Favor 'Under' for HS props.",
+    "Ancient": "Fast-paced, high-clutter. Mid-range duels favor spray-downs. HS volume follows high KPR on T-side.",
+    "Anubis": "2026 Active Duty. Wide lanes, aim-heavy. Predictable head-level angles in 'A' main. High HS volume.",
+    "Inferno": "Cramped mid-rounds. High utility usage lowers pure aim duels. HS% can be high but total volume is lower.",
+    "Dust 2": "The 'Aim Map.' Long, flat lanes favor pure mechanical skill. Highest HS% potential for elite riflers.",
+    "Overpass": "Diverse elevations. Favors AWPers for Kills; riflers struggle with HS consistency at extreme ranges.",
+    "Vertigo": "Close-quarters. High volume of 'spam' kills through wood; significantly lowers pure HS%.",
+    "Splinter": "Released April 2026. High verticality and narrow lanes. Early data suggests lower HS% as players learn heights.",
+    "Train": "Retired from Active Duty Jan 2026. High verticality and long lanes; AWPer dominant for kills."
+  },
+  "strat_archetypes": {
+    "Economic Disciplinarians": "High save frequency (2v4/3v5). Reduces total match duels. Favor 'Under' props.",
+    "Force-Buy Aggressors": "Constant 2nd-round forcing. Creates high-attrition, messy rounds. Inflates Kills.",
+    "Tactical Executioners": "Relies on set utility and late-round executes (<10s). Limits hero duels.",
+    "Star-Power Adaptive": "Looser defaults that rely on individual multi-kills and stars winning 1v1s."
   },
   "team_styles": {
-    "Team Spirit": "Aggressive Entry/Methodical Support hybrid (donk/sh1ro). High-intensity academy system.",
-    "Team Vitality": "World Rank #1. Total tactical dominance. Built around the ropz/ZywOo duo. High-precision spacing.",
-    "FaZe Clan": "Tactical Individualistic. Relies on mid-round magic and individual clutch ability.",
-    "NAVI": "Disciplined Methodical System. Highly structured play with youth talent revitalizing firepower.",
-    "G2 Esports": "Aggressive Tactical Rebuild. sAw system focuses on SunPayus's patient AWPing.",
-    "FURIA": "Tactical Brazilian Aggression. Transitioned under FalleN to a veteran-led, calculated aggressive style.",
-    "The MongolZ": "High-Tempo Asian Aggression. Unique utility combinations and fearless trading.",
-    "MOUZ": "Mechanical Efficiency. Young, high-fragging roster (Jimpphat/Spinx) that excels on modern maps.",
-    "Astralis": "Structured Rebuild. HooXi-led tactical system focusing on trade-fragging and positioning.",
-    "Team Liquid": "Firepower Hybrid. siuhy European structure mixed with NA veteran experience.",
-    "Team Falcons": "Superstar Firepower Core. Led by NiKo and m0NESY. High-risk individualistic playstyle.",
-    "Aurora": "Turkish Aim-Heavy. MAJ3R system focuses on XANTARES/woxic explosive entry capabilities.",
-    "PARIVISION": "Jame-Style Defensive. Ultra-methodical with a heavy 'save-culture.' Very low-variance.",
-    "Cloud9": "Tier 2 Firepower Rebuild. Relies on raw rifling talent and high-variance aggression. Prone to mid-round collapses.",
-    "Eternal Fire": "Elite Aimers / High Pace. Turkish core with extremely high HS potential. Aggressive T-sides and chaotic map control.",
-    "Complexity": "NA Grit / Trade Focused. Strong site-entry execution. Relies on EliGE's veteran spacing and aggressive positioning.",
-    "BIG": "German Tactical Discipline. High utility efficiency but lower raw firepower. Predictable but very consistent defensive setups.",
-    "HEROIC": "Innovative Tactical Aggression. High frequency of stack-holds and creative utility. High intensity in close-quarters maps.",
-    "GamerLegion": "Tactical Underdogs. Excel at exploiting map-specific timings and utility gaps. Lower raw firepower but high strategic ceiling.",
-    "Imperial": "Aggressive Brazilian Momentum. Heavy focus on entry-fragging and emotional momentum. High variance between maps.",
-    "9Pandas": "Calculated Aggression. Strong CT-side holds and methodical utility usage. Rounds often go deep into the clock.",
-    "Metizport": "High-Tempo European 'Scout' Style. Hyper-aggressive entries and unpredictable rotations. High-risk, high-reward.",
-    "Sashi": "Fast-Paced Trading. Focuses on overwhelm-tactics and high-frequency duels. High intensity in regional qualifiers."
-},
-  "roles": {
-    "Rifler": "Primary engagement player. High volume of headshots and entry duels.",
-    "AWPer": "Sniper role. Focuses on center-of-mass kills. Naturally lower Headshot % but high survival."
-  },
-  "tournaments": {
-    "S-Tier (Major/Cologne)": "Maximum pressure. Teams strictly follow the tactical meta. Lowest volatility. High utility efficiency.",
-    "A-Tier (Pro League/Online)": "High level play but slightly higher variance. Teams may experiment with new map setups.",
-    "B-Tier (Regional/Qualifiers)": "High volatility. Chaotic playstyles. Individual hero-plays often override tactical structure."
+    "Vitality": "Archetype: Tactical Executioners. Systematic dominance using ropz lurking and ZywOo gravity.",
+    "Falcons": "Archetype: Star-Power Adaptive. High-aggression system built around NiKo and m0NESY opening picks.",
+    "Spirit": "Archetype: Force-Buy Aggressors. The 'Donk System.' Constant aim-duels and early-round contact.",
+    "NAVI": "Archetype: Tactical Executioners. Slowest pacing in pro CS. Extremely disciplined utility usage.",
+    "FaZe": "Archetype: Star-Power Adaptive. High reliance on individual veteran multi-kills.",
+    "MOUZ": "Archetype: Tactical Executioners. High-speed coordination and trade-fragging efficiency."
   }
 }
