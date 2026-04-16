@@ -42,7 +42,7 @@ states = {
     'weight_advice': None, 'analysis_results': None,
     'm_context_val': "Team vs Opponent", 'opp_rank_val': "N/A", 
     'expected_maps_val': "TBD", 'opening_val': "50%",
-    'map1_kpr': "0.00", 'map2_kpr': "0.00", # New Map KPR fields
+    'map1_kpr': "0.00", 'map2_kpr': "0.00",
     'last_player': None, 'p_tag_val': "donk", 'l10_val': "46, 33, 45", 'kpr_val': 0.90
 }
 for key, val in states.items():
@@ -69,15 +69,14 @@ with st.sidebar:
         else:
             client = Groq(api_key=api_key)
             with st.spinner("AI analyzing deep context..."):
-                # UPGRADED PROMPT: Includes Matchup and Map-specific KPRs
                 prompt = f"""
                 Act as an Esports Betting Syndicate Analyst.
                 Matchup: {st.session_state.m_context_val}
                 Player: {st.session_state.p_tag_val}
-                Context: Opponent Rank: {st.session_state.opp_rank_val} | Projected Maps: {st.session_state.expected_maps_val}
-                Deep Stats: Opening Duels: {st.session_state.opening_val} | Map 1 KPR: {st.session_state.map1_kpr} | Map 2 KPR: {st.session_state.map2_kpr}
+                Context: Rank: {st.session_state.opp_rank_val} | Maps: {st.session_state.expected_maps_val}
+                Deep Stats: Opening: {st.session_state.opening_val} | Map1: {st.session_state.map1_kpr} | Map2: {st.session_state.map2_kpr}
 
-                TASK: Output 4 Weights (0.85-1.15) for our model based on how these factors interact.
+                TASK: Output 4 Weights (0.85-1.15).
                 FORMAT: H2H: [X] | Tier: [X] | Map: [X] | Int: [X]
                 FOLLOWED BY: A 2-sentence 'Cheat Sheet' explanation.
                 """
@@ -115,30 +114,27 @@ with col_l:
     
     selected_name = st.selectbox("Database Search", ["Manual Entry"] + db_players)
     
-    # Auto-fill Matchup with Player Team
     if selected_name != st.session_state.last_player:
         if selected_name != "Manual Entry":
             p_row = df[df['Player'] == selected_name].iloc[0]
             st.session_state.p_tag_val = str(p_row['Player'])
             st.session_state.l10_val = str(p_row['L10'])
             st.session_state.kpr_val = float(p_row['BaseKPR'])
-            st.session_state.m_context_val = f"{p_row['Team']} vs " # Defaults player's team
+            st.session_state.m_context_val = f"{p_row['Team']} vs "
             st.session_state.opp_rank_val = str(p_row.get('Rank', "N/A"))
             st.session_state.expected_maps_val = str(p_row.get('ExpectedMaps', "TBD"))
         st.session_state.last_player = selected_name
         st.rerun()
 
     p_tag = st.text_input("Player Tag", key="p_tag_val")
-    # New Matchup Field
-    matchup = st.text_input("Matchup Context (Team vs Team)", key="m_context_val")
+    matchup = st.text_input("Matchup Context", key="m_context_val")
     l10_raw = st.text_area("L10 Stats", key="l10_val")
     base_kpr = st.number_input("Base KPR", key="kpr_val", step=0.01)
 
-    with st.expander("🧠 Deep Context (Feeds AI Advisor)", expanded=True):
+    with st.expander("🧠 Deep Context", expanded=True):
         st.text_input("Opponent World Rank", key="opp_rank_val")
         st.text_input("Projected Maps", key="expected_maps_val")
         st.text_input("Opening Duel Success %", key="opening_val")
-        # New Map KPR inputs
         k_col1, k_col2 = st.columns(2)
         k_col1.text_input("Map 1 Projected KPR", key="map1_kpr")
         k_col2.text_input("Map 2 Projected KPR", key="map2_kpr")
@@ -166,13 +162,16 @@ if st.button("RUN ELITE ANALYSIS"):
         model_prob = (1 - prob_under) * 100 if m_side == "Over" else prob_under * 100
         edge = model_prob - get_implied_prob(m_odds)
         
+        # NEW: Confidence Calculation
+        conf = min(max(((abs(edge) * 3) + (100 - (cv * 100))), 0), 100)
+        
         grade, color, flat, units = get_grade_details(edge)
         if cv > 0.25: units = max(0.5, units - 0.5)
         
         st.session_state.analysis_results = {
             "p_tag": p_tag, "matchup": matchup, "side": m_side, "line": m_line, "grade": grade,
             "color": color, "flat": flat, "units": units, "proj": proj, "edge": edge, 
-            "hit_rate": hit_rate * 100, "cv": cv, "game": game_choice
+            "hit_rate": hit_rate * 100, "conf": conf, "cv": cv, "game": game_choice
         }
     except Exception as e:
         st.error(f"Analysis Error: {e}")
@@ -183,33 +182,65 @@ if st.button("RUN ELITE ANALYSIS"):
 with col_r:
     if st.session_state.analysis_results:
         res = st.session_state.analysis_results
-        arrow = "▲" if res["side"] == "Over" else "▼"
+        
+        # Formatting for display
+        p_name = res.get("p_tag", "Unknown").upper()
+        match_info = res.get("matchup", "N/A")
+        side = res.get("side", "Over")
+        line = res.get("line", 0.0)
+        arrow = "▲" if side == "Over" else "▼"
+        arrow_color = "#00FF00" if side == "Over" else "#FF4500"
         
         st.markdown(f"""
-            <div class="grade-card" style="background: {res["color"]}; color: white;">
-                <div style="font-size: 28px; font-weight: 900;">{res["p_tag"].upper()}</div>
-                <div style="font-size: 14px; opacity: 0.8;">{res["matchup"]}</div>
-                <div style="font-size: 18px; margin-top: 10px;">{arrow} {res["side"].upper()} {res["line"]}</div>
-                <h1 class="grade-text">{res["grade"]}</h1>
-                <div style="font-size: 20px; font-weight: bold;">{res["units"]} UNIT PLAY</div>
+            <div class="grade-card" style="background: {res.get('color', '#333')}; color: white;">
+                <div style="font-size: 28px; font-weight: 900;">{p_name}</div>
+                <div style="font-size: 14px; opacity: 0.8;">{match_info}</div>
+                <div style="font-size: 24px; margin-top: 10px; color: {arrow_color}; font-weight: 900;">{arrow} {side.upper()} {line}</div>
+                <h1 class="grade-text">{res.get('grade', '?')}</h1>
+                <div style="font-size: 20px; font-weight: bold;">{res.get('units', 0)} UNIT PLAY</div>
             </div>
             """, unsafe_allow_html=True)
         
-        m1, m2, m3 = st.columns(3)
-        m1.metric("Projected", f"{res['proj']:.1f}")
-        m2.metric("Edge", f"{res['edge']:+.1f}%")
-        m3.metric("L10 Hit", f"{res['hit_rate']:.0f}%")
+        m1, m2, m3, m4 = st.columns(4)
+        m1.metric("Projected", f"{res.get('proj', 0):.1f}")
+        m2.metric("Edge", f"{res.get('edge', 0):+.1f}%")
+        m3.metric("L10 Hit", f"{res.get('hit_rate', 0):.0f}%")
+        m4.metric("Conf", f"{res.get('conf', 0):.0f}%")
 
         if st.checkbox("📸 Generate Social Share Card"):
-            # UPGRADED CARD: Matchup added to the card
+            # ENHANCED SHARE CARD: Branding, Confidence, and Arrow
             card_html = f"""
-            <div style="background-color: #0e1117; border: 3px solid {res["flat"]}; border-radius: 20px; padding: 30px; max-width: 450px; color: white; margin: 10px auto; text-align: center;">
-                <h2 style="margin: 0; font-size: 32px;">{res["p_tag"].upper()}</h2>
-                <div style="font-size: 14px; color: #58a6ff; margin-bottom: 10px;">{res["matchup"]}</div>
-                <div style="color: {res["flat"]}; font-size: 100px; font-weight: 900; line-height: 1;">{res["grade"]}</div>
-                <div style="font-size: 24px; font-weight: bold;">{arrow} {res["side"].upper()} {res["line"]}</div>
-                <div style="background: {res["flat"]}30; padding: 10px; margin-top: 15px; border-radius: 10px;">
-                    <b>{res["units"]} UNIT PLAY</b> | Edge: {res["edge"]:+.1f}%
+            <div style="background-color: #0e1117; border: 3px solid {res.get('flat', '#58a6ff')}; border-radius: 20px; padding: 30px; max-width: 480px; color: white; margin: 10px auto; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                <div style="border-bottom: 1px solid #30363d; padding-bottom: 15px; margin-bottom: 20px;">
+                    <div style="font-size: 10px; color: #adbac7; text-transform: uppercase; letter-spacing: 2px;">{res.get('game', 'CS2')} PROP ANALYSIS</div>
+                    <h2 style="margin: 5px 0; font-size: 36px; font-weight: 900;">{p_name}</h2>
+                    <div style="color: #58a6ff; font-size: 14px; font-weight: bold;">{match_info}</div>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <div style="text-align: left;">
+                        <div style="font-size: 12px; color: #adbac7;">THE LINE</div>
+                        <div style="font-size: 55px; font-weight: 900; line-height: 1; margin: 5px 0;">{line}</div>
+                        <div style="font-size: 28px; font-weight: 900; color: {arrow_color};">{arrow} {side.upper()}</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 12px; color: #adbac7;">MODEL GRADE</div>
+                        <div style="font-size: 110px; font-weight: 900; color: {res.get('flat', '#58a6ff')}; line-height: 0.8;">{res.get('grade', '?')}</div>
+                    </div>
+                </div>
+
+                <div style="background: {res.get('flat', '#58a6ff')}20; border-radius: 12px; padding: 15px; border: 1px solid {res.get('flat', '#58a6ff')}40;">
+                    <div style="font-size: 32px; font-weight: 900;">{res.get('units', 0)} UNIT PLAY</div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; border-top: 1px solid #30363d; padding-top: 20px;">
+                    <div><div style="font-size: 10px; color: #adbac7;">EDGE</div><div style="font-size: 18px; font-weight: bold; color: {res.get('flat', '#58a6ff')};">+{res.get('edge', 0):+.1f}%</div></div>
+                    <div><div style="font-size: 10px; color: #adbac7;">L10 HIT</div><div style="font-size: 18px; font-weight: bold;">{res.get('hit_rate', 0):.0f}%</div></div>
+                    <div><div style="font-size: 10px; color: #adbac7;">CONF</div><div style="font-size: 18px; font-weight: bold;">{res.get('conf', 0):.0f}%</div></div>
+                </div>
+
+                <div style="margin-top: 25px; font-size: 10px; color: #adbac7; text-transform: uppercase; letter-spacing: 3px;">
+                    ANALYSIS BY <b>SLEEPER D. KID</b>
                 </div>
             </div>
             """
