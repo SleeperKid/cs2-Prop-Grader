@@ -11,9 +11,14 @@ import re
 # 🧠 INTELLIGENCE VAULT LOADER
 # ==========================================
 def load_intel():
+    """Loads the external Brain from JSON with error protection"""
     if os.path.exists("intel_vault.json"):
-        with open("intel_vault.json", "r") as f:
-            return json.load(f)
+        try:
+            with open("intel_vault.json", "r") as f:
+                return json.load(f)
+        except json.JSONDecodeError:
+            st.error("⚠️ Typo detected in intel_vault.json! App is using default logic.")
+            return {}
     return {}
 
 INTEL = load_intel()
