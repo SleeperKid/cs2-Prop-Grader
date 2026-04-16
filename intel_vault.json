@@ -9,15 +9,28 @@
     "Overpass": "Highly tactical. Long-range sightlines mixed with tight park chokes. High complexity."
   },
   "team_styles": {
-    "Team Spirit": "Aggressive Entry/Methodical Support hybrid (donk/sh1ro). High-intensity academy system.",
-    "Team Vitality": "Structured individual dominance (ZywOo). High-precision system with elite spacing.",
-    "FaZe Clan": "Tactical Individualistic. Relies on mid-round magic and individual clutch ability.",
-    "NAVI": "Disciplined Methodical System. Highly structured play with balanced fire-power.",
-    "G2 Esports": "Flashy Aggression. Aggressive entry system paired with veteran sniping stability."
-  },
+    "Team Vitality": "World Rank #1. Total tactical dominance. Built around the ropz/ZywOo duo. High-precision spacing and the most efficient utility trades in the world.",
+    "Natus Vincere": "Disciplined Methodical System. Heavily micro-managed by Aleksib/B1ad3. Emphasis on mid-round resets and youth firepower from makazze.",
+    "FURIA": "Tactical Brazilian Aggression. Transitioned under FalleN to a veteran-led, calculated aggressive style. High focus on site-anchoring and late-round pivots.",
+    "PARIVISION": "Jame-Style Defensive. Ultra-methodical with a heavy 'save-culture.' Rounds often go to the 10-second mark. Extremely low-variance and predictable pace.",
+    "Team Falcons": "Superstar Firepower Core. Led by NiKo and m0NESY. High-risk individualistic playstyle that relies on opening duel percentages to break rounds.",
+    "Aurora": "Turkish Aim-Heavy. MAJ3R's system focuses on XANTARES/woxic's explosive entry capabilities. Fast executes and aggressive T-side map control.",
+    "The MongolZ": "High-Tempo Asian Aggression. Unique utility combinations and fearless trading. High-intensity style that punishes passive defensive setups.",
+    "MOUZ": "Mechanical Efficiency. A young, high-fragging roster (Jimpphat/Spinx) that excels on modern maps. High success rate in 2v2 and 3v3 clutch situations.",
+    "Team Spirit": "Hybrid Aggression. Built around donk's hyper-aggressive entries and sh1ro's methodical AWP anchoring. magixx now leads as a tactical IGL.",
+    "Astralis": "Structured Rebuild. HooXi-led tactical system focusing on trade-fragging and jabbi's positioning. High-discipline, low-chaos approach.",
+    "FaZe Clan": "Tactical Individualistic. The 'Karrigan Magic' era continues with Twistzz's return. Relies on mid-round reads and high-ceiling clutch players like frozen and broky.",
+    "G2 Esports": "Aggressive Tactical Rebuild. sAw's system focuses on SunPayus's patient AWPing and the explosive entry potential of malbsMd.",
+    "Team Liquid": "Firepower Hybrid. siuhy's European structure mixed with NA veteran experience (EliGE/NAF). High emphasis on mid-lane control and AWP utility."
+},
 
   "roles": {
     "Rifler": "Primary engagement player. High volume of headshots and entry duels.",
     "AWPer": "Sniper role. Focuses on center-of-mass kills. Naturally lower Headshot % but high survival."
-  }
+  },
+
+  "tournaments": {
+    "S-Tier (Major/Cologne)": "Maximum pressure. Teams strictly follow the tactical meta. Lowest volatility. High utility efficiency.",
+    "A-Tier (Pro League/Online)": "High level play but slightly higher variance. Teams may experiment with new map setups.",
+    "B-Tier (Regional/Qualifiers)": "High volatility. Chaotic playstyles. Individual hero-plays often override tactical structure. Higher upset potential."
 }

@@ -37,7 +37,16 @@ def get_implied_prob(odds):
 # ==========================================
 # 📥 DATA & SESSION STATE
 # ==========================================
-states = {'h2h_val': 1.0, 'tier_val': 1.0, 'map_val': 1.0, 'int_val': 1.0, 'weight_advice': None, 'analysis_results': None, 'm_context_val': "Team vs Opponent", 'opp_rank_val': "N/A", 'expected_maps_val': "TBD", 'opening_val': "50%", 'map1_rate': "0.00", 'map2_rate': "0.00", 'last_player': None, 'p_tag_val': "donk", 'l10_val': "46, 33, 45", 'kpr_val': 0.90, 'stat_type_val': "Kills", 'role_val': "Rifler"}
+states = {
+    'h2h_val': 1.0, 'tier_val': 1.0, 'map_val': 1.0, 'int_val': 1.0, 
+    'weight_advice': None, 'analysis_results': None, 
+    'm_context_val': "Team vs Opponent", 'opp_rank_val': "N/A", 
+    'expected_maps_val': "TBD", 'opening_val': "50%", 
+    'map1_rate': "0.00", 'map2_rate': "0.00", 
+    'last_player': None, 'p_tag_val': "donk", 'l10_val': "46, 33, 45", 
+    'kpr_val': 0.90, 'stat_type_val': "Kills", 'role_val': "Rifler",
+    'tourney_val': "S-Tier (Major/Cologne)" # NEW
+}
 for key, val in states.items():
     if key not in st.session_state: st.session_state[key] = val
 
@@ -48,7 +57,7 @@ def load_vault():
 df = load_vault()
 
 # ==========================================
-# ⚙️ SIDEBAR: THE AI ADVISOR (ROBOTIC & STABLE)
+# ⚙️ SIDEBAR: THE AI ADVISOR (DET.)
 # ==========================================
 with st.sidebar:
     st.header("⚙️ Model Intelligence")
@@ -64,28 +73,26 @@ with st.sidebar:
             maps_split = [m.strip() for m in st.session_state.expected_maps_val.split(',')]
             m1, m2 = maps_split[0] if len(maps_split) > 0 else "TBD", maps_split[1] if len(maps_split) > 1 else "TBD"
             
-            with st.spinner(f"Running Deterministic Analysis..."):
+            # PULL NEW TOURNEY INTEL
+            tourney_data = INTEL.get("tournaments", {}).get(st.session_state.tourney_val, "Standard competition.")
+            
+            with st.spinner(f"Analyzing {st.session_state.tourney_val}..."):
                 prompt = f"""
-                Act as a Cold, Professional Esports Betting Analyst. 
-                MATCHUP: {p_team} vs {o_team} (Opponent Rank: {st.session_state.opp_rank_val})
+                Act as a Cold, Professional Esports Betting Analyst. Temp 0.0.
+                MATCHUP: {p_team} vs {o_team} (Rank: {st.session_state.opp_rank_val})
+                TOURNAMENT: {st.session_state.tourney_val} ({tourney_data})
                 PROP: {st.session_state.stat_type_val} | ROLE: {st.session_state.role_val}
                 INTEL: Map 1: {m1} ({INTEL.get('maps', {}).get(m1)}) | Map 2: {m2} ({INTEL.get('maps', {}).get(m2)})
-                TEAM STYLES: {p_team}: {INTEL.get('team_styles', {}).get(p_team)} | {o_team}: {INTEL.get('team_styles', {}).get(o_team)}
+                STYLES: {p_team}: {INTEL.get('team_styles', {}).get(p_team)} | {o_team}: {INTEL.get('team_styles', {}).get(o_team)}
 
                 TASK:
                 1. Assign 4 Weights (0.85-1.15) for H2H, Tier, Map, and Intensity.
-                2. Explain how the transition from {m1} to {m2} affects this specific {st.session_state.role_val}.
+                2. Explain how the {st.session_state.tourney_val} level impacts playstyle variance.
                 3. FORMAT: H2H: [X] | Tier: [X] | Map: [X] | Int: [X]
                 
-                Keep reasoning under 2 sentences. Use zero creative language.
+                Zero creative language. 2-sentence max reasoning.
                 """
-                # TEMPERATURE 0.0: Strict Determinism
-                completion = client.chat.completions.create(
-                    model="llama-3.3-70b-versatile", 
-                    messages=[{"role": "user", "content": prompt}],
-                    temperature=0.0
-                )
-                
+                completion = client.chat.completions.create(model="llama-3.3-70b-versatile", messages=[{"role": "user", "content": prompt}], temperature=0.0)
                 st.session_state.weight_advice = completion.choices[0].message.content
                 found_weights = re.findall(r"([0-1]\.\d+)", st.session_state.weight_advice)
                 if len(found_weights) >= 4:
@@ -93,7 +100,7 @@ with st.sidebar:
                     st.session_state.tier_val = min(max(float(found_weights[1]), 0.80), 1.20)
                     st.session_state.map_val = min(max(float(found_weights[2]), 0.80), 1.20)
                     st.session_state.int_val = min(max(float(found_weights[3]), 0.70), 1.10)
-                    st.toast("🎯 Vault Intelligence Synced!", icon="✅")
+                    st.toast("🎯 Full Vault Sync!", icon="✅")
 
     if st.session_state.weight_advice: st.markdown(f'<div class="advice-box"><b>Vault Intelligence:</b><br>{st.session_state.weight_advice}</div>', unsafe_allow_html=True)
     st.divider()
@@ -103,7 +110,7 @@ with st.sidebar:
     int_w = st.slider("Match Intensity", 0.70, 1.10, key="int_val", step=0.05)
 
 # ==========================================
-# 🎯 MAIN ANALYZER (Rest stays the same)
+# 🎯 MAIN ANALYZER
 # ==========================================
 st.title("🎯 Prop Grader Elite")
 col_l, col_r = st.columns([1, 1.2], gap="large")
@@ -111,6 +118,10 @@ col_l, col_r = st.columns([1, 1.2], gap="large")
 with col_l:
     st.subheader("📋 Prop & Context")
     game_choice = st.radio("Game", ["CS2", "Valorant"], horizontal=True)
+    
+    # NEW TOURNEY SELECTOR
+    tourney_choice = st.selectbox("Tournament Tier", ["S-Tier (Major/Cologne)", "A-Tier (Pro League/Online)", "B-Tier (Regional/Qualifiers)"], key="tourney_val")
+
     cat_col, role_col = st.columns(2)
     with cat_col: stat_type = st.radio("Stat Category", ["Kills", "Headshots"] if game_choice == "CS2" else ["Kills"], horizontal=True, key="stat_type_val")
     with role_col: 
