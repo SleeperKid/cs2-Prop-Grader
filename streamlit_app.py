@@ -48,7 +48,7 @@ def load_vault():
 df = load_vault()
 
 # ==========================================
-# ⚙️ SIDEBAR: THE AI ADVISOR (DETERMINISTIC)
+# ⚙️ SIDEBAR: THE AI ADVISOR (ROBOTIC & STABLE)
 # ==========================================
 with st.sidebar:
     st.header("⚙️ Model Intelligence")
@@ -57,62 +57,44 @@ with st.sidebar:
         if not api_key: st.error("API Key missing.")
         else:
             client = Groq(api_key=api_key)
-            
-            # 1. Matchup Splitting
             match_parts = st.session_state.m_context_val.split(' vs ')
             p_team = match_parts[0].strip() if len(match_parts) > 0 else "Unknown"
             o_team = match_parts[1].strip() if len(match_parts) > 1 else "Opponent"
             
-            # 2. DUAL MAP LOGIC: Extract both maps
             maps_split = [m.strip() for m in st.session_state.expected_maps_val.split(',')]
-            m1_name = maps_split[0] if len(maps_split) > 0 else "TBD"
-            m2_name = maps_split[1] if len(maps_split) > 1 else "TBD"
+            m1, m2 = maps_split[0] if len(maps_split) > 0 else "TBD", maps_split[1] if len(maps_split) > 1 else "TBD"
             
-            # Pull Intel for both maps from JSON
-            m1_data = INTEL.get("maps", {}).get(m1_name, "Standard map dynamics.")
-            m2_data = INTEL.get("maps", {}).get(m2_name, "Standard map dynamics.")
-            
-            p_style = INTEL.get("team_styles", {}).get(p_team, "Standard pro playstyle.")
-            o_style = INTEL.get("team_styles", {}).get(o_team, "Standard pro playstyle.")
-            
-            with st.spinner(f"Analyzing {m1_name} & {m2_name}..."):
-                # PROMPT: Now feeds both maps to the AI
+            with st.spinner(f"Running Deterministic Analysis..."):
                 prompt = f"""
-                Act as a Professional Esports Betting Model (Temp 0.2).
-                
-                CONTEXT:
-                - PLAYER: {st.session_state.p_tag_val} ({st.session_state.role_val})
-                - PLAYER_TEAM: {p_team} | STYLE: {p_style}
-                - OPPONENT: {o_team} | STYLE: {o_style} | RANK: {st.session_state.opp_rank_val}
-                
-                MATCH DATA:
-                - PROP: {st.session_state.stat_type_val}
-                - MAP 1: {m1_name} ({m1_data}) | RATE: {st.session_state.map1_rate}
-                - MAP 2: {m2_name} ({m2_data}) | RATE: {st.session_state.map2_rate}
-                - OPENING DUELS: {st.session_state.opening_val}
+                Act as a Cold, Professional Esports Betting Analyst. 
+                MATCHUP: {p_team} vs {o_team} (Opponent Rank: {st.session_state.opp_rank_val})
+                PROP: {st.session_state.stat_type_val} | ROLE: {st.session_state.role_val}
+                INTEL: Map 1: {m1} ({INTEL.get('maps', {}).get(m1)}) | Map 2: {m2} ({INTEL.get('maps', {}).get(m2)})
+                TEAM STYLES: {p_team}: {INTEL.get('team_styles', {}).get(p_team)} | {o_team}: {INTEL.get('team_styles', {}).get(o_team)}
 
                 TASK:
                 1. Assign 4 Weights (0.85-1.15) for H2H, Tier, Map, and Intensity.
-                2. Explain how the transition from {m1_name} to {m2_name} impacts the player's potential.
+                2. Explain how the transition from {m1} to {m2} affects this specific {st.session_state.role_val}.
                 3. FORMAT: H2H: [X] | Tier: [X] | Map: [X] | Int: [X]
-                """
                 
+                Keep reasoning under 2 sentences. Use zero creative language.
+                """
+                # TEMPERATURE 0.0: Strict Determinism
                 completion = client.chat.completions.create(
                     model="llama-3.3-70b-versatile", 
                     messages=[{"role": "user", "content": prompt}],
-                    temperature=0.2
+                    temperature=0.0
                 )
                 
                 st.session_state.weight_advice = completion.choices[0].message.content
                 found_weights = re.findall(r"([0-1]\.\d+)", st.session_state.weight_advice)
-                
                 if len(found_weights) >= 4:
-                    # Apply safety clamping for all 4 sliders
                     st.session_state.h2h_val = min(max(float(found_weights[0]), 0.80), 1.20)
                     st.session_state.tier_val = min(max(float(found_weights[1]), 0.80), 1.20)
                     st.session_state.map_val = min(max(float(found_weights[2]), 0.80), 1.20)
                     st.session_state.int_val = min(max(float(found_weights[3]), 0.70), 1.10)
-                    st.toast("🎯 Dual-Map Intelligence Synced!", icon="✅")
+                    st.toast("🎯 Vault Intelligence Synced!", icon="✅")
+
     if st.session_state.weight_advice: st.markdown(f'<div class="advice-box"><b>Vault Intelligence:</b><br>{st.session_state.weight_advice}</div>', unsafe_allow_html=True)
     st.divider()
     h2h_w = st.slider("H2H Advantage", 0.80, 1.20, key="h2h_val", step=0.05)
@@ -121,7 +103,7 @@ with st.sidebar:
     int_w = st.slider("Match Intensity", 0.70, 1.10, key="int_val", step=0.05)
 
 # ==========================================
-# 🎯 MAIN ANALYZER
+# 🎯 MAIN ANALYZER (Rest stays the same)
 # ==========================================
 st.title("🎯 Prop Grader Elite")
 col_l, col_r = st.columns([1, 1.2], gap="large")
@@ -176,7 +158,7 @@ if st.button("RUN ELITE ANALYSIS"):
     except Exception as e: st.error(f"Analysis Error: {e}")
 
 # ==========================================
-# 📊 OUTPUTS & RENDERED SHARE CARD
+# 📊 RENDERED SHARE CARD
 # ==========================================
 with col_r:
     if st.session_state.analysis_results:
