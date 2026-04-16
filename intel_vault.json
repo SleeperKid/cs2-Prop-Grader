@@ -1,21 +1,21 @@
 {
   "maps": {
-    "Mirage": "High-visibility duels, long sightlines. Favors precision/AWP. High HS potential.",
-    "Inferno": "Cluttered, utility-heavy. High spray frequency through smoke. Lower HS potential.",
-    "Nuke": "CT-Sided. Verticality. High intensity rotations. Favors defensive crosshair placement.",
-    "Ancient": "High foliage, medium-range duels. Favors aggressive entry-pathing and high-KPR riflers.",
-    "Anubis": "Wide-open mid, high-speed rotations. Favors raw Kills over tactical headshots.",
-    "Dust 2": "Aim-duel capital. Extremely long sightlines. Massive boost for AWPers and precision riflers.",
-    "Vertigo": "Close-quarters, ramp-centric duels. High trade-kill frequency. High intensity."
+    "Mirage": "Balanced aim-duel map. High-precision sightlines favor AWPers and high-HS riflers.",
+    "Inferno": "Utility-heavy and narrow. High spray frequency. Lowers HS potential but boosts raw Kills.",
+    "Nuke": "CT-Sided verticality. Quick rotations. Favors tactical crosshair placement and high intensity.",
+    "Ancient": "Jungle-themed. High foliage. Favor aggressive entry pathing and high-KPR firepower.",
+    "Anubis": "Re-added Jan 2026. Wide-open mid and fast rotations. T-Sided bias favors raw aggression.",
+    "Dust 2": "The aim-duel capital. Longest sightlines in the pool. Massive boost for AWPers.",
+    "Overpass": "Highly tactical. Long-range sightlines mixed with tight park chokes. High complexity."
   },
   "team_styles": {
-    "Team Spirit": "Aggressive Entry/Methodical Support hybrid. Powered by aggressive entry-fragging (donk) and methodical AWPing (sh1ro). High-intensity system.",
-    "Team Vitality": "Structured individualistic dominance. Led by the elite ZywOo. High-precision system with deep tactical pedigree.",
-    "G2 Esports": "Flashy/Fearless Aggression. fearless entry-fragging (malbsMd) with anchor stability (HeavyGod) and patient sniping.",
-    "NAVI": "Disciplined Methodical System. Highly structured play with youth talent revitalizing firepower alongside w0nderful and b1t.",
-    "FaZe Clan": "Tactical Individualistic. Relies on individual clutches (frozen, broky) and karrigan's mid-round tactical 'magic'.",
-    "FURIA": "Tactical Brazilian Aggression. Transitioned to a more structured, veteran-led tactical style under FalleN."
+    "Team Spirit": "Aggressive Entry/Methodical Support hybrid (donk/sh1ro). High-intensity academy system.",
+    "Team Vitality": "Structured individual dominance (ZywOo). High-precision system with elite spacing.",
+    "FaZe Clan": "Tactical Individualistic. Relies on mid-round magic and individual clutch ability.",
+    "NAVI": "Disciplined Methodical System. Highly structured play with balanced fire-power.",
+    "G2 Esports": "Flashy Aggression. Aggressive entry system paired with veteran sniping stability."
   },
+
   "roles": {
     "Rifler": "Primary engagement player. High volume of headshots and entry duels.",
     "AWPer": "Sniper role. Focuses on center-of-mass kills. Naturally lower Headshot % but high survival."
