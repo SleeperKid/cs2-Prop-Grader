@@ -1,11 +1,3 @@
 {
-    "AUR": "https://www.hltv.org/team/11861/aurora",
-    "CS2: Vitality": "https://www.hltv.org/team/9565/vitality",
-<<<<<<< HEAD
     "Vitality": "https://www.hltv.org/team/9565/vitality"
 }
-=======
-    "Vitality": "https://www.hltv.org/team/9565/vitality",
-    "Spirit": "https://www.hltv.org/team/7020/spirit"
-}
->>>>>>> 6c6f93d (🔧 Local sync before rebase)
