@@ -29,22 +29,41 @@ INTEL = load_intel()
 # ==========================================
 @st.cache_data(ttl=10)
 def load_vault():
-    st.sidebar.info("📡 Running Blind Connection Test...")
+    sheet_url = st.secrets["connections"]["gsheets"]["spreadsheet"]
     try:
         conn = st.connection("gsheets", type=GSheetsConnection)
         
-        # We use 'ttl=0' here to bypass all caching for the test
-        df_test = conn.read(ttl=0) 
+        # Load VAL
+        try:
+            val_df = conn.read(spreadsheet=sheet_url, worksheet="VAL_DATA", ttl=0)
+            val_df['Game'] = 'Valorant'
+        except:
+            val_df = pd.DataFrame()
+
+        # Load CS2
+        try:
+            cs_df = conn.read(spreadsheet=sheet_url, worksheet="CS2_DATA", ttl=0)
+            cs_df['Game'] = 'CS2'
+        except:
+            cs_df = pd.DataFrame()
         
-        if df_test is not None:
-            st.sidebar.success(f"✅ Data Found: {len(df_test)} rows")
-            # For the test, let's just return whatever it found
-            return df_test
+        # Diagnostics in the sidebar
+        st.sidebar.write(f"📊 VAL Found: {len(val_df)}")
+        st.sidebar.write(f"📊 CS2 Found: {len(cs_df)}")
+
+        # Ensure CS2 has the columns the UI expects even if it's empty
+        for col in ['Team', 'Agents', 'ADR', 'ACS']:
+            if not cs_df.empty and col not in cs_df.columns: cs_df[col] = "N/A"
+            if not val_df.empty and col not in val_df.columns: val_df[col] = "N/A"
+
+        # Combine them
+        if val_df.empty and cs_df.empty:
+            return pd.DataFrame()
+        
+        return pd.concat([val_df, cs_df], ignore_index=True).fillna("N/A")
             
     except Exception as e:
-        st.error(f"❌ THE WALL IS STILL UP: {e}")
-        # This will print the actual HTML Google sent back if we're lucky
-        st.write("Diagnostic Response Content:", e) 
+        st.error(f"❌ Load Error: {e}")
         return pd.DataFrame()
 
 # ==========================================
