@@ -29,29 +29,22 @@ INTEL = load_intel()
 # ==========================================
 @st.cache_data(ttl=10)
 def load_vault():
-    st.sidebar.info("📡 Connection established. Reading data...")
+    st.sidebar.info("📡 Running Blind Connection Test...")
     try:
         conn = st.connection("gsheets", type=GSheetsConnection)
         
-        # TEST: Read the first available sheet without a name
-        full_df = conn.read() 
+        # We use 'ttl=0' here to bypass all caching for the test
+        df_test = conn.read(ttl=0) 
         
-        if full_df.empty:
-            st.error("⚠️ The connection is working, but the sheet appears empty.")
-            return pd.DataFrame()
-
-        # If it finds data, then we try the specific tabs
-        val_df = conn.read(worksheet="VAL_DATA")
-        cs_df = conn.read(worksheet="CS2_DATA")
-        
-        st.sidebar.success(f"✅ VAL Rows: {len(val_df)}")
-        st.sidebar.success(f"✅ CS2 Rows: {len(cs_df)}")
-        
-        # ... (keep the rest of your merging logic) ...
-        return pd.concat([val_df, cs_df], ignore_index=True)
-
+        if df_test is not None:
+            st.sidebar.success(f"✅ Data Found: {len(df_test)} rows")
+            # For the test, let's just return whatever it found
+            return df_test
+            
     except Exception as e:
-        st.error(f"❌ Handshake Error: {e}")
+        st.error(f"❌ THE WALL IS STILL UP: {e}")
+        # This will print the actual HTML Google sent back if we're lucky
+        st.write("Diagnostic Response Content:", e) 
         return pd.DataFrame()
 
 # ==========================================
