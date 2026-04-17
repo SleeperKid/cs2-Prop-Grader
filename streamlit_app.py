@@ -178,7 +178,8 @@ with st.sidebar:
 # ==========================================
 st.title("🎯 Prop Grader Elite")
 df = load_vault()
-
+st.write("### Debug: Raw Data from Cloud")
+st.write(df) # This will show the actual table on your website
 col_l, col_r = st.columns([1, 1.2], gap="large")
 
 with col_l:
