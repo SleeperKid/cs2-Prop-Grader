@@ -9,27 +9,33 @@ import re
 from streamlit_gsheets import GSheetsConnection
 
 
-@st.cache_data(ttl=600) # Data refreshes every 10 mins
+@st.cache_data(ttl=10) # Set to 10 seconds for testing
 def load_vault():
-    """Connects to Google Sheets and pulls the latest data"""
     conn = st.connection("gsheets", type=GSheetsConnection)
-    
-    # Load both tabs
     try:
-        val_df = conn.read(worksheet="VAL_DATA")
-        val_df['Game'] = 'Valorant'
+        # Try reading without a worksheet name first to see if it hits the first tab
+        test_df = conn.read()
+        if test_df.empty:
+            st.warning("⚠️ Connection established, but the first sheet appears empty.")
         
+        # Now try the specific tabs
+        val_df = conn.read(worksheet="VAL_DATA")
         cs_df = conn.read(worksheet="CS2_DATA")
+        
+        # Verification Prints
+        st.sidebar.write(f"VAL Rows: {len(val_df)}")
+        st.sidebar.write(f"CS2 Rows: {len(cs_df)}")
+        
+        val_df['Game'] = 'Valorant'
         cs_df['Game'] = 'CS2'
         
-        # Fill schema gaps
+        # Merge logic
         for col in ['Team', 'Agents', 'ADR', 'ACS']:
-            if col not in cs_df.columns: cs_df[col] = "N/A" if col in ['Team', 'Agents'] else 0.0
+            if col not in cs_df.columns: cs_df[col] = "N/A"
             
-        final_df = pd.concat([val_df, cs_df], ignore_index=True)
-        return final_df
+        return pd.concat([val_df, cs_df], ignore_index=True)
     except Exception as e:
-        st.error(f"Error connecting to Google Sheets: {e}")
+        st.error(f"❌ Vault Connection Error: {e}")
         return pd.DataFrame()
 # ==========================================
 # 🧠 INTELLIGENCE VAULT LOADER
