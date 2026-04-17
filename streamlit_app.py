@@ -7,6 +7,18 @@ from groq import Groq
 from streamlit_gsheets import GSheetsConnection
 
 # ==========================================
+# 🛡️ ARCHITECT'S UTILITIES
+# ==========================================
+def safe_float(value, default=0.0):
+    """Bypasses ValueError crashes from empty cells or 'N/A' strings."""
+    try:
+        if pd.isna(value) or value == "N/A" or value == "":
+            return default
+        return float(value)
+    except:
+        return default
+
+# ==========================================
 # 📥 DATA & INTEL LOADERS
 # ==========================================
 def load_intel():
@@ -16,22 +28,24 @@ def load_intel():
         except: return {}
     return {}
 
-@st.cache_data(ttl=600)
+@st.cache_data(ttl=300)
 def load_vault():
+    """Separates Domain Data to prevent cross-sport contamination."""
     sheet_url = st.secrets["connections"]["gsheets"]["spreadsheet"]
     try:
         conn = st.connection("gsheets", type=GSheetsConnection)
         val_df = conn.read(spreadsheet=sheet_url, worksheet="VAL_DATA", ttl=0)
         cs_df = conn.read(spreadsheet=sheet_url, worksheet="CS2_DATA", ttl=0)
         val_df['Game'], cs_df['Game'] = 'Valorant', 'CS2'
-        return pd.concat([val_df, cs_df], ignore_index=True).fillna("N/A")
+        return pd.concat([val_df, cs_df], ignore_index=True)
     except Exception as e:
-        st.error(f"Vault Connection Error: {e}"); return pd.DataFrame()
-
+        st.error(f"Vault Connection Failure: {e}")
+        return pd.DataFrame()
+    
 # ==========================================
 # 🎨 SOVEREIGN CSS STYLING
 # ==========================================
-st.set_page_config(page_title="Prop Grader Elite", layout="wide", page_icon="🎯")
+st.set_page_config(page_title="Prop Grader Elite V74", layout="wide", page_icon="🎯")
 st.markdown("""
 <style>
     .main { background-color: #0e1117; }
@@ -61,6 +75,61 @@ st.markdown("""
     .metric-val { font-size: 16px; font-weight: bold; color: white; display: block; }
 </style>
 """, unsafe_allow_html=True)
+
+# ==========================================
+# 🧠 STATE MANAGEMENT
+# ==========================================
+st.set_page_config(page_title="Prop Grader Elite V74", layout="wide")
+df = load_vault()
+
+# Initialize keys to prevent 'KeyError' during hot-reloads
+for key, val in {'m1_kpr': 0.82, 'm2_kpr': 0.82, 'p_tag': "", 'l10': "", 'm_context': ""}.items():
+    if key not in st.session_state: st.session_state[key] = val
+
+game_choice = st.radio("Target Game", ["CS2", "Valorant"], horizontal=True)
+
+# ==========================================
+# 🕵️ THE MANUAL SHIELD SELECTION
+# ==========================================
+col_l, col_r = st.columns([1, 1.2], gap="large")
+
+with col_l:
+    st.subheader("🕵️ Deep Profile Intelligence")
+    
+    players = df[df['Game'] == game_choice]['Player'].tolist() if not df.empty else []
+    selected = st.selectbox("Search Vault", ["Manual Entry"] + players)
+    
+    if selected != "Manual Entry":
+        row = df[df['Player'] == selected].iloc[0]
+        
+        # 1. Update Identity & History
+        st.session_state.p_tag = str(row.get('Player', ''))
+        st.session_state.l10 = str(row.get('L10', '')).replace('"', '')
+        st.session_state.m_context = f"{row.get('Team', 'Free Agent')} vs "
+        
+        # 2. THE SHIELD: Display Global KPR for context, but do NOT overwrite M1/M2
+        if game_choice == "CS2":
+            global_ref = safe_float(row.get('KPR'), 0.82)
+            st.info(f"📊 Global KPR Baseline: **{global_ref}** (HLTV Rating 3.0)")
+            # We reset inputs to the baseline only to clear previous player data,
+            # but we don't pull M1/M2 from the sheet because they don't exist there.
+            st.session_state.m1_kpr = global_ref
+            st.session_state.m2_kpr = global_ref
+        else:
+            st.session_state.adr = safe_float(row.get('ADR'), 140.0)
+
+    # UI INPUTS (Manual Override Enabled)
+    st.text_input("Player Tag", value=st.session_state.p_tag, key="p_tag_input")
+    
+    if game_choice == "CS2":
+        ck1, ck2 = st.columns(2)
+        # Use key-based binding for better persistence in 2026 Streamlit
+        m1_kpr = ck1.number_input("Map 1 KPR", value=st.session_state.m1_kpr, format="%.2f", step=0.01)
+        m2_kpr = ck2.number_input("Map 2 KPR", value=st.session_state.m2_kpr, format="%.2f", step=0.01)
+    else:
+        adr = st.number_input("Base ADR", value=st.session_state.get('adr', 140.0))
+
+    l10_data = st.text_area("L10 Data (CSV)", value=st.session_state.l10)
 
 # ==========================================
 # 🧠 CORE INITIALIZATION
