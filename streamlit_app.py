@@ -29,7 +29,7 @@ def load_vault():
         st.error(f"Vault Connection Error: {e}"); return pd.DataFrame()
 
 # ==========================================
-# 🎨 SOVEREIGN CSS STYLING
+# 🎨 DUAL-CARD CSS STYLING
 # ==========================================
 st.set_page_config(page_title="Prop Grader Elite", layout="wide", page_icon="🎯")
 st.markdown("""
@@ -40,22 +40,21 @@ st.markdown("""
         color: white; border: none; padding: 18px; font-size: 20px; font-weight: bold; 
         border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); width: 100%;
     }
-    .intel-box { 
-        background: linear-gradient(90deg, rgba(88,166,255,0.1) 0%, rgba(13,17,23,0) 100%); 
-        padding: 20px; border-radius: 12px; border-left: 5px solid #58a6ff; margin-bottom: 20px;
+    .analyst-card { 
+        padding: 40px; border-radius: 30px; text-align: center; 
+        box-shadow: 0 15px 45px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.15);
+        margin-bottom: 25px; color: white;
     }
-    .map-logic-box { 
-        background: #1c2128; padding: 20px; border-radius: 15px; border: 1px solid #30363d; 
-        margin-top: 15px; color: #adbac7; line-height: 1.6;
-    }
+    .analyst-grade { font-size: 130px; font-weight: 900; margin: 0; line-height: 1; text-shadow: 3px 3px 10px rgba(0,0,0,0.3); }
     .share-container {
         background-color: #121212; border: 3px solid #FFD700; border-radius: 20px;
-        padding: 30px; width: 400px; margin: auto; color: white; text-align: center;
-        box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        padding: 30px; width: 420px; margin: 20px auto; color: white; text-align: center;
+        box-shadow: 0 0 25px rgba(255, 215, 0, 0.4);
     }
-    .grade-box { font-size: 100px; font-weight: 900; color: #FFD700; text-shadow: 0 0 15px rgba(255,215,0,0.6); line-height: 1; }
-    .pill-over { background: #1b3a1e; border: 1px solid #2ea043; border-radius: 10px; padding: 10px 20px; display: inline-block; font-size: 24px; font-weight: 900; color: #3fb950; text-transform: uppercase; }
-    .metric-val { font-size: 16px; font-weight: bold; color: white; }
+    .share-player { font-size: 55px; font-weight: 900; margin: 5px 0; letter-spacing: 2px; text-transform: uppercase; }
+    .pill-over { background: #1b3a1e; border: 1px solid #2ea043; border-radius: 10px; padding: 10px 20px; display: inline-block; font-size: 24px; font-weight: 900; color: #3fb950; }
+    .hiro-grade { font-size: 100px; font-weight: 900; color: #FFD700; text-shadow: 0 0 20px rgba(255,215,0,0.7); line-height: 1; }
+    .map-logic-box { background: #1c2128; padding: 20px; border-radius: 15px; border: 1px solid #30363d; margin-top: 15px; color: #adbac7; line-height: 1.6; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -65,14 +64,14 @@ st.markdown("""
 df = load_vault()
 INTEL = load_intel()
 
-# Sliders Session State (Allows AI to overwrite)
+# Persistent Sliders
 if 'h2h_val' not in st.session_state: st.session_state.h2h_val = 1.0
 if 'rank_val' not in st.session_state: st.session_state.rank_val = 1.0
 if 'map_val' not in st.session_state: st.session_state.map_val = 1.0
 if 'int_val' not in st.session_state: st.session_state.int_val = 1.0
 
-# General State
-keys = ['p_tag', 'l10', 'kpr', 'adr', 'acs', 'm_context', 'w_rank', 'results', 'ai_advice', 'tourney_type']
+# General State (Added proj_maps)
+keys = ['p_tag', 'l10', 'kpr', 'adr', 'acs', 'm_context', 'w_rank', 'results', 'ai_advice', 'tourney_type', 'proj_maps']
 for key in keys:
     if key not in st.session_state: st.session_state[key] = "" if key not in ['kpr', 'adr', 'acs'] else 0.80
 
@@ -80,7 +79,7 @@ st.title("🎯 Prop Grader Elite")
 game_choice = st.radio("Target Game", ["CS2", "Valorant"], horizontal=True)
 
 # ==========================================
-# ⚙️ SIDEBAR: THE ADVISOR
+# ⚙️ SIDEBAR: AI & AUTONOMOUS SLIDERS
 # ==========================================
 with st.sidebar:
     st.title("🛡️ Command Center")
@@ -93,31 +92,35 @@ with st.sidebar:
             p_intel = INTEL.get(st.session_state.p_tag, {})
             stat_ctx = f"KPR: {st.session_state.kpr}" if game_choice == "CS2" else f"ADR: {st.session_state.adr}, ACS: {st.session_state.acs}"
             
-            prompt = f"""Expert Mode (Temp 0.01). Context: {st.session_state.m_context} | {st.session_state.tourney_type}.
-            Stats: {stat_ctx}. Vault Intel: {p_intel}.
-            Suggest 4 weights (0.85-1.15) for H2H, Tier, Map, Int. 
-            Rules: MAX 4 sentences each. Include weights in brackets: [1.05]."""
+            prompt = f"""
+            Expert Analyst Mode (Temp 0.01). 
+            Context: {st.session_state.m_context} | {st.session_state.tourney_type} | Opponent: {st.session_state.w_rank}.
+            PROJECTED MAPS FOR THIS MATCH: {st.session_state.proj_maps}.
             
+            Player Intel (Vault): {p_intel}. 
+            Stats: {stat_ctx}.
+            
+            Task: Weights for H2H, Tier, Map, Int. 
+            Rules: Use the 'Projected Maps' against the Vault 'map_notes' to decide the 'Map Fit' weight. 
+            MAX 4 sentences each. Include weights in brackets: [1.05].
+            """
             res = client.chat.completions.create(model="llama-3.3-70b-versatile", messages=[{"role":"user","content":prompt}], temperature=0.01)
             st.session_state.ai_advice = res.choices[0].message.content
             
-            # --- AUTO-ADJUST SLIDERS ---
             weights = re.findall(r"\[(\d+(?:\.\d+)?)\]", st.session_state.ai_advice)
             if len(weights) >= 4:
                 st.session_state.h2h_val, st.session_state.rank_val, st.session_state.map_val, st.session_state.int_val = map(float, weights[:4])
                 st.rerun()
 
     if st.session_state.ai_advice: st.info(st.session_state.ai_advice)
-    
     st.divider()
-    # Sliders linked to Session State
-    h2h_w = st.slider("H2H Advantage", 0.80, 1.20, key="h2h_val")
-    rank_w = st.slider("Opponent Tier", 0.80, 1.20, key="rank_val")
-    map_w = st.slider("Map Fit", 0.80, 1.20, key="map_val")
-    int_w = st.slider("Match Intensity", 0.70, 1.10, key="int_val")
+    st.slider("H2H Advantage", 0.80, 1.20, key="h2h_val")
+    st.slider("Opponent Tier", 0.80, 1.20, key="rank_val")
+    st.slider("Map Fit", 0.80, 1.20, key="map_val")
+    st.slider("Match Intensity", 0.70, 1.10, key="int_val")
 
     with st.expander("📖 SLIDER STRATEGY GUIDE"):
-        st.write("**H2H:** Boost for favorable archetypes. **Tier:** Adjust vs Rank. **Map:** Use Vault notes. **Int:** Boost for LAN.")
+        st.write("H2H: Archetype counters. Tier: -10% vs Top 5. Map: Match user-input maps to Intel notes. Int: LAN boost.")
 
 # ==========================================
 # 🎯 MAIN ANALYZER
@@ -140,22 +143,20 @@ with col_l:
 
     st.session_state.p_tag = st.text_input("Player Tag", value=st.session_state.p_tag)
     st.session_state.m_context = st.text_input("Match Context", value=st.session_state.m_context)
+    st.session_state.proj_maps = st.text_input("Projected Maps Pool", value=st.session_state.proj_maps, placeholder="e.g. Mirage, Ancient, Dust 2")
     st.session_state.w_rank = st.text_input("Opponent World Rank", value=st.session_state.w_rank)
     st.session_state.l10 = st.text_area("L10 Data", value=st.session_state.l10)
 
-    if game_choice == "CS2":
-        active_base = st.number_input("Base KPR", value=st.session_state.kpr)
+    if game_choice == "CS2": active_base = st.number_input("Base KPR", value=st.session_state.kpr)
     else:
         c1, c2 = st.columns(2)
-        v_adr = c1.number_input("Base ADR", value=st.session_state.adr)
-        v_acs = c2.number_input("Base ACS", value=st.session_state.acs)
+        v_adr, v_acs = c1.number_input("Base ADR", value=st.session_state.adr), c2.number_input("Base ACS", value=st.session_state.acs)
         active_base = (v_adr / 150) + (v_acs / 300) 
 
     c1, c2 = st.columns(2)
     with c1: m_line, m_side = st.number_input("Line", 35.5, step=0.5), st.selectbox("Side", ["Over", "Under"])
     with c2: m_odds, m_scope = st.number_input("Odds", -115), st.selectbox("Scope", ["Maps 1 & 2", "Map 1 Only", "Full Match"])
 
-# --- BUTTON RENAMED ---
 if st.button("🚀 GENERATE ELITE GRADE"):
     vals = [float(x.strip()) for x in st.session_state.l10.split(",") if x.strip()]
     stdev = max(np.std(vals, ddof=1) if len(vals) > 1 else 2.5, 2.5)
@@ -171,38 +172,28 @@ if st.button("🚀 GENERATE ELITE GRADE"):
         "grade": "S" if edge >= 12 else "A+" if edge >= 8 else "A" if edge >= 3 else "B", 
         "units": 2.5 if edge >= 12 else 2.0 if edge >= 8 else 1.0 if edge >= 3 else 0.5, 
         "proj": final_proj, "base": base_proj, "edge": edge, "prob": prob, 
+        "grad": "linear-gradient(135deg, #FFD700 0%, #8B6508 100%)" if edge >= 12 else "linear-gradient(135deg, #00FF00 0%, #004d00 100%)" if edge >= 8 else "linear-gradient(135deg, #ADFF2F 0%, #228B22 100%)" if edge >= 3 else "linear-gradient(135deg, #2c3e50 0%, #000000 100%)",
         "m_line": m_line, "m_side": m_side, "scope": m_scope, "hit": (sum(1 for v in vals if (v > m_line if m_side == "Over" else v < m_line))/len(vals)*100), "game": game_choice
     }
 
-# --- RESULTS DISPLAY (STABILIZED) ---
+# --- RESULTS DISPLAY ---
 if st.session_state.results:
     res = st.session_state.results
     with col_r:
-        # 🗺️ PROJECTED MAPS LOGIC BOX
+        # 🗺️ UPDATED MAP LOGIC BOX (Shows Inputted Maps)
         st.markdown(f"""<div class="map-logic-box"><b style="color:#58a6ff;">🗺️ PROJECTED MAPS LOGIC</b><br>
-            • Baseline: {res['base']:.1f} | Weighted: <b>{res['proj']:.1f} Kills</b><br>
-            • Multiplier: x{(st.session_state.h2h_val*st.session_state.rank_val*st.session_state.map_val*st.session_state.int_val):.2f}</div>""", unsafe_allow_html=True)
+            • Maps Considered: <b>{st.session_state.proj_maps if st.session_state.proj_maps else 'None Entered'}</b><br>
+            • Baseline: {res['base']:.1f} | Weighted: <b>{res['proj']:.1f} Kills</b> | Multiplier: x{(st.session_state.h2h_val*st.session_state.rank_val*st.session_state.map_val*st.session_state.int_val):.2f}</div>""", unsafe_allow_html=True)
+
+        st.markdown(f"""<div class="analyst-card" style="background: {res['grad']};"><div style="font-size:32px; font-weight:900;">{st.session_state.p_tag.upper()} {res['m_side'].upper()} {res['m_line']}</div><h1 class="analyst-grade">{res['grade']}</h1><div style="font-size:26px; font-weight:bold;">{res['units']} UNIT PLAY</div></div>""", unsafe_allow_html=True)
 
         st.divider()
-        arrow = "▲" if res['m_side'] == "Over" else "▼"
-        st.markdown(f"""
-        <div class="share-container">
-            <div style="font-size: 14px; letter-spacing: 3px; opacity: 0.7;">{res['game'].upper()} PROP ANALYSIS</div>
-            <div class="share-player">{st.session_state.p_tag.upper()}</div>
-            <div style="color: #58a6ff; font-weight: bold; font-size: 18px; margin-bottom: 15px;">{st.session_state.m_context}</div>
-            <div style="border-top: 1px solid #30363d; margin: 15px 0;"></div>
-            <div style="display: flex; justify-content: space-around; align-items: center;">
-                <div style="text-align: left;"><small style="opacity:0.7">THE PROP LINE</small><br><b style="font-size: 40px;">{res['m_line']}</b><br><small style="opacity:0.7">KILLS</small></div>
-                <div><small style="opacity:0.7">MODEL GRADE</small><br><div class="grade-box">{res['grade']}</div></div>
-            </div>
-            <div style="margin: 20px 0;"><div class="pill-over">{arrow} {res['m_side'].upper()}</div></div>
-            <div class="suggested-play"><small style="color: #FFD700; letter-spacing: 2px;">SUGGESTED PLAY</small><br><b style="font-size: 28px;">{res['units']} UNITS</b></div>
-            <div class="metric-grid" style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; margin-top: 20px; border-top: 1px solid #30363d; padding-top: 15px;">
-                <div style="font-size: 10px; opacity: 0.7;">PROJ<br><b class="metric-val">{res['proj']:.1f}</b></div>
-                <div style="font-size: 10px; opacity: 0.7;">EDGE<br><b class="metric-val">+{res['edge']:.1f}%</b></div>
-                <div style="font-size: 10px; opacity: 0.7;">CONF<br><b class="metric-val">{res['prob']:.0f}%</b></div>
-                <div style="font-size: 10px; opacity: 0.7;">L10 HIT<br><b class="metric-val">{res['hit']:.0f}%</b></div>
-            </div>
-            <div style="font-size: 10px; margin-top: 20px; letter-spacing: 2px; color: #58a6ff;">ANALYSIS BY SLEEPER D. KID</div>
-        </div>
-        """, unsafe_allow_html=True)
+        m1, m2, m3 = st.columns(3)
+        m1.metric("L10 Hit", f"{res['hit']:.0f}%")
+        m2.metric("Edge", f"{res['edge']:.1f}%")
+        m3.metric("Conf", f"{res['prob']:.0f}%")
+
+        st.divider()
+        if st.checkbox("Show Social Share Card"):
+            arrow = "▲" if res['m_side'] == "Over" else "▼"
+            st.markdown(f"""<div class="share-container"><div style="font-size:14px;letter-spacing:3px;opacity:0.7;">{res['game'].upper()} PROP ANALYSIS</div><div class="share-player">{st.session_state.p_tag.upper()}</div><div style="color:#58a6ff;font-weight:bold;font-size:18px;margin-bottom:15px;">{st.session_state.m_context}</div><div style="border-top:1px solid #30363d;margin:15px 0;"></div><div style="display:flex;justify-content:space-around;align-items:center;"><div style="text-align:left;"><small style="opacity:0.7">THE PROP LINE</small><br><b style="font-size:40px;">{res['m_line']}</b><br><small style="opacity:0.7">KILLS</small></div><div><small style="opacity:0.7">MODEL GRADE</small><br><div class="hiro-grade">{res['grade']}</div></div></div><div style="margin:20px 0;"><div class="pill-over">{arrow} {res['m_side'].upper()}</div></div><div style="background:#1c1c1c;border:1px solid #FFD700;border-radius:15px;padding:15px;margin:20px 0;"><small style="color:#FFD700;letter-spacing:2px;">SUGGESTED PLAY</small><br><b style="font-size:28px;">{res['units']} UNITS</b></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-top:20px;border-top:1px solid #30363d;padding-top:15px;"><div style="font-size:10px;opacity:0.7;">PROJ<br><b style="font-size:16px;color:white;">{res['proj']:.1f}</b></div><div style="font-size:10px;opacity:0.7;">EDGE<br><b style="font-size:16px;color:white;">+{res['edge']:.1f}%</b></div><div style="font-size:10px;opacity:0.7;">CONF<br><b style="font-size:16px;color:white;">{res['prob']:.0f}%</b></div><div style="font-size:10px;opacity:0.7;">L10 HIT<br><b style="font-size:16px;color:white;">{res['hit']:.0f}%</b></div></div><div style="font-size:10px;margin-top:20px;letter-spacing:2px;color:#58a6ff;">ANALYSIS BY SLEEPER D. KID</div></div>""", unsafe_allow_html=True)
