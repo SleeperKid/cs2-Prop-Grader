@@ -63,16 +63,14 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ==========================================
-# 🧠 CORE INITIALIZATION & GAME SWITCHER
+# 🧠 CORE INITIALIZATION
 # ==========================================
 df = load_vault()
 INTEL = load_intel()
 
-# Persistent Sliders
 for k in ['h2h_val', 'rank_val', 'map_val', 'int_val']:
     if k not in st.session_state: st.session_state[k] = 1.0
 
-# General State
 keys = ['p_tag', 'l10', 'kpr', 'm1_kpr', 'm2_kpr', 'adr', 'acs', 'm_context', 'w_rank', 'results', 'ai_advice', 'tourney_type', 'proj_maps', 'proj_agents', 'marketing_blurb', 'last_game']
 for key in keys:
     if key not in st.session_state: 
@@ -81,7 +79,7 @@ for key in keys:
 st.title("🎯 Prop Grader Elite")
 game_choice = st.radio("Target Game", ["CS2", "Valorant"], horizontal=True)
 
-# --- AUTO-CLEAR MAPS ON GAME SWITCH ---
+# --- GAME SWITCHER SAFETY ---
 if st.session_state.last_game != game_choice:
     st.session_state.proj_maps = ""
     st.session_state.proj_agents = ""
@@ -101,9 +99,8 @@ with st.sidebar:
         api_key = st.secrets.get("GROQ_API_KEY")
         if api_key:
             client = Groq(api_key=api_key)
-            # Combine Maps and Agents for Val
             intel_context = f"Maps: {st.session_state.proj_maps}"
-            if game_choice == "Valorant": intel_context += f" | Agents: {st.session_state.proj_agents}"
+            if game_choice == "Valorant": intel_context += f" | Agent Selection: {st.session_state.proj_agents}"
             
             prompt = f"""Expert Analyst. Context: {st.session_state.m_context}. {intel_context}.
             Suggest 4 weights (0.85-1.15) for H2H, Tier, Map, Int. 
@@ -134,38 +131,42 @@ with col_l:
     db_players = df[df['Game'] == game_choice]['Player'].tolist() if not df.empty else []
     selected = st.selectbox("Database Search", ["Manual Entry"] + db_players)
     
-    # --- AUTO-POPULATE LOGIC ---
+    # --- FIXED AUTO-POPULATION LOGIC ---
     if selected != "Manual Entry":
         row = df[df['Player'] == selected].iloc[0]
-        st.session_state.p_tag, st.session_state.l10 = row['Player'], str(row['L10']).replace('"', '')
+        st.session_state.p_tag = row['Player']
+        st.session_state.l10 = str(row['L10']).replace('"', '')
         st.session_state.m_context = f"{row.get('Team', 'Team')} vs "
-        # New: Auto-populate Agents if column exists in VAL_DATA
+        
         if game_choice == "Valorant":
-            st.session_state.proj_agents = row.get('Agent', '')
+            # Fuzzy match for Agent column
+            st.session_state.proj_agents = row.get('Agent', row.get('Agents', ''))
             st.session_state.adr = float(row.get('ADR', 140))
         else:
-            st.session_state.m1_kpr, st.session_state.m2_kpr = float(row.get('M1_KPR', 0.82)), float(row.get('M2_KPR', 0.82))
+            st.session_state.m1_kpr = float(row.get('M1_KPR', 0.82))
+            st.session_state.m2_kpr = float(row.get('M2_KPR', 0.82))
 
     st.session_state.p_tag = st.text_input("Player Tag", value=st.session_state.p_tag)
     
     c_m1, c_m2 = st.columns(2)
     st.session_state.proj_maps = c_m1.text_input("Projected Maps Pool", value=st.session_state.proj_maps)
     
-    # --- DYNAMIC FIELD FOR VALORANT ---
     if game_choice == "Valorant":
         st.session_state.proj_agents = c_m2.text_input("Projected Agents", value=st.session_state.proj_agents)
+        st.session_state.active_stat_type = "KILLS"
     else:
         st.session_state.active_stat_type = c_m2.selectbox("Stat Type", stat_options)
     
     st.session_state.m_context = st.text_input("Context", value=st.session_state.m_context)
     st.session_state.w_rank = st.text_input("World Rank", value=st.session_state.w_rank)
-    st.session_state.l10 = st.text_area("L10 Data", value=st.session_state.l10)
+    st.session_state.l10 = st.text_area("L10 Data (CSV)", value=st.session_state.l10)
 
     if game_choice == "CS2":
         ck1, ck2 = st.columns(2)
         st.session_state.m1_kpr = ck1.number_input("M1 KPR", value=float(st.session_state.m1_kpr), format="%.2f")
         st.session_state.m2_kpr = ck2.number_input("M2 KPR", value=float(st.session_state.m2_kpr), format="%.2f")
-    else: st.session_state.adr = st.number_input("ADR", value=float(st.session_state.adr))
+    else:
+        st.session_state.adr = st.number_input("Base ADR", value=float(st.session_state.adr))
 
     st.divider()
     c1, c2 = st.columns(2)
@@ -181,6 +182,7 @@ if st.button("🚀 GENERATE ELITE GRADE"):
         elif m_scope == "Maps 1 & 2": base_proj = (st.session_state.m1_kpr * 24) + (st.session_state.m2_kpr * 24)
         else: base_proj = ((st.session_state.m1_kpr + st.session_state.m2_kpr) / 2) * 24 * 2.6
     else:
+        # VALORANT ADR LOGIC
         scope_mult = {"Map 1 Only": 1.0, "Maps 1 & 2": 2.0, "Full Match": 2.6}
         base_proj = (st.session_state.adr / 150) * 26 * scope_mult[m_scope]
     
