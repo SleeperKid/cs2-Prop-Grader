@@ -115,6 +115,13 @@ def get_cs2_stats(sb, p_id, p_tag, p_url):
         sb.uc_open_with_reconnect(p_url, reconnect_time=4)
         sb.sleep(4)
         soup = BeautifulSoup(sb.get_page_source(), 'lxml')
+        
+        # --- NEW: TEAM EXTRACTION ---
+        base_team = "Free Agent"
+        team_link = soup.find('a', href=re.compile(r'/team/'))
+        if team_link and "player" not in team_link.get('href'):
+            base_team = team_link.get_text().strip()
+        
         kpr = 0.82
         stat_label = soup.find(string=re.compile("Kills per round"))
         if stat_label:
@@ -123,7 +130,7 @@ def get_cs2_stats(sb, p_id, p_tag, p_url):
                 m = re.search(r"\d+\.\d+", val_elem.text)
                 if m: kpr = float(m.group())
 
-        # Match History (Consolidated Grouping)
+        # Match History logic remains the same...
         matches_url = f"https://www.hltv.org/stats/players/matches/{p_id}/{p_tag.lower()}"
         sb.uc_open_with_reconnect(matches_url, reconnect_time=4)
         sb.sleep(6)
@@ -143,21 +150,13 @@ def get_cs2_stats(sb, p_id, p_tag, p_url):
         l10_list = []
         for m_key in match_groups:
             k_list = match_groups[m_key]
-            if len(k_list) >= 2:
-                m1_k, m2_k = k_list[-1], k_list[-2]
-                l10_list.append(m1_k + m2_k)
-                print(f"      ✅ Hit Series: {m_key} ({m1_k} + {m2_k} = {m1_k + m2_k})")
+            if len(k_list) >= 2: l10_list.append(k_list[-1] + k_list[-2])
             if len(l10_list) >= 10: break
 
-        expected = kpr * 24
-        avg_actual = np.mean(l10_list) if l10_list else 0
-        edge = round(((avg_actual - expected) / expected * 100), 1) if expected > 0 else 0
-
-        return {"Player": p_tag, "Game": "CS2", "KPR": kpr, 
-                "L10": ", ".join(map(str, l10_list)), "Edge %": edge}
+        return {"Player": p_tag, "Game": "CS2", "Team": base_team, "KPR": kpr, 
+                "L10": ", ".join(map(str, l10_list)), "Edge %": 0}
     except Exception as e:
-        print(f"      [!] CS2 Error: {e}")
-        return None
+        print(f"      [!] CS2 Error: {e}"); return None
 
 # ==========================================
 # 🚀 MASTER EXECUTION (V38 COMPLETE)
