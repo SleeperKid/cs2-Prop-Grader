@@ -52,7 +52,7 @@ st.markdown("""
         box-shadow: 0 0 25px rgba(255, 215, 0, 0.4);
     }
     .share-player { font-size: 55px; font-weight: 900; margin: 5px 0; letter-spacing: 2px; text-transform: uppercase; }
-    .pill-over { background: #1b3a1e; border: 1px solid #2ea043; border-radius: 10px; padding: 10px 20px; display: inline-block; font-size: 24px; font-weight: 900; color: #3fb950; }
+    .pill-over { background: #1b3a1e; border: 1px solid #2ea043; border-radius: 10px; padding: 10px 20px; display: inline-block; font-size: 24px; font-weight: 900; color: #3fb950; text-transform: uppercase; }
     .hiro-grade { font-size: 100px; font-weight: 900; color: #FFD700; text-shadow: 0 0 20px rgba(255,215,0,0.7); line-height: 1; }
     .map-logic-box { background: #1c2128; padding: 20px; border-radius: 15px; border: 1px solid #30363d; margin-top: 15px; color: #adbac7; line-height: 1.6; }
 </style>
@@ -64,13 +64,11 @@ st.markdown("""
 df = load_vault()
 INTEL = load_intel()
 
-# Persistent Sliders
 if 'h2h_val' not in st.session_state: st.session_state.h2h_val = 1.0
 if 'rank_val' not in st.session_state: st.session_state.rank_val = 1.0
 if 'map_val' not in st.session_state: st.session_state.map_val = 1.0
 if 'int_val' not in st.session_state: st.session_state.int_val = 1.0
 
-# General State (Added proj_maps)
 keys = ['p_tag', 'l10', 'kpr', 'adr', 'acs', 'm_context', 'w_rank', 'results', 'ai_advice', 'tourney_type', 'proj_maps']
 for key in keys:
     if key not in st.session_state: st.session_state[key] = "" if key not in ['kpr', 'adr', 'acs'] else 0.80
@@ -79,34 +77,52 @@ st.title("🎯 Prop Grader Elite")
 game_choice = st.radio("Target Game", ["CS2", "Valorant"], horizontal=True)
 
 # ==========================================
-# ⚙️ SIDEBAR: AI & AUTONOMOUS SLIDERS
+# ⚙️ SIDEBAR: AI ADVISOR (ENHANCED LOOKUP)
 # ==========================================
 with st.sidebar:
     st.title("🛡️ Command Center")
-    st.session_state.tourney_type = st.selectbox("Tournament Prestige", ["S-Tier", "A-Tier", "Qualifiers", "Showmatch"])
+    st.session_state.tourney_type = st.selectbox("Tournament Prestige", list(INTEL.get("tournaments", {}).keys()) or ["S-Tier"])
 
     if st.button("CONSULT AI ADVISOR"):
         api_key = st.secrets.get("GROQ_API_KEY")
         if api_key:
             client = Groq(api_key=api_key)
-            p_intel = INTEL.get(st.session_state.p_tag, {})
-            stat_ctx = f"KPR: {st.session_state.kpr}" if game_choice == "CS2" else f"ADR: {st.session_state.adr}, ACS: {st.session_state.acs}"
+            
+            # --- INTELLIGENT LOOKUP LOGIC ---
+            # 1. Map Search
+            found_maps = []
+            for m_key, m_desc in INTEL.get("maps", {}).items():
+                if m_key.lower() in st.session_state.proj_maps.lower():
+                    found_maps.append(f"{m_key}: {m_desc}")
+            
+            # 2. Team/Style Search
+            found_styles = []
+            for t_key, t_desc in INTEL.get("team_styles", {}).items():
+                if t_key.lower() in st.session_state.m_context.lower():
+                    found_styles.append(f"{t_key}: {t_desc}")
+
+            # 3. Tournament Context
+            t_ctx = INTEL.get("tournaments", {}).get(st.session_state.tourney_type, "Standard tournament pressure.")
             
             prompt = f"""
-            Expert Analyst Mode (Temp 0.01). 
-            Context: {st.session_state.m_context} | {st.session_state.tourney_type} | Opponent: {st.session_state.w_rank}.
-            PROJECTED MAPS FOR THIS MATCH: {st.session_state.proj_maps}.
-            
-            Player Intel (Vault): {p_intel}. 
-            Stats: {stat_ctx}.
-            
-            Task: Weights for H2H, Tier, Map, Int. 
-            Rules: Use the 'Projected Maps' against the Vault 'map_notes' to decide the 'Map Fit' weight. 
-            MAX 4 sentences each. Include weights in brackets: [1.05].
+            SYSTEM ROLE: Pro Betting Analyst (Temp 0.01).
+            CONTEXT: {st.session_state.m_context} | {st.session_state.tourney_type} | Opponent Rank: {st.session_state.w_rank}.
+            PLAYER STATS: {'KPR: ' + str(st.session_state.kpr) if game_choice == 'CS2' else 'ADR/ACS Focus'}.
+
+            VAULT DATA FOUND:
+            - Map Intelligence: {found_maps if found_maps else 'Analyze Mirage and Dust 2 as balanced rifler maps if not in vault.'}
+            - Team Playstyles: {found_styles if found_styles else 'Standard Pro Meta.'}
+            - Tournament Context: {t_ctx}
+
+            TASK: Suggest 4 weights (0.85-1.15) for H2H, Tier, Map Fit, and Intensity.
+            REQUIREMENT: For 'Map Fit', explicitly reference the Map Intelligence provided above.
+            CONSTRAINT: Max 4 sentences per decision. Include weights in brackets like [1.05].
             """
+            
             res = client.chat.completions.create(model="llama-3.3-70b-versatile", messages=[{"role":"user","content":prompt}], temperature=0.01)
             st.session_state.ai_advice = res.choices[0].message.content
             
+            # --- AUTO-SLIDER ADJUST ---
             weights = re.findall(r"\[(\d+(?:\.\d+)?)\]", st.session_state.ai_advice)
             if len(weights) >= 4:
                 st.session_state.h2h_val, st.session_state.rank_val, st.session_state.map_val, st.session_state.int_val = map(float, weights[:4])
@@ -119,18 +135,12 @@ with st.sidebar:
     st.slider("Map Fit", 0.80, 1.20, key="map_val")
     st.slider("Match Intensity", 0.70, 1.10, key="int_val")
 
-    with st.expander("📖 SLIDER STRATEGY GUIDE"):
-        st.write("H2H: Archetype counters. Tier: -10% vs Top 5. Map: Match user-input maps to Intel notes. Int: LAN boost.")
-
 # ==========================================
 # 🎯 MAIN ANALYZER
 # ==========================================
 col_l, col_r = st.columns([1, 1.2], gap="large")
 
 with col_l:
-    if st.session_state.p_tag in INTEL:
-        st.markdown(f"""<div class="intel-box"><span style="color:#58a6ff;font-weight:bold;">🔍 {st.session_state.p_tag.upper()} STRATEGY PROFILE</span><br><p style="color:#adbac7;margin-top:10px;">{INTEL[st.session_state.p_tag].get('notes','')}</p></div>""", unsafe_allow_html=True)
-
     db_players = df[df['Game'] == game_choice]['Player'].tolist() if not df.empty else []
     selected = st.selectbox("Database Search", ["Manual Entry"] + db_players)
     
@@ -143,7 +153,7 @@ with col_l:
 
     st.session_state.p_tag = st.text_input("Player Tag", value=st.session_state.p_tag)
     st.session_state.m_context = st.text_input("Match Context", value=st.session_state.m_context)
-    st.session_state.proj_maps = st.text_input("Projected Maps Pool", value=st.session_state.proj_maps, placeholder="e.g. Mirage, Ancient, Dust 2")
+    st.session_state.proj_maps = st.text_input("Projected Maps Pool", value=st.session_state.proj_maps)
     st.session_state.w_rank = st.text_input("Opponent World Rank", value=st.session_state.w_rank)
     st.session_state.l10 = st.text_area("L10 Data", value=st.session_state.l10)
 
@@ -180,10 +190,9 @@ if st.button("🚀 GENERATE ELITE GRADE"):
 if st.session_state.results:
     res = st.session_state.results
     with col_r:
-        # 🗺️ UPDATED MAP LOGIC BOX (Shows Inputted Maps)
+        # 🗺️ PROJECTED MAPS LOGIC BOX (RESTORED)
         st.markdown(f"""<div class="map-logic-box"><b style="color:#58a6ff;">🗺️ PROJECTED MAPS LOGIC</b><br>
-            • Maps Considered: <b>{st.session_state.proj_maps if st.session_state.proj_maps else 'None Entered'}</b><br>
-            • Baseline: {res['base']:.1f} | Weighted: <b>{res['proj']:.1f} Kills</b> | Multiplier: x{(st.session_state.h2h_val*st.session_state.rank_val*st.session_state.map_val*st.session_state.int_val):.2f}</div>""", unsafe_allow_html=True)
+            Baseline: {res['base']:.1f} | Weighted: <b>{res['proj']:.1f} Kills</b> | Multiplier: x{(st.session_state.h2h_val*st.session_state.rank_val*st.session_state.map_val*st.session_state.int_val):.2f}</div>""", unsafe_allow_html=True)
 
         st.markdown(f"""<div class="analyst-card" style="background: {res['grad']};"><div style="font-size:32px; font-weight:900;">{st.session_state.p_tag.upper()} {res['m_side'].upper()} {res['m_line']}</div><h1 class="analyst-grade">{res['grade']}</h1><div style="font-size:26px; font-weight:bold;">{res['units']} UNIT PLAY</div></div>""", unsafe_allow_html=True)
 
@@ -193,7 +202,6 @@ if st.session_state.results:
         m2.metric("Edge", f"{res['edge']:.1f}%")
         m3.metric("Conf", f"{res['prob']:.0f}%")
 
-        st.divider()
         if st.checkbox("Show Social Share Card"):
             arrow = "▲" if res['m_side'] == "Over" else "▼"
-            st.markdown(f"""<div class="share-container"><div style="font-size:14px;letter-spacing:3px;opacity:0.7;">{res['game'].upper()} PROP ANALYSIS</div><div class="share-player">{st.session_state.p_tag.upper()}</div><div style="color:#58a6ff;font-weight:bold;font-size:18px;margin-bottom:15px;">{st.session_state.m_context}</div><div style="border-top:1px solid #30363d;margin:15px 0;"></div><div style="display:flex;justify-content:space-around;align-items:center;"><div style="text-align:left;"><small style="opacity:0.7">THE PROP LINE</small><br><b style="font-size:40px;">{res['m_line']}</b><br><small style="opacity:0.7">KILLS</small></div><div><small style="opacity:0.7">MODEL GRADE</small><br><div class="hiro-grade">{res['grade']}</div></div></div><div style="margin:20px 0;"><div class="pill-over">{arrow} {res['m_side'].upper()}</div></div><div style="background:#1c1c1c;border:1px solid #FFD700;border-radius:15px;padding:15px;margin:20px 0;"><small style="color:#FFD700;letter-spacing:2px;">SUGGESTED PLAY</small><br><b style="font-size:28px;">{res['units']} UNITS</b></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-top:20px;border-top:1px solid #30363d;padding-top:15px;"><div style="font-size:10px;opacity:0.7;">PROJ<br><b style="font-size:16px;color:white;">{res['proj']:.1f}</b></div><div style="font-size:10px;opacity:0.7;">EDGE<br><b style="font-size:16px;color:white;">+{res['edge']:.1f}%</b></div><div style="font-size:10px;opacity:0.7;">CONF<br><b style="font-size:16px;color:white;">{res['prob']:.0f}%</b></div><div style="font-size:10px;opacity:0.7;">L10 HIT<br><b style="font-size:16px;color:white;">{res['hit']:.0f}%</b></div></div><div style="font-size:10px;margin-top:20px;letter-spacing:2px;color:#58a6ff;">ANALYSIS BY SLEEPER D. KID</div></div>""", unsafe_allow_html=True)
+            st.markdown(f"""<div class="share-container"><div style="font-size:14px;letter-spacing:3px;opacity:0.7;">{res['game'].upper()} PROP ANALYSIS</div><div class="share-player">{st.session_state.p_tag.upper()}</div><div style="color:#58a6ff;font-weight:bold;font-size:18px;margin-bottom:15px;">{st.session_state.m_context}</div><div style="border-top:1px solid #30363d;margin:15px 0;"></div><div style="display:flex;justify-content:space-around;align-items:center;"><div style="text-align:left;"><small style="opacity:0.7">THE PROP LINE</small><br><b style="font-size: 40px;">{res['m_line']}</b><br><small style="opacity:0.7">KILLS</small></div><div><small style="opacity:0.7">MODEL GRADE</small><br><div class="hiro-grade">{res['grade']}</div></div></div><div style="margin:20px 0;"><div class="pill-over">{arrow} {res['m_side'].upper()}</div></div><div style="background:#1c1c1c;border:1px solid #FFD700;border-radius:15px;padding:15px;margin:20px 0;"><small style="color:#FFD700;letter-spacing:2px;">SUGGESTED PLAY</small><br><b style="font-size: 28px;">{res['units']} UNITS</b></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-top:20px;border-top:1px solid #30363d;padding-top:15px;"><div style="font-size:10px; opacity:0.7;">PROJ<br><b style="font-size:16px; color:white;">{res['proj']:.1f}</b></div><div style="font-size:10px; opacity:0.7;">EDGE<br><b style="font-size:16px; color:white;">+{res['edge']:.1f}%</b></div><div style="font-size:10px; opacity:0.7;">CONF<br><b style="font-size:16px; color:white;">{res['prob']:.0f}%</b></div><div style="font-size:10px; opacity:0.7;">L10 HIT<br><b style="font-size:16px; color:white;">{res['hit']:.0f}%</b></div></div><div style="font-size:10px;margin-top:20px;letter-spacing:2px;color:#58a6ff;">ANALYSIS BY SLEEPER D. KID</div></div>""", unsafe_allow_html=True)
