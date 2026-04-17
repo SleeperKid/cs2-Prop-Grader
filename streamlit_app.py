@@ -50,41 +50,48 @@ st.markdown("""
         background: rgba(88, 166, 255, 0.05); border: 1px dashed #58a6ff; 
         padding: 15px; border-radius: 10px; margin-top: 15px; color: #adbac7;
     }
-    /* HIRO SHARE CARD RESTORED */
     .share-container {
         background-color: #121212; border: 3px solid #FFD700; border-radius: 20px;
         padding: 30px; width: 420px; margin: 20px auto; color: white; text-align: center;
         box-shadow: 0 0 25px rgba(255, 215, 0, 0.4); font-family: 'Helvetica', sans-serif;
     }
-    .share-player { font-size: 55px; font-weight: 900; margin: 5px 0; letter-spacing: 2px; text-transform: uppercase; }
     .hiro-grade { font-size: 100px; font-weight: 900; color: #FFD700; text-shadow: 0 0 20px rgba(255,215,0,0.7); line-height: 1; }
     .pill-over { background: #1b3a1e; border: 1px solid #2ea043; border-radius: 8px; padding: 8px 18px; display: inline-block; font-size: 24px; font-weight: 900; color: #3fb950; }
-    .pill-pass { background: #3a1b1b; border: 1px solid #a02e2e; border-radius: 8px; padding: 8px 18px; display: inline-block; font-size: 24px; font-weight: 900; color: #b93f3f; }
     .metric-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 5px; border-top: 1px solid #333; padding-top: 15px; margin-top: 15px; }
     .metric-val { font-size: 16px; font-weight: bold; color: white; display: block; }
-    .metric-label { font-size: 9px; opacity: 0.6; text-transform: uppercase; }
 </style>
 """, unsafe_allow_html=True)
 
 # ==========================================
-# 🧠 CORE INITIALIZATION
+# 🧠 CORE INITIALIZATION & GAME SWITCHER
 # ==========================================
 df = load_vault()
 INTEL = load_intel()
 
+# Persistent Sliders
 for k in ['h2h_val', 'rank_val', 'map_val', 'int_val']:
     if k not in st.session_state: st.session_state[k] = 1.0
 
-keys = ['p_tag', 'l10', 'kpr', 'm1_kpr', 'm2_kpr', 'adr', 'acs', 'm_context', 'w_rank', 'results', 'ai_advice', 'tourney_type', 'proj_maps', 'marketing_blurb']
+# General State
+keys = ['p_tag', 'l10', 'kpr', 'm1_kpr', 'm2_kpr', 'adr', 'acs', 'm_context', 'w_rank', 'results', 'ai_advice', 'tourney_type', 'proj_maps', 'proj_agents', 'marketing_blurb', 'last_game']
 for key in keys:
     if key not in st.session_state: 
         st.session_state[key] = "" if key not in ['kpr', 'm1_kpr', 'm2_kpr', 'adr', 'acs'] else 0.80
 
+st.title("🎯 Prop Grader Elite")
 game_choice = st.radio("Target Game", ["CS2", "Valorant"], horizontal=True)
+
+# --- AUTO-CLEAR MAPS ON GAME SWITCH ---
+if st.session_state.last_game != game_choice:
+    st.session_state.proj_maps = ""
+    st.session_state.proj_agents = ""
+    st.session_state.last_game = game_choice
+    st.rerun()
+
 stat_options = ["KILLS", "HEADSHOTS"] if game_choice == "CS2" else ["KILLS"]
 
 # ==========================================
-# ⚙️ SIDEBAR: AI ADVISOR (CONCISE MODE)
+# ⚙️ SIDEBAR: AI ADVISOR
 # ==========================================
 with st.sidebar:
     st.title("🛡️ Command Center")
@@ -94,11 +101,11 @@ with st.sidebar:
         api_key = st.secrets.get("GROQ_API_KEY")
         if api_key:
             client = Groq(api_key=api_key)
-            found_maps = [f"{k}: {v}" for k, v in INTEL.get("maps", {}).items() if k.lower() in st.session_state.proj_maps.lower()]
-            found_styles = [f"{k}: {v}" for k, v in INTEL.get("team_styles", {}).items() if k.lower() in st.session_state.m_context.lower()]
+            # Combine Maps and Agents for Val
+            intel_context = f"Maps: {st.session_state.proj_maps}"
+            if game_choice == "Valorant": intel_context += f" | Agents: {st.session_state.proj_agents}"
             
-            # --- CONCISE 2-SENTENCE PROMPT ---
-            prompt = f"""Expert Analyst. Context: {st.session_state.m_context}. Maps: {found_maps}. Intel: {found_styles}.
+            prompt = f"""Expert Analyst. Context: {st.session_state.m_context}. {intel_context}.
             Suggest 4 weights (0.85-1.15) for H2H, Tier, Map, Int. 
             STRICT RULE: MAX 2 sentences per decision. Brackets: [1.05]."""
             
@@ -118,7 +125,7 @@ with st.sidebar:
     st.slider("Match Intensity", 0.70, 1.10, key="int_val")
 
 # ==========================================
-# 🎯 MAIN ANALYZER
+# 🎯 MAIN ANALYZER: DEEP PROFILE
 # ==========================================
 col_l, col_r = st.columns([1, 1.2], gap="large")
 
@@ -126,17 +133,30 @@ with col_l:
     st.subheader("🕵️ Deep Profile Intelligence")
     db_players = df[df['Game'] == game_choice]['Player'].tolist() if not df.empty else []
     selected = st.selectbox("Database Search", ["Manual Entry"] + db_players)
+    
+    # --- AUTO-POPULATE LOGIC ---
     if selected != "Manual Entry":
         row = df[df['Player'] == selected].iloc[0]
         st.session_state.p_tag, st.session_state.l10 = row['Player'], str(row['L10']).replace('"', '')
         st.session_state.m_context = f"{row.get('Team', 'Team')} vs "
-        if game_choice == "CS2": st.session_state.m1_kpr, st.session_state.m2_kpr = float(row.get('M1_KPR', 0.82)), float(row.get('M2_KPR', 0.82))
-        else: st.session_state.adr = float(row.get('ADR', 140))
+        # New: Auto-populate Agents if column exists in VAL_DATA
+        if game_choice == "Valorant":
+            st.session_state.proj_agents = row.get('Agent', '')
+            st.session_state.adr = float(row.get('ADR', 140))
+        else:
+            st.session_state.m1_kpr, st.session_state.m2_kpr = float(row.get('M1_KPR', 0.82)), float(row.get('M2_KPR', 0.82))
 
     st.session_state.p_tag = st.text_input("Player Tag", value=st.session_state.p_tag)
+    
     c_m1, c_m2 = st.columns(2)
-    st.session_state.proj_maps = c_m1.text_input("Projected Maps", value=st.session_state.proj_maps)
-    st.session_state.active_stat_type = c_m2.selectbox("Stat Type", stat_options)
+    st.session_state.proj_maps = c_m1.text_input("Projected Maps Pool", value=st.session_state.proj_maps)
+    
+    # --- DYNAMIC FIELD FOR VALORANT ---
+    if game_choice == "Valorant":
+        st.session_state.proj_agents = c_m2.text_input("Projected Agents", value=st.session_state.proj_agents)
+    else:
+        st.session_state.active_stat_type = c_m2.selectbox("Stat Type", stat_options)
+    
     st.session_state.m_context = st.text_input("Context", value=st.session_state.m_context)
     st.session_state.w_rank = st.text_input("World Rank", value=st.session_state.w_rank)
     st.session_state.l10 = st.text_area("L10 Data", value=st.session_state.l10)
@@ -168,21 +188,18 @@ if st.button("🚀 GENERATE ELITE GRADE"):
     prob = (1 - norm.cdf(m_line, loc=final_proj, scale=stdev)) * 100 if m_side == "Over" else norm.cdf(m_line, loc=final_proj, scale=stdev) * 100
     edge = prob - ((abs(m_odds)/(abs(m_odds)+100))*100 if m_odds < 0 else (100/(m_odds+100))*100)
     
-    if edge >= 12: g, u, lbl, grad = "S", 2.5, "ELITE VALUE", "linear-gradient(135deg, #FFD700 0%, #8B6508 100%)"
-    elif edge >= 8: g, u, lbl, grad = "A+", 2.0, "STRONG PLAY", "linear-gradient(135deg, #00FF00 0%, #004d00 100%)"
-    elif edge >= 3: g, u, lbl, grad = "A", 1.0, "VALUE PLAY", "linear-gradient(135deg, #ADFF2F 0%, #228B22 100%)"
-    elif edge >= 0: g, u, lbl, grad = "B", 0.5, "MARGINAL", "linear-gradient(135deg, #2c3e50 0%, #000000 100%)"
-    else: g, u, lbl, grad = "X", 0.0, "PASS / TRAP", "linear-gradient(135deg, #4b0000 0%, #000000 100%)"
+    grade_data = {"S": (12, "ELITE"), "A+": (8, "STRONG"), "A": (3, "VALUE"), "B": (0, "MARGINAL")}
+    g, u, lbl, grad = ("X", 0.0, "PASS", "linear-gradient(135deg, #4b0000 0%, #000000 100%)")
+    for key, (val, name) in grade_data.items():
+        if edge >= val: g, u, lbl, grad = key, (2.5 if key=="S" else 2.0 if key=="A+" else 1.0 if key=="A" else 0.5), name, ("linear-gradient(135deg, #FFD700 0%, #8B6508 100%)" if key=="S" else "linear-gradient(135deg, #00FF00 0%, #004d00 100%)" if key=="A+" else "linear-gradient(135deg, #ADFF2F 0%, #228B22 100%)" if key=="A" else "linear-gradient(135deg, #2c3e50 0%, #000000 100%)"); break
 
-    # --- ENHANCED SOCIAL HOOK ---
     api_key = st.secrets.get("GROQ_API_KEY")
     if api_key and g != "X":
         client = Groq(api_key=api_key)
-        m_prompt = f"Meaningful betting analysis (MAX 240 chars). No emojis. Focus on the logical 'why'. Bet: {st.session_state.p_tag} {m_side} {m_line} {st.session_state.active_stat_type}. Proj: {final_proj:.1f} | Edge: {edge:.1f}%."
-        m_res = client.chat.completions.create(model="llama-3.3-70b-versatile", messages=[{"role":"user","content":m_prompt}], temperature=0.85)
-        st.session_state.marketing_blurb = m_res.choices[0].message.content
+        m_prompt = f"Meaningful analysis (MAX 240 chars). No emojis. {st.session_state.p_tag} {m_side} {m_line}. Proj: {final_proj:.1f} | Edge: {edge:.1f}%. Context: {st.session_state.m_context}."
+        st.session_state.marketing_blurb = client.chat.completions.create(model="llama-3.3-70b-versatile", messages=[{"role":"user","content":m_prompt}], temperature=0.85).choices[0].message.content
 
-    st.session_state.results = {"grade": g, "units": u, "proj": final_proj, "base": base_proj, "edge": edge, "prob": prob, "grad": grad, "label": lbl, "line": m_line, "side": m_side, "hit": (sum(1 for v in vals if (v > m_line if m_side == "Over" else v < m_line))/len(vals)*100), "stat": st.session_state.active_stat_type}
+    st.session_state.results = {"grade": g, "units": u, "proj": final_proj, "base": base_proj, "edge": edge, "prob": prob, "grad": grad, "label": lbl, "line": m_line, "side": m_side, "hit": (sum(1 for v in vals if (v > m_line if m_side == "Over" else v < m_line))/len(vals)*100), "stat": st.session_state.get('active_stat_type', 'KILLS')}
 
 # --- RESULTS DISPLAY ---
 if st.session_state.results:
@@ -207,7 +224,7 @@ if st.session_state.results:
             p_class = "pill-over" if res['grade'] != "X" else "pill-pass"
             arrow = "▲" if res['side'] == 'Over' else '▼'
             st.markdown(f"""<div class="share-container">
-                <div style="font-size:12px; letter-spacing:3px; opacity:0.6; margin-bottom:5px;">{game_choice.upper()} PROP ANALYSIS</div>
+                <div style="font-size:12px; opacity:0.6; margin-bottom:5px;">{game_choice.upper()} PROP ANALYSIS</div>
                 <div class="share-player">{st.session_state.p_tag.upper()}</div>
                 <div style="color: #58a6ff; font-weight: bold; font-size: 18px; margin-bottom: 15px;">{st.session_state.m_context}</div>
                 <div style="border-top:1px solid #333; margin:15px 0;"></div>
