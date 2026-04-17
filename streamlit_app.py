@@ -68,6 +68,7 @@ st.markdown("""
 df = load_vault()
 INTEL = load_intel()
 
+# Sliders Session State initialization (MUST come before slider widgets)
 for k in ['h2h_val', 'rank_val', 'map_val', 'int_val']:
     if k not in st.session_state: st.session_state[k] = 1.0
 
@@ -86,8 +87,6 @@ if st.session_state.last_game != game_choice:
     st.session_state.last_game = game_choice
     st.rerun()
 
-stat_options = ["KILLS", "HEADSHOTS"] if game_choice == "CS2" else ["KILLS"]
-
 # ==========================================
 # ⚙️ SIDEBAR: AI ADVISOR
 # ==========================================
@@ -99,23 +98,30 @@ with st.sidebar:
         api_key = st.secrets.get("GROQ_API_KEY")
         if api_key:
             client = Groq(api_key=api_key)
-            intel_context = f"Maps: {st.session_state.proj_maps}"
-            if game_choice == "Valorant": intel_context += f" | Agent Selection: {st.session_state.proj_agents}"
+            # Combine Maps and Agents for Intelligence Feed
+            intel_ctx = f"Maps: {st.session_state.proj_maps} | Context: {st.session_state.m_context}"
+            if game_choice == "Valorant": intel_ctx += f" | Agent: {st.session_state.proj_agents}"
             
-            prompt = f"""Expert Analyst. Context: {st.session_state.m_context}. {intel_context}.
+            prompt = f"""Expert Analyst (Temp 0.01). Context: {intel_ctx}. 
             Suggest 4 weights (0.85-1.15) for H2H, Tier, Map, Int. 
-            STRICT RULE: MAX 2 sentences per decision. Brackets: [1.05]."""
+            STRICT RULE: Exactly 2 sentences per decision. Tone: Professional/Concise.
+            Weights MUST be in brackets: [1.05]."""
             
             res = client.chat.completions.create(model="llama-3.3-70b-versatile", messages=[{"role":"user","content":prompt}], temperature=0.01)
             st.session_state.ai_advice = res.choices[0].message.content
             
+            # --- FIXED AUTO-SLIDER LOGIC ---
             weights = re.findall(r"\[(\d+(?:\.\d+)?)\]", st.session_state.ai_advice)
             if len(weights) >= 4:
-                st.session_state.h2h_val, st.session_state.rank_val, st.session_state.map_val, st.session_state.int_val = map(float, weights[:4])
-                st.rerun()
+                st.session_state.h2h_val = float(weights[0])
+                st.session_state.rank_val = float(weights[1])
+                st.session_state.map_val = float(weights[2])
+                st.session_state.int_val = float(weights[3])
+                st.rerun() # Refresh to move sliders
 
     if st.session_state.ai_advice: st.info(st.session_state.ai_advice)
     st.divider()
+    # Sliders tied directly to session_state keys
     st.slider("H2H Advantage", 0.80, 1.20, key="h2h_val")
     st.slider("Opponent Tier", 0.80, 1.20, key="rank_val")
     st.slider("Map Fit", 0.80, 1.20, key="map_val")
@@ -131,16 +137,19 @@ with col_l:
     db_players = df[df['Game'] == game_choice]['Player'].tolist() if not df.empty else []
     selected = st.selectbox("Database Search", ["Manual Entry"] + db_players)
     
-    # --- FIXED AUTO-POPULATION LOGIC ---
+    # --- ENHANCED COLUMN SCOUT FOR AUTO-POPULATION ---
     if selected != "Manual Entry":
         row = df[df['Player'] == selected].iloc[0]
-        st.session_state.p_tag = row['Player']
+        st.session_state.p_tag = str(row['Player'])
         st.session_state.l10 = str(row['L10']).replace('"', '')
         st.session_state.m_context = f"{row.get('Team', 'Team')} vs "
         
         if game_choice == "Valorant":
-            # Fuzzy match for Agent column
-            st.session_state.proj_agents = row.get('Agent', row.get('Agents', ''))
+            # Check multiple common column names for Agents
+            for col in ['Agent', 'Agents', 'Main', 'Character']:
+                if col in row:
+                    st.session_state.proj_agents = str(row[col])
+                    break
             st.session_state.adr = float(row.get('ADR', 140))
         else:
             st.session_state.m1_kpr = float(row.get('M1_KPR', 0.82))
@@ -149,15 +158,15 @@ with col_l:
     st.session_state.p_tag = st.text_input("Player Tag", value=st.session_state.p_tag)
     
     c_m1, c_m2 = st.columns(2)
-    st.session_state.proj_maps = c_m1.text_input("Projected Maps Pool", value=st.session_state.proj_maps)
+    st.session_state.proj_maps = c_m1.text_input("Projected Maps", value=st.session_state.proj_maps)
     
     if game_choice == "Valorant":
-        st.session_state.proj_agents = c_m2.text_input("Projected Agents", value=st.session_state.proj_agents)
+        st.session_state.proj_agents = c_m2.text_input("Projected Agent", value=st.session_state.proj_agents)
         st.session_state.active_stat_type = "KILLS"
     else:
-        st.session_state.active_stat_type = c_m2.selectbox("Stat Type", stat_options)
+        st.session_state.active_stat_type = c_m2.selectbox("Stat Type", ["KILLS", "HEADSHOTS"])
     
-    st.session_state.m_context = st.text_input("Context", value=st.session_state.m_context)
+    st.session_state.m_context = st.text_input("Match Context", value=st.session_state.m_context)
     st.session_state.w_rank = st.text_input("World Rank", value=st.session_state.w_rank)
     st.session_state.l10 = st.text_area("L10 Data (CSV)", value=st.session_state.l10)
 
@@ -170,8 +179,11 @@ with col_l:
 
     st.divider()
     c1, c2 = st.columns(2)
-    with c1: m_line, m_side = st.number_input("Line", value=float(35.5), min_value=0.0, step=0.5), st.selectbox("Side", ["Over", "Under"])
-    with c2: m_odds, m_scope = st.number_input("Odds", value=int(-128)), st.selectbox("Scope", ["Maps 1 & 2", "Map 1 Only", "Full Match"])
+    # Fixed explicitly typed inputs to prevent TypeErrors
+    m_line = c1.number_input("Line", value=float(35.5), min_value=0.0, step=0.5)
+    m_side = c1.selectbox("Side", ["Over", "Under"])
+    m_odds = c2.number_input("Odds", value=int(-128))
+    m_scope = c2.selectbox("Scope", ["Maps 1 & 2", "Map 1 Only", "Full Match"])
 
 if st.button("🚀 GENERATE ELITE GRADE"):
     vals = [float(x.strip()) for x in st.session_state.l10.split(",") if x.strip()]
@@ -182,7 +194,7 @@ if st.button("🚀 GENERATE ELITE GRADE"):
         elif m_scope == "Maps 1 & 2": base_proj = (st.session_state.m1_kpr * 24) + (st.session_state.m2_kpr * 24)
         else: base_proj = ((st.session_state.m1_kpr + st.session_state.m2_kpr) / 2) * 24 * 2.6
     else:
-        # VALORANT ADR LOGIC
+        # 150 ADR-to-Kill Conversion for Val
         scope_mult = {"Map 1 Only": 1.0, "Maps 1 & 2": 2.0, "Full Match": 2.6}
         base_proj = (st.session_state.adr / 150) * 26 * scope_mult[m_scope]
     
@@ -193,15 +205,21 @@ if st.button("🚀 GENERATE ELITE GRADE"):
     grade_data = {"S": (12, "ELITE"), "A+": (8, "STRONG"), "A": (3, "VALUE"), "B": (0, "MARGINAL")}
     g, u, lbl, grad = ("X", 0.0, "PASS", "linear-gradient(135deg, #4b0000 0%, #000000 100%)")
     for key, (val, name) in grade_data.items():
-        if edge >= val: g, u, lbl, grad = key, (2.5 if key=="S" else 2.0 if key=="A+" else 1.0 if key=="A" else 0.5), name, ("linear-gradient(135deg, #FFD700 0%, #8B6508 100%)" if key=="S" else "linear-gradient(135deg, #00FF00 0%, #004d00 100%)" if key=="A+" else "linear-gradient(135deg, #ADFF2F 0%, #228B22 100%)" if key=="A" else "linear-gradient(135deg, #2c3e50 0%, #000000 100%)"); break
+        if edge >= val: 
+            g = key
+            u = (2.5 if key=="S" else 2.0 if key=="A+" else 1.0 if key=="A" else 0.5)
+            lbl = name
+            grad = ("linear-gradient(135deg, #FFD700 0%, #8B6508 100%)" if key=="S" else "linear-gradient(135deg, #00FF00 0%, #004d00 100%)" if key=="A+" else "linear-gradient(135deg, #ADFF2F 0%, #228B22 100%)" if key=="A" else "linear-gradient(135deg, #2c3e50 0%, #000000 100%)")
+            break
 
+    # --- SOCIAL HOOK: HIGH TEMP FOR CREATIVITY ---
     api_key = st.secrets.get("GROQ_API_KEY")
     if api_key and g != "X":
         client = Groq(api_key=api_key)
-        m_prompt = f"Meaningful analysis (MAX 240 chars). No emojis. {st.session_state.p_tag} {m_side} {m_line}. Proj: {final_proj:.1f} | Edge: {edge:.1f}%. Context: {st.session_state.m_context}."
+        m_prompt = f"Meaningful betting logic (MAX 240 chars). No emojis. {st.session_state.p_tag} {m_side} {m_line}. Proj: {final_proj:.1f} | Edge: {edge:.1f}%. Why is this bet good?"
         st.session_state.marketing_blurb = client.chat.completions.create(model="llama-3.3-70b-versatile", messages=[{"role":"user","content":m_prompt}], temperature=0.85).choices[0].message.content
 
-    st.session_state.results = {"grade": g, "units": u, "proj": final_proj, "base": base_proj, "edge": edge, "prob": prob, "grad": grad, "label": lbl, "line": m_line, "side": m_side, "hit": (sum(1 for v in vals if (v > m_line if m_side == "Over" else v < m_line))/len(vals)*100), "stat": st.session_state.get('active_stat_type', 'KILLS')}
+    st.session_state.results = {"grade": g, "units": u, "proj": final_proj, "base": base_proj, "edge": edge, "prob": prob, "grad": grad, "label": lbl, "line": m_line, "side": m_side, "hit": (sum(1 for v in vals if (v > m_line if m_side == "Over" else v < m_line))/len(vals)*100), "stat": st.session_state.active_stat_type}
 
 # --- RESULTS DISPLAY ---
 if st.session_state.results:
