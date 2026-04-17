@@ -9,33 +9,35 @@ import re
 from streamlit_gsheets import GSheetsConnection
 
 
-@st.cache_data(ttl=10) # Set to 10 seconds for testing
+@st.cache_data(ttl=10)
 def load_vault():
+    # 1. IMMEDIATE HEARTBEAT
+    st.sidebar.info("🔍 Vault: Attempting Connection...")
+    
     conn = st.connection("gsheets", type=GSheetsConnection)
     try:
-        # Try reading without a worksheet name first to see if it hits the first tab
-        test_df = conn.read()
-        if test_df.empty:
-            st.warning("⚠️ Connection established, but the first sheet appears empty.")
-        
-        # Now try the specific tabs
+        # 2. ATTEMPT DATA PULL
         val_df = conn.read(worksheet="VAL_DATA")
         cs_df = conn.read(worksheet="CS2_DATA")
         
-        # Verification Prints
-        st.sidebar.write(f"VAL Rows: {len(val_df)}")
-        st.sidebar.write(f"CS2 Rows: {len(cs_df)}")
+        # 3. SUCCESS MARKERS
+        st.sidebar.success(f"✅ VAL Rows Found: {len(val_df)}")
+        st.sidebar.success(f"✅ CS2 Rows Found: {len(cs_df)}")
         
+        # Align Game Tags
         val_df['Game'] = 'Valorant'
         cs_df['Game'] = 'CS2'
         
-        # Merge logic
+        # Merge Schema
         for col in ['Team', 'Agents', 'ADR', 'ACS']:
             if col not in cs_df.columns: cs_df[col] = "N/A"
             
         return pd.concat([val_df, cs_df], ignore_index=True)
+        
     except Exception as e:
-        st.error(f"❌ Vault Connection Error: {e}")
+        # 4. ERROR VISIBILITY
+        st.sidebar.error(f"❌ Connection Failed")
+        st.error(f"Detailed Error: {e}") # This shows on the main page
         return pd.DataFrame()
 # ==========================================
 # 🧠 INTELLIGENCE VAULT LOADER
