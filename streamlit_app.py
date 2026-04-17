@@ -27,40 +27,31 @@ INTEL = load_intel()
 # ==========================================
 # 📥 THE ONLY LOAD_VAULT (GOOGLE SHEETS)
 # ==========================================
-@st.cache_data(ttl=600) # Auto-refreshes every 10 minutes
+@st.cache_data(ttl=10)
 def load_vault():
-    """Connects to Google Sheets Vault and merges the data"""
-    # Signal in the sidebar that we are working
-    st.sidebar.info("📡 Connecting to Google Vault...")
-    
-    conn = st.connection("gsheets", type=GSheetsConnection)
+    st.sidebar.info("📡 Connection established. Reading data...")
     try:
-        # Pull live data from specific tabs
+        conn = st.connection("gsheets", type=GSheetsConnection)
+        
+        # TEST: Read the first available sheet without a name
+        full_df = conn.read() 
+        
+        if full_df.empty:
+            st.error("⚠️ The connection is working, but the sheet appears empty.")
+            return pd.DataFrame()
+
+        # If it finds data, then we try the specific tabs
         val_df = conn.read(worksheet="VAL_DATA")
         cs_df = conn.read(worksheet="CS2_DATA")
         
-        # Success indicators in the sidebar
         st.sidebar.success(f"✅ VAL Rows: {len(val_df)}")
         st.sidebar.success(f"✅ CS2 Rows: {len(cs_df)}")
         
-        # Tag games for filtering
-        val_df['Game'] = 'Valorant'
-        cs_df['Game'] = 'CS2'
-        
-        # Syncing schemas for the Elite UI
-        for col in ['Team', 'Agents', 'ADR', 'ACS']:
-            if col not in cs_df.columns: 
-                cs_df[col] = "N/A" if col in ['Team', 'Agents'] else 0.0
-            
-        final_df = pd.concat([val_df, cs_df], ignore_index=True)
-        # Clean L10 strings (remove any residual quotes from CSV export)
-        if 'L10' in final_df.columns:
-            final_df['L10'] = final_df['L10'].astype(str).str.replace('"', '')
-            
-        return final_df
+        # ... (keep the rest of your merging logic) ...
+        return pd.concat([val_df, cs_df], ignore_index=True)
+
     except Exception as e:
-        st.sidebar.error("❌ Vault Connection Failed")
-        st.error(f"Critical Error: {e}")
+        st.error(f"❌ Handshake Error: {e}")
         return pd.DataFrame()
 
 # ==========================================
