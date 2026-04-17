@@ -29,7 +29,7 @@ def load_vault():
         st.error(f"Vault Connection Error: {e}"); return pd.DataFrame()
 
 # ==========================================
-# 🎨 DUAL-CARD CSS STYLING
+# 🎨 SOVEREIGN CSS STYLING
 # ==========================================
 st.set_page_config(page_title="Prop Grader Elite", layout="wide", page_icon="🎯")
 st.markdown("""
@@ -51,8 +51,8 @@ st.markdown("""
         padding: 30px; width: 420px; margin: 20px auto; color: white; text-align: center;
         box-shadow: 0 0 25px rgba(255, 215, 0, 0.4);
     }
-    .share-player { font-size: 55px; font-weight: 900; margin: 5px 0; letter-spacing: 2px; text-transform: uppercase; }
     .pill-over { background: #1b3a1e; border: 1px solid #2ea043; border-radius: 10px; padding: 10px 20px; display: inline-block; font-size: 24px; font-weight: 900; color: #3fb950; text-transform: uppercase; }
+    .pill-pass { background: #3a1b1b; border: 1px solid #a02e2e; border-radius: 10px; padding: 10px 20px; display: inline-block; font-size: 24px; font-weight: 900; color: #b93f3f; text-transform: uppercase; }
     .hiro-grade { font-size: 100px; font-weight: 900; color: #FFD700; text-shadow: 0 0 20px rgba(255,215,0,0.7); line-height: 1; }
     .map-logic-box { background: #1c2128; padding: 20px; border-radius: 15px; border: 1px solid #30363d; margin-top: 15px; color: #adbac7; line-height: 1.6; }
 </style>
@@ -77,52 +77,21 @@ st.title("🎯 Prop Grader Elite")
 game_choice = st.radio("Target Game", ["CS2", "Valorant"], horizontal=True)
 
 # ==========================================
-# ⚙️ SIDEBAR: AI ADVISOR (ENHANCED LOOKUP)
+# ⚙️ SIDEBAR
 # ==========================================
 with st.sidebar:
     st.title("🛡️ Command Center")
-    st.session_state.tourney_type = st.selectbox("Tournament Prestige", list(INTEL.get("tournaments", {}).keys()) or ["S-Tier"])
-
+    st.session_state.tourney_type = st.selectbox("Prestige", list(INTEL.get("tournaments", {}).keys()) or ["S-Tier"])
+    
     if st.button("CONSULT AI ADVISOR"):
         api_key = st.secrets.get("GROQ_API_KEY")
         if api_key:
             client = Groq(api_key=api_key)
-            
-            # --- INTELLIGENT LOOKUP LOGIC ---
-            # 1. Map Search
-            found_maps = []
-            for m_key, m_desc in INTEL.get("maps", {}).items():
-                if m_key.lower() in st.session_state.proj_maps.lower():
-                    found_maps.append(f"{m_key}: {m_desc}")
-            
-            # 2. Team/Style Search
-            found_styles = []
-            for t_key, t_desc in INTEL.get("team_styles", {}).items():
-                if t_key.lower() in st.session_state.m_context.lower():
-                    found_styles.append(f"{t_key}: {t_desc}")
-
-            # 3. Tournament Context
-            t_ctx = INTEL.get("tournaments", {}).get(st.session_state.tourney_type, "Standard tournament pressure.")
-            
-            prompt = f"""
-            SYSTEM ROLE: Pro Betting Analyst (Temp 0.01).
-            CONTEXT: {st.session_state.m_context} | {st.session_state.tourney_type} | Opponent Rank: {st.session_state.w_rank}.
-            PLAYER STATS: {'KPR: ' + str(st.session_state.kpr) if game_choice == 'CS2' else 'ADR/ACS Focus'}.
-
-            VAULT DATA FOUND:
-            - Map Intelligence: {found_maps if found_maps else 'Analyze Mirage and Dust 2 as balanced rifler maps if not in vault.'}
-            - Team Playstyles: {found_styles if found_styles else 'Standard Pro Meta.'}
-            - Tournament Context: {t_ctx}
-
-            TASK: Suggest 4 weights (0.85-1.15) for H2H, Tier, Map Fit, and Intensity.
-            REQUIREMENT: For 'Map Fit', explicitly reference the Map Intelligence provided above.
-            CONSTRAINT: Max 4 sentences per decision. Include weights in brackets like [1.05].
-            """
-            
+            found_maps = [f"{k}: {v}" for k, v in INTEL.get("maps", {}).items() if k.lower() in st.session_state.proj_maps.lower()]
+            found_styles = [f"{k}: {v}" for k, v in INTEL.get("team_styles", {}).items() if k.lower() in st.session_state.m_context.lower()]
+            prompt = f"Expert Mode (Temp 0.01). Context: {st.session_state.m_context} | {st.session_state.tourney_type}. Maps: {found_maps}. Styles: {found_styles}. Suggest 4 weights (0.85-1.15) for H2H, Tier, Map, Int. MAX 4 sentences each. Brackets: [1.05]."
             res = client.chat.completions.create(model="llama-3.3-70b-versatile", messages=[{"role":"user","content":prompt}], temperature=0.01)
             st.session_state.ai_advice = res.choices[0].message.content
-            
-            # --- AUTO-SLIDER ADJUST ---
             weights = re.findall(r"\[(\d+(?:\.\d+)?)\]", st.session_state.ai_advice)
             if len(weights) >= 4:
                 st.session_state.h2h_val, st.session_state.rank_val, st.session_state.map_val, st.session_state.int_val = map(float, weights[:4])
@@ -143,7 +112,6 @@ col_l, col_r = st.columns([1, 1.2], gap="large")
 with col_l:
     db_players = df[df['Game'] == game_choice]['Player'].tolist() if not df.empty else []
     selected = st.selectbox("Database Search", ["Manual Entry"] + db_players)
-    
     if selected != "Manual Entry":
         row = df[df['Player'] == selected].iloc[0]
         st.session_state.p_tag, st.session_state.l10 = row['Player'], str(row['L10']).replace('"', '')
@@ -159,9 +127,8 @@ with col_l:
 
     if game_choice == "CS2": active_base = st.number_input("Base KPR", value=st.session_state.kpr)
     else:
-        c1, c2 = st.columns(2)
-        v_adr, v_acs = c1.number_input("Base ADR", value=st.session_state.adr), c2.number_input("Base ACS", value=st.session_state.acs)
-        active_base = (v_adr / 150) + (v_acs / 300) 
+        v_adr = st.number_input("Base ADR", value=st.session_state.adr)
+        active_base = (v_adr / 150)
 
     c1, c2 = st.columns(2)
     with c1: m_line, m_side = st.number_input("Line", 35.5, step=0.5), st.selectbox("Side", ["Over", "Under"])
@@ -178,30 +145,62 @@ if st.button("🚀 GENERATE ELITE GRADE"):
     prob = (1 - norm.cdf(m_line, loc=final_proj, scale=stdev)) * 100 if m_side == "Over" else norm.cdf(m_line, loc=final_proj, scale=stdev) * 100
     edge = prob - ((abs(m_odds)/(abs(m_odds)+100))*100 if m_odds < 0 else (100/(m_odds+100))*100)
     
-    st.session_state.results = {
-        "grade": "S" if edge >= 12 else "A+" if edge >= 8 else "A" if edge >= 3 else "B", 
-        "units": 2.5 if edge >= 12 else 2.0 if edge >= 8 else 1.0 if edge >= 3 else 0.5, 
-        "proj": final_proj, "base": base_proj, "edge": edge, "prob": prob, 
-        "grad": "linear-gradient(135deg, #FFD700 0%, #8B6508 100%)" if edge >= 12 else "linear-gradient(135deg, #00FF00 0%, #004d00 100%)" if edge >= 8 else "linear-gradient(135deg, #ADFF2F 0%, #228B22 100%)" if edge >= 3 else "linear-gradient(135deg, #2c3e50 0%, #000000 100%)",
-        "m_line": m_line, "m_side": m_side, "scope": m_scope, "hit": (sum(1 for v in vals if (v > m_line if m_side == "Over" else v < m_line))/len(vals)*100), "game": game_choice
-    }
+    # ⚖️ REFINED GRADE & UNIT LOGIC
+    if edge >= 12: g, u, lbl, grad = "S", 2.5, "ELITE VALUE", "linear-gradient(135deg, #FFD700 0%, #8B6508 100%)"
+    elif edge >= 8: g, u, lbl, grad = "A+", 2.0, "STRONG PLAY", "linear-gradient(135deg, #00FF00 0%, #004d00 100%)"
+    elif edge >= 3: g, u, lbl, grad = "A", 1.0, "VALUE PLAY", "linear-gradient(135deg, #ADFF2F 0%, #228B22 100%)"
+    elif edge >= 0: g, u, lbl, grad = "B", 0.5, "MARGINAL", "linear-gradient(135deg, #2c3e50 0%, #000000 100%)"
+    else: g, u, lbl, grad = "X", 0.0, "PASS / TRAP", "linear-gradient(135deg, #4b0000 0%, #000000 100%)"
+
+    st.session_state.results = {"grade": g, "units": u, "proj": final_proj, "base": base_proj, "edge": edge, "prob": prob, "grad": grad, "label": lbl, "line": m_line, "side": m_side, "hit": (sum(1 for v in vals if (v > m_line if m_side == "Over" else v < m_line))/len(vals)*100)}
 
 # --- RESULTS DISPLAY ---
 if st.session_state.results:
     res = st.session_state.results
     with col_r:
-        # 🗺️ PROJECTED MAPS LOGIC BOX (RESTORED)
-        st.markdown(f"""<div class="map-logic-box"><b style="color:#58a6ff;">🗺️ PROJECTED MAPS LOGIC</b><br>
-            Baseline: {res['base']:.1f} | Weighted: <b>{res['proj']:.1f} Kills</b> | Multiplier: x{(st.session_state.h2h_val*st.session_state.rank_val*st.session_state.map_val*st.session_state.int_val):.2f}</div>""", unsafe_allow_html=True)
+        # 🗺️ LOGIC BOX
+        st.markdown(f"""<div class="map-logic-box"><b style="color:#58a6ff;">🗺️ PROJECTED MAPS LOGIC</b><br>Baseline: {res['base']:.1f} | Weighted: <b>{res['proj']:.1f} Kills</b></div>""", unsafe_allow_html=True)
 
-        st.markdown(f"""<div class="analyst-card" style="background: {res['grad']};"><div style="font-size:32px; font-weight:900;">{st.session_state.p_tag.upper()} {res['m_side'].upper()} {res['m_line']}</div><h1 class="analyst-grade">{res['grade']}</h1><div style="font-size:26px; font-weight:bold;">{res['units']} UNIT PLAY</div></div>""", unsafe_allow_html=True)
+        # 🃏 THE ANALYST GRADE CARD
+        st.markdown(f"""
+        <div class="analyst-card" style="background: {res['grad']};">
+            <div style="font-size: 20px; font-weight: bold; opacity: 0.8;">{res['label']}</div>
+            <div style="font-size: 32px; font-weight: 900;">{st.session_state.p_tag.upper()} {res['side'].upper()} {res['line']}</div>
+            <h1 class="analyst-grade">{res['grade']}</h1>
+            <div style="font-size: 26px; font-weight: bold;">{res['units']} UNIT PLAY</div>
+        </div>
+        """, unsafe_allow_html=True)
 
-        st.divider()
-        m1, m2, m3 = st.columns(3)
-        m1.metric("L10 Hit", f"{res['hit']:.0f}%")
-        m2.metric("Edge", f"{res['edge']:.1f}%")
-        m3.metric("Conf", f"{res['prob']:.0f}%")
+        # 📊 CONTEXTUAL METRIC GRID (ENHANCED GROUPING)
+        m1, m2, m3, m4 = st.columns(4)
+        m1.metric("Projected", f"{res['proj']:.1f}")
+        m2.metric("L10 Hit", f"{res['hit']:.0f}%")
+        m3.metric("Edge", f"{res['edge']:.1f}%", delta=f"{res['edge']:.1f}%")
+        m4.metric("Conf", f"{res['prob']:.0f}%")
+
+        st.write("**Model Confidence Meter**")
+        st.progress(res['prob'] / 100)
 
         if st.checkbox("Show Social Share Card"):
-            arrow = "▲" if res['m_side'] == "Over" else "▼"
-            st.markdown(f"""<div class="share-container"><div style="font-size:14px;letter-spacing:3px;opacity:0.7;">{res['game'].upper()} PROP ANALYSIS</div><div class="share-player">{st.session_state.p_tag.upper()}</div><div style="color:#58a6ff;font-weight:bold;font-size:18px;margin-bottom:15px;">{st.session_state.m_context}</div><div style="border-top:1px solid #30363d;margin:15px 0;"></div><div style="display:flex;justify-content:space-around;align-items:center;"><div style="text-align:left;"><small style="opacity:0.7">THE PROP LINE</small><br><b style="font-size: 40px;">{res['m_line']}</b><br><small style="opacity:0.7">KILLS</small></div><div><small style="opacity:0.7">MODEL GRADE</small><br><div class="hiro-grade">{res['grade']}</div></div></div><div style="margin:20px 0;"><div class="pill-over">{arrow} {res['m_side'].upper()}</div></div><div style="background:#1c1c1c;border:1px solid #FFD700;border-radius:15px;padding:15px;margin:20px 0;"><small style="color:#FFD700;letter-spacing:2px;">SUGGESTED PLAY</small><br><b style="font-size: 28px;">{res['units']} UNITS</b></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-top:20px;border-top:1px solid #30363d;padding-top:15px;"><div style="font-size:10px; opacity:0.7;">PROJ<br><b style="font-size:16px; color:white;">{res['proj']:.1f}</b></div><div style="font-size:10px; opacity:0.7;">EDGE<br><b style="font-size:16px; color:white;">+{res['edge']:.1f}%</b></div><div style="font-size:10px; opacity:0.7;">CONF<br><b style="font-size:16px; color:white;">{res['prob']:.0f}%</b></div><div style="font-size:10px; opacity:0.7;">L10 HIT<br><b style="font-size:16px; color:white;">{res['hit']:.0f}%</b></div></div><div style="font-size:10px;margin-top:20px;letter-spacing:2px;color:#58a6ff;">ANALYSIS BY SLEEPER D. KID</div></div>""", unsafe_allow_html=True)
+            arrow = "▲" if res['side'] == "Over" else "▼"
+            p_class = "pill-over" if res['grade'] != "X" else "pill-pass"
+            st.markdown(f"""
+            <div class="share-container">
+                <div class="share-player">{st.session_state.p_tag.upper()}</div>
+                <div style="color: #58a6ff; font-weight: bold; font-size: 18px; margin-bottom: 15px;">{st.session_state.m_context}</div>
+                <div style="display: flex; justify-content: space-around; align-items: center;">
+                    <div style="text-align: left;"><small>LINE</small><br><b style="font-size: 40px;">{res['line']}</b></div>
+                    <div><small>GRADE</small><br><div class="hiro-grade">{res['grade']}</div></div>
+                </div>
+                <div style="margin: 20px 0;"><div class="{p_class}">{arrow} {res['side'].upper() if res['grade'] != 'X' else 'PASS'}</div></div>
+                <div style="background:#1c1c1c; border:1px solid #FFD700; border-radius:15px; padding:15px; margin:20px 0;">
+                    <small style="color:#FFD700;">{res['label']}</small><br><b style="font-size: 24px;">{res['units']} UNITS</b>
+                </div>
+                <div class="metric-grid" style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; margin-top: 20px; border-top: 1px solid #30363d; padding-top: 15px;">
+                    <div style="font-size:10px;">PROJ<br><b style="font-size:16px; color:white;">{res['proj']:.1f}</b></div>
+                    <div style="font-size:10px;">EDGE<br><b style="font-size:16px; color:white;">{res['edge']:.1f}%</b></div>
+                    <div style="font-size:10px;">CONF<br><b style="font-size:16px; color:white;">{res['prob']:.0f}%</b></div>
+                    <div style="font-size:10px;">L10 HIT<br><b style="font-size:16px; color:white;">{res['hit']:.0f}%</b></div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
