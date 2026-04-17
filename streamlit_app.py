@@ -53,11 +53,8 @@ st.markdown("""
         padding: 30px; width: 400px; margin: auto; color: white; text-align: center;
         box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
     }
-    .share-player { font-size: 50px; font-weight: 900; margin: 10px 0; letter-spacing: 2px; text-transform: uppercase; }
-    .pill-over { background: #1b3a1e; border: 1px solid #2ea043; border-radius: 10px; padding: 10px 20px; display: inline-block; font-size: 24px; font-weight: 900; color: #3fb950; text-transform: uppercase; }
     .grade-box { font-size: 100px; font-weight: 900; color: #FFD700; text-shadow: 0 0 15px rgba(255,215,0,0.6); line-height: 1; }
-    .suggested-play { background: #1c1c1c; border: 1px solid #FFD700; border-radius: 15px; padding: 15px; margin: 20px 0; }
-    .metric-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; margin-top: 20px; border-top: 1px solid #30363d; padding-top: 15px; }
+    .pill-over { background: #1b3a1e; border: 1px solid #2ea043; border-radius: 10px; padding: 10px 20px; display: inline-block; font-size: 24px; font-weight: 900; color: #3fb950; text-transform: uppercase; }
     .metric-val { font-size: 16px; font-weight: bold; color: white; }
 </style>
 """, unsafe_allow_html=True)
@@ -68,21 +65,22 @@ st.markdown("""
 df = load_vault()
 INTEL = load_intel()
 
-# Sliders
-for k in ['h2h_val', 'rank_val', 'map_val', 'int_val']:
-    if k not in st.session_state: st.session_state[k] = 1.0
+# Sliders Session State (Allows AI to overwrite)
+if 'h2h_val' not in st.session_state: st.session_state.h2h_val = 1.0
+if 'rank_val' not in st.session_state: st.session_state.rank_val = 1.0
+if 'map_val' not in st.session_state: st.session_state.map_val = 1.0
+if 'int_val' not in st.session_state: st.session_state.int_val = 1.0
 
 # General State
 keys = ['p_tag', 'l10', 'kpr', 'adr', 'acs', 'm_context', 'w_rank', 'results', 'ai_advice', 'tourney_type']
 for key in keys:
     if key not in st.session_state: st.session_state[key] = "" if key not in ['kpr', 'adr', 'acs'] else 0.80
 
-# --- FIX: Move Game Choice to top level so Sidebar can see it ---
 st.title("🎯 Prop Grader Elite")
 game_choice = st.radio("Target Game", ["CS2", "Valorant"], horizontal=True)
 
 # ==========================================
-# ⚙️ SIDEBAR: AI & AUTONOMOUS SLIDERS
+# ⚙️ SIDEBAR: THE ADVISOR
 # ==========================================
 with st.sidebar:
     st.title("🛡️ Command Center")
@@ -93,19 +91,18 @@ with st.sidebar:
         if api_key:
             client = Groq(api_key=api_key)
             p_intel = INTEL.get(st.session_state.p_tag, {})
-            # Now game_choice is defined and accessible
-            stat_context = f"KPR: {st.session_state.kpr}" if game_choice == "CS2" else f"ADR: {st.session_state.adr}, ACS: {st.session_state.acs}"
+            stat_ctx = f"KPR: {st.session_state.kpr}" if game_choice == "CS2" else f"ADR: {st.session_state.adr}, ACS: {st.session_state.acs}"
             
-            prompt = f"""
-            Expert Analyst Mode. Context: {st.session_state.m_context} | {st.session_state.tourney_type} | Player: {st.session_state.p_tag}. 
-            Stats: {stat_context}. Intel: {p_intel}.
-            Task: Weights for H2H, Tier, Map, Int. 
-            Rules: MAX 4 sentences each. Include weights in brackets like [1.05].
-            """
-            completion = client.chat.completions.create(model="llama-3.3-70b-versatile", messages=[{"role":"user","content":prompt}], temperature=0.01)
-            st.session_state.ai_advice = completion.choices[0].message.content
+            prompt = f"""Expert Mode (Temp 0.01). Context: {st.session_state.m_context} | {st.session_state.tourney_type}.
+            Stats: {stat_ctx}. Vault Intel: {p_intel}.
+            Suggest 4 weights (0.85-1.15) for H2H, Tier, Map, Int. 
+            Rules: MAX 4 sentences each. Include weights in brackets: [1.05]."""
             
-            weights = re.findall(r"\[(\d\.\d+)\]", st.session_state.ai_advice)
+            res = client.chat.completions.create(model="llama-3.3-70b-versatile", messages=[{"role":"user","content":prompt}], temperature=0.01)
+            st.session_state.ai_advice = res.choices[0].message.content
+            
+            # --- AUTO-ADJUST SLIDERS ---
+            weights = re.findall(r"\[(\d+(?:\.\d+)?)\]", st.session_state.ai_advice)
             if len(weights) >= 4:
                 st.session_state.h2h_val, st.session_state.rank_val, st.session_state.map_val, st.session_state.int_val = map(float, weights[:4])
                 st.rerun()
@@ -113,15 +110,14 @@ with st.sidebar:
     if st.session_state.ai_advice: st.info(st.session_state.ai_advice)
     
     st.divider()
+    # Sliders linked to Session State
     h2h_w = st.slider("H2H Advantage", 0.80, 1.20, key="h2h_val")
     rank_w = st.slider("Opponent Tier", 0.80, 1.20, key="rank_val")
     map_w = st.slider("Map Fit", 0.80, 1.20, key="map_val")
     int_w = st.slider("Match Intensity", 0.70, 1.10, key="int_val")
 
     with st.expander("📖 SLIDER STRATEGY GUIDE"):
-        st.write("**H2H:** Boost for specific counter-strat archetypes.")
-        st.write("**Tier:** Adjust based on Tournament Tier (S-Tier = lower KPR variance).")
-        st.write("**Map:** Use intel-vault map explanations.")
+        st.write("**H2H:** Boost for favorable archetypes. **Tier:** Adjust vs Rank. **Map:** Use Vault notes. **Int:** Boost for LAN.")
 
 # ==========================================
 # 🎯 MAIN ANALYZER
@@ -130,8 +126,7 @@ col_l, col_r = st.columns([1, 1.2], gap="large")
 
 with col_l:
     if st.session_state.p_tag in INTEL:
-        p_data = INTEL[st.session_state.p_tag]
-        st.markdown(f"""<div class="intel-box"><span style="color:#58a6ff;font-weight:bold;">🔍 {st.session_state.p_tag.upper()} STRATEGY PROFILE</span><br><p style="color:#adbac7;margin-top:10px;">{p_data.get('notes','')}</p></div>""", unsafe_allow_html=True)
+        st.markdown(f"""<div class="intel-box"><span style="color:#58a6ff;font-weight:bold;">🔍 {st.session_state.p_tag.upper()} STRATEGY PROFILE</span><br><p style="color:#adbac7;margin-top:10px;">{INTEL[st.session_state.p_tag].get('notes','')}</p></div>""", unsafe_allow_html=True)
 
     db_players = df[df['Game'] == game_choice]['Player'].tolist() if not df.empty else []
     selected = st.selectbox("Database Search", ["Manual Entry"] + db_players)
@@ -160,7 +155,8 @@ with col_l:
     with c1: m_line, m_side = st.number_input("Line", 35.5, step=0.5), st.selectbox("Side", ["Over", "Under"])
     with c2: m_odds, m_scope = st.number_input("Odds", -115), st.selectbox("Scope", ["Maps 1 & 2", "Map 1 Only", "Full Match"])
 
-if st.button("🚀 RUN ELITE ANALYSIS"):
+# --- BUTTON RENAMED ---
+if st.button("🚀 GENERATE ELITE GRADE"):
     vals = [float(x.strip()) for x in st.session_state.l10.split(",") if x.strip()]
     stdev = max(np.std(vals, ddof=1) if len(vals) > 1 else 2.5, 2.5)
     game_mult = 26 if game_choice == "Valorant" else 24
@@ -170,16 +166,15 @@ if st.button("🚀 RUN ELITE ANALYSIS"):
     final_proj = base_proj * st.session_state.h2h_val * st.session_state.rank_val * st.session_state.map_val * st.session_state.int_val
     prob = (1 - norm.cdf(m_line, loc=final_proj, scale=stdev)) * 100 if m_side == "Over" else norm.cdf(m_line, loc=final_proj, scale=stdev) * 100
     edge = prob - ((abs(m_odds)/(abs(m_odds)+100))*100 if m_odds < 0 else (100/(m_odds+100))*100)
-    hit_rate = (sum(1 for v in vals if (v > m_line if m_side == "Over" else v < m_line))/len(vals)*100)
-
+    
     st.session_state.results = {
         "grade": "S" if edge >= 12 else "A+" if edge >= 8 else "A" if edge >= 3 else "B", 
         "units": 2.5 if edge >= 12 else 2.0 if edge >= 8 else 1.0 if edge >= 3 else 0.5, 
         "proj": final_proj, "base": base_proj, "edge": edge, "prob": prob, 
-        "m_line": m_line, "m_side": m_side, "scope": m_scope, "hit": hit_rate, "game": game_choice
+        "m_line": m_line, "m_side": m_side, "scope": m_scope, "hit": (sum(1 for v in vals if (v > m_line if m_side == "Over" else v < m_line))/len(vals)*100), "game": game_choice
     }
 
-# --- RESULTS DISPLAY ---
+# --- RESULTS DISPLAY (STABILIZED) ---
 if st.session_state.results:
     res = st.session_state.results
     with col_r:
@@ -189,36 +184,25 @@ if st.session_state.results:
             • Multiplier: x{(st.session_state.h2h_val*st.session_state.rank_val*st.session_state.map_val*st.session_state.int_val):.2f}</div>""", unsafe_allow_html=True)
 
         st.divider()
-        if st.checkbox("Show Social Share Card"):
-            arrow = "▲" if res['m_side'] == "Over" else "▼"
-            st.markdown(f"""
-            <div class="share-container">
-                <div style="font-size: 14px; letter-spacing: 3px; opacity: 0.7;">{res['game'].upper()} PROP ANALYSIS</div>
-                <div class="share-player">{st.session_state.p_tag.upper()}</div>
-                <div style="color: #58a6ff; font-weight: bold; font-size: 18px; margin-bottom: 15px;">{st.session_state.m_context}</div>
-                <div style="border-top: 1px solid #30363d; margin: 15px 0;"></div>
-                <div style="display: flex; justify-content: space-around; align-items: center;">
-                    <div style="text-align: left;">
-                        <small style="opacity:0.7">THE PROP LINE</small><br>
-                        <b style="font-size: 40px;">{res['m_line']}</b><br>
-                        <small style="opacity:0.7">KILLS</small>
-                    </div>
-                    <div>
-                        <small style="opacity:0.7">MODEL GRADE</small><br>
-                        <div class="grade-box">{res['grade']}</div>
-                    </div>
-                </div>
-                <div style="margin: 20px 0;"><div class="pill-over">{arrow} {res['m_side'].upper()}</div></div>
-                <div class="suggested-play">
-                    <small style="color: #FFD700; letter-spacing: 2px;">SUGGESTED PLAY</small><br>
-                    <b style="font-size: 28px;">{res['units']} UNITS</b>
-                </div>
-                <div class="metric-grid">
-                    <div style="font-size: 10px; opacity: 0.7;">PROJ<br><b class="metric-val">{res['proj']:.1f}</b></div>
-                    <div style="font-size: 10px; opacity: 0.7;">EDGE<br><b class="metric-val">+{res['edge']:.1f}%</b></div>
-                    <div style="font-size: 10px; opacity: 0.7;">CONF<br><b class="metric-val">{res['prob']:.0f}%</b></div>
-                    <div style="font-size: 10px; opacity: 0.7;">L10 HIT<br><b class="metric-val">{res['hit']:.0f}%</b></div>
-                </div>
-                <div style="font-size: 10px; margin-top: 20px; letter-spacing: 2px; color: #58a6ff;">ANALYSIS BY SLEEPER D. KID</div>
+        arrow = "▲" if res['m_side'] == "Over" else "▼"
+        st.markdown(f"""
+        <div class="share-container">
+            <div style="font-size: 14px; letter-spacing: 3px; opacity: 0.7;">{res['game'].upper()} PROP ANALYSIS</div>
+            <div class="share-player">{st.session_state.p_tag.upper()}</div>
+            <div style="color: #58a6ff; font-weight: bold; font-size: 18px; margin-bottom: 15px;">{st.session_state.m_context}</div>
+            <div style="border-top: 1px solid #30363d; margin: 15px 0;"></div>
+            <div style="display: flex; justify-content: space-around; align-items: center;">
+                <div style="text-align: left;"><small style="opacity:0.7">THE PROP LINE</small><br><b style="font-size: 40px;">{res['m_line']}</b><br><small style="opacity:0.7">KILLS</small></div>
+                <div><small style="opacity:0.7">MODEL GRADE</small><br><div class="grade-box">{res['grade']}</div></div>
             </div>
-            """, unsafe_allow_html=True)
+            <div style="margin: 20px 0;"><div class="pill-over">{arrow} {res['m_side'].upper()}</div></div>
+            <div class="suggested-play"><small style="color: #FFD700; letter-spacing: 2px;">SUGGESTED PLAY</small><br><b style="font-size: 28px;">{res['units']} UNITS</b></div>
+            <div class="metric-grid" style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; margin-top: 20px; border-top: 1px solid #30363d; padding-top: 15px;">
+                <div style="font-size: 10px; opacity: 0.7;">PROJ<br><b class="metric-val">{res['proj']:.1f}</b></div>
+                <div style="font-size: 10px; opacity: 0.7;">EDGE<br><b class="metric-val">+{res['edge']:.1f}%</b></div>
+                <div style="font-size: 10px; opacity: 0.7;">CONF<br><b class="metric-val">{res['prob']:.0f}%</b></div>
+                <div style="font-size: 10px; opacity: 0.7;">L10 HIT<br><b class="metric-val">{res['hit']:.0f}%</b></div>
+            </div>
+            <div style="font-size: 10px; margin-top: 20px; letter-spacing: 2px; color: #58a6ff;">ANALYSIS BY SLEEPER D. KID</div>
+        </div>
+        """, unsafe_allow_html=True)
