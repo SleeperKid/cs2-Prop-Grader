@@ -64,11 +64,9 @@ st.markdown("""
 df = load_vault()
 INTEL = load_intel()
 
-# Handle Slider Persistence
 for k in ['h2h_val', 'rank_val', 'map_val', 'int_val']:
     if k not in st.session_state: st.session_state[k] = 1.0
 
-# Initialize Inputs & Clear Outdated Results
 if 'results' not in st.session_state or not isinstance(st.session_state.results, dict):
     st.session_state.results = None
 
@@ -81,7 +79,7 @@ st.title("🎯 Prop Grader Elite")
 game_choice = st.radio("Target Game", ["CS2", "Valorant"], horizontal=True)
 
 # ==========================================
-# ⚙️ SIDEBAR: AI ADVISOR & SLIDERS
+# ⚙️ SIDEBAR: AI ADVISOR (ARCHETYPE FOCUS)
 # ==========================================
 with st.sidebar:
     st.title("🛡️ Command Center")
@@ -91,11 +89,28 @@ with st.sidebar:
         api_key = st.secrets.get("GROQ_API_KEY")
         if api_key:
             client = Groq(api_key=api_key)
+            
+            # --- ARCHETYPE LOOKUP ---
             found_maps = [f"{k}: {v}" for k, v in INTEL.get("maps", {}).items() if k.lower() in st.session_state.proj_maps.lower()]
             found_styles = [f"{k}: {v}" for k, v in INTEL.get("team_styles", {}).items() if k.lower() in st.session_state.m_context.lower()]
-            prompt = f"Expert Analyst (Temp 0.01). Context: {st.session_state.m_context}. Maps: {found_maps}. Suggest 4 weights (0.85-1.15) for H2H, Tier, Map, Int. MAX 4 sentences each. Brackets: [1.05]."
+            archetypes = INTEL.get("strat_archetypes", {})
+
+            prompt = f"""
+            SYSTEM ROLE: Pro Betting Analyst (Temp 0.01). 
+            STRICT RULE: DO NOT hallucinate match history or H2H scores. 
+
+            CONTEXT: {st.session_state.m_context} | {st.session_state.tourney_type}.
+            MAPS: {found_maps if found_maps else 'Analyze Mirage and Dust 2 as balanced rifler maps if not in vault.'}
+            VAULT STYLES: {found_styles}
+            STRATEGY ARCHETYPES: {archetypes}
+
+            TASK: Suggest 4 weights (0.85-1.15) for H2H, Tier, Map, Int. 
+            H2H LOGIC: Base 'H2H Advantage' purely on how the Player's team Archetype interacts with the Opponent's Archetype (e.g. Tactical vs Force-Buy).
+            MAX 4 sentences per weight. Include weights in brackets like [1.05].
+            """
             res = client.chat.completions.create(model="llama-3.3-70b-versatile", messages=[{"role":"user","content":prompt}], temperature=0.01)
             st.session_state.ai_advice = res.choices[0].message.content
+            
             weights = re.findall(r"\[(\d+(?:\.\d+)?)\]", st.session_state.ai_advice)
             if len(weights) >= 4:
                 st.session_state.h2h_val, st.session_state.rank_val, st.session_state.map_val, st.session_state.int_val = map(float, weights[:4])
@@ -126,15 +141,20 @@ with col_l:
     st.session_state.p_tag = st.text_input("Player Tag", value=st.session_state.p_tag)
     st.session_state.m_context = st.text_input("Match Context", value=st.session_state.m_context)
     st.session_state.proj_maps = st.text_input("Projected Maps", value=st.session_state.proj_maps)
-    st.session_state.w_rank = st.text_input("World Rank", value=st.session_state.w_rank)
+    st.session_state.w_rank = st.text_input("Opponent World Rank", value=st.session_state.w_rank)
     st.session_state.l10 = st.text_area("L10 Data", value=st.session_state.l10)
 
+    # Line Input Refined (Unlocked min_value)
     if game_choice == "CS2": active_base = st.number_input("Base KPR", value=st.session_state.kpr)
     else: active_base = (st.number_input("Base ADR", value=st.session_state.adr) / 150)
 
     c1, c2 = st.columns(2)
-    with c1: m_line, m_side = st.number_input("Line", 35.5, step=0.5), st.selectbox("Side", ["Over", "Under"])
-    with c2: m_odds, m_scope = st.number_input("Odds", -115), st.selectbox("Scope", ["Maps 1 & 2", "Map 1 Only", "Full Match"])
+    with c1: 
+        # FIXED: Removed implicit 35.5 floor by explicitly setting min_value=0.0
+        m_line = st.number_input("Line (App/Bookie Line)", value=35.5, min_value=0.0, step=0.5)
+        m_side = st.selectbox("Side", ["Over", "Under"])
+    with c2: 
+        m_odds, m_scope = st.number_input("Odds", -115), st.selectbox("Scope", ["Maps 1 & 2", "Map 1 Only", "Full Match"])
 
 if st.button("🚀 GENERATE ELITE GRADE"):
     vals = [float(x.strip()) for x in st.session_state.l10.split(",") if x.strip()]
@@ -147,7 +167,6 @@ if st.button("🚀 GENERATE ELITE GRADE"):
     prob = (1 - norm.cdf(m_line, loc=final_proj, scale=stdev)) * 100 if m_side == "Over" else norm.cdf(m_line, loc=final_proj, scale=stdev) * 100
     edge = prob - ((abs(m_odds)/(abs(m_odds)+100))*100 if m_odds < 0 else (100/(m_odds+100))*100)
     
-    # ⚖️ REFINED GRADE & "UNDER" SUGGESTION LOGIC
     if edge >= 12: g, u, lbl, grad = "S", 2.5, "ELITE VALUE", "linear-gradient(135deg, #FFD700 0%, #8B6508 100%)"
     elif edge >= 8: g, u, lbl, grad = "A+", 2.0, "STRONG PLAY", "linear-gradient(135deg, #00FF00 0%, #004d00 100%)"
     elif edge >= 3: g, u, lbl, grad = "A", 1.0, "VALUE PLAY", "linear-gradient(135deg, #ADFF2F 0%, #228B22 100%)"
@@ -160,33 +179,25 @@ if st.button("🚀 GENERATE ELITE GRADE"):
 if st.session_state.results:
     res = st.session_state.results
     with col_r:
-        # 🗺️ LOGIC BOX
         st.markdown(f"""<div class="map-logic-box"><b style="color:#58a6ff;">🗺️ PROJECTED MAPS LOGIC</b><br>Baseline: {res['base']:.1f} | Weighted: <b>{res['proj']:.1f} Kills</b></div>""", unsafe_allow_html=True)
-
-        # 🃏 THE ANALYST GRADE CARD
-        st.markdown(f"""
-        <div class="analyst-card" style="background: {res['grad']};">
+        st.markdown(f"""<div class="analyst-card" style="background: {res['grad']};">
             <div style="font-size: 20px; font-weight: bold; opacity: 0.8;">{res['label']}</div>
             <div style="font-size: 32px; font-weight: 900;">{st.session_state.p_tag.upper()} {res['side'].upper()} {res['line']}</div>
             <h1 class="analyst-grade">{res['grade']}</h1>
             <div style="font-size: 26px; font-weight: bold;">{res['units']} UNIT PLAY</div>
-        </div>
-        """, unsafe_allow_html=True)
+        </div>""", unsafe_allow_html=True)
 
-        # 📊 ENHANCED GROUPING: PROJ & CONFIDENCE
         m1, m2, m3, m4 = st.columns(4)
         m1.metric("Projected", f"{res['proj']:.1f}")
         m2.metric("L10 Hit", f"{res['hit']:.0f}%")
         m3.metric("Edge", f"{res['edge']:.1f}%")
         m4.metric("Conf", f"{res['prob']:.0f}%")
 
-        st.write("**Model Confidence Meter**")
         st.progress(res['prob'] / 100)
 
         if st.checkbox("Show Social Share Card"):
             p_class = "pill-over" if res['grade'] != "X" else "pill-pass"
-            st.markdown(f"""
-            <div class="share-container">
+            st.markdown(f"""<div class="share-container">
                 <div class="share-player">{st.session_state.p_tag.upper()}</div>
                 <div style="color:#58a6ff; font-weight:bold; margin-bottom:15px;">{st.session_state.m_context}</div>
                 <div style="display:flex; justify-content:space-around; align-items:center;">
@@ -197,11 +208,4 @@ if st.session_state.results:
                 <div style="background:#1c1c1c; border:1px solid #FFD700; border-radius:15px; padding:15px; margin:20px 0;">
                     <small style="color:#FFD700;">{res['label']}</small><br><b style="font-size:24px;">{res['units']} UNITS</b>
                 </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:10px; border-top:1px solid #30363d; padding-top:15px;">
-                    <div style="font-size:10px;">PROJ<br><b>{res['proj']:.1f}</b></div>
-                    <div style="font-size:10px;">EDGE<br><b>{res['edge']:.1f}%</b></div>
-                    <div style="font-size:10px;">CONF<br><b>{res['prob']:.0f}%</b></div>
-                    <div style="font-size:10px;">L10 HIT<br><b>{res['hit']:.0f}%</b></div>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+            </div>""", unsafe_allow_html=True)
