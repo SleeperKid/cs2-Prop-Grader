@@ -10,4 +10,4 @@ daily_stats.csv
 .streamlit/secrets.toml
 __pycache__/
 .venv/
-prop-grader-vault.json
+service_account.json
