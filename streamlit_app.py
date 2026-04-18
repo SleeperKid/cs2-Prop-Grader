@@ -29,51 +29,51 @@ def load_intel_vault():
         with open("intel_vault.json", "r") as f: return json.load(f)
     return {}
 
-# --- 🧠 AI ADVISOR (NUMERICAL & AUTO-SYNC) ---
+# --- 🧠 AI ENGINE (PERSISTENT & DEEP) ---
 def run_ai_advisor():
     full_intel = load_intel_vault()
     game_key = "CS2" if st.session_state.game_choice == "CS2" else "VAL"
     intel = full_intel.get(game_key, {})
     
-    # Read live from state
     context = st.session_state.m_context.lower()
     maps = st.session_state.p_maps.lower()
     rank = st.session_state.opp_rank_input
     
     analysis = {"w_h2h": 1.0, "w_tier": 1.0, "w_map": 1.0, "notes": []}
 
-    # Rank Logic
+    # Intel Logic
     if rank <= 10: 
         analysis["w_tier"] = 0.93
-        analysis["notes"].append(f"Rank {rank}: Elite defense. Expect lower individual fragging.")
+        analysis["notes"].append(f"Rank {rank}: Defensive wall detected.")
     
-    # Style Scan
     for team, style in intel.get("team_styles", {}).items():
         if team.lower() in context:
-            analysis["notes"].append(f"Intel: {style}")
-            if "Aggressors" in style: analysis["w_h2h"] = 1.10
+            analysis["notes"].append(f"Intel Found: {style}")
 
-    # Auto-adjust state
+    # Physical Slider Sync
     st.session_state.w_h2h = analysis["w_h2h"]
     st.session_state.w_tier = analysis["w_tier"]
     st.session_state.ai_report = analysis
     st.rerun()
 
 def sync_player_data():
+    """CALLBACK: Only runs when search selection changes."""
     if st.session_state.player_selector != "Manual Entry":
         row = df[df['Player'] == st.session_state.player_selector].iloc[0]
         base = safe_float(row.get('KPR'), 0.82)
+        
+        # Shield manual edits by only overwriting on fresh selection
         st.session_state.p_tag = str(row.get('Player', ''))
         st.session_state.l10 = str(row.get('L10', '')).replace('"', '')
         st.session_state.m_context = f"{row.get('Team', 'Free Agent')} vs "
         st.session_state.m1_kpr_input = base
         st.session_state.m2_kpr_input = base
 
-# --- 🎨 UI SETUP ---
+# --- 🎨 UI & STYLING ---
 st.set_page_config(page_title="Prop Grader Elite", layout="wide")
 df = load_vault()
 
-# Initialize Persistence
+# Initial State
 if 'initialized' not in st.session_state:
     st.session_state.update({
         'p_tag': "", 'm_context': "", 'p_maps': "", 'opp_rank_input': 15, 
@@ -84,17 +84,14 @@ if 'initialized' not in st.session_state:
 
 st.markdown("""
 <style>
-    /* 🚀 ENHANCED GRADE BUTTON */
     div.stButton > button:first-child {
         background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-        color: #000 !important; font-weight: 900 !important; font-size: 22px !important;
-        border: none; border-radius: 15px; height: 65px;
-        box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
-        margin-top: 20px;
+        color: black !important; font-weight: 900 !important; font-size: 22px !important;
+        border: none; border-radius: 15px; height: 65px; margin-top: 20px;
     }
-    div.stButton > button:first-child:hover {
-        box-shadow: 0 0 25px rgba(255, 215, 0, 0.7);
-        transform: scale(1.02);
+    .metric-grid-box {
+        background: #1a1c23; border: 1px solid #333; border-radius: 12px;
+        padding: 15px; text-align: center;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -102,7 +99,7 @@ st.markdown("""
 # --- 🛰️ SIDEBAR ---
 with st.sidebar:
     st.title("⚖️ Scrutiny Layer")
-    if st.button("🤖 CONSULT AI ADVISOR", use_container_width=True): run_ai_advisor()
+    if st.button("🤖 CONSULT AI ADVISOR"): run_ai_advisor()
     st.slider("H2H Advantage", 0.8, 1.2, key="w_h2h", step=0.05)
     st.slider("Opponent Tier", 0.8, 1.2, key="w_tier", step=0.05)
     st.slider("Map Fit", 0.8, 1.2, key="w_map", step=0.05)
@@ -118,7 +115,7 @@ with col_l:
     st.subheader("🕵️ Deep Profile Intelligence")
     st.selectbox("Search Database", ["Manual Entry"] + players, key="player_selector", on_change=sync_player_data)
     
-    # PERSISTENT INPUTS
+    # Widgets hard-coded to keys for manual persistence
     st.text_input("Player Tag", key="p_tag")
     st.text_input("Match Context", key="m_context")
     st.text_input("Projected Maps", key="p_maps")
@@ -132,24 +129,21 @@ with col_l:
         st.number_input("Base ADR", key="adr", value=140.0)
     
     st.text_area("L10 Data", key="l10")
-    
-    # Prop Line Selection
-    cl1, cl2 = st.columns(2)
-    m_line = cl1.number_input("Prop Line", value=31.5, step=0.5)
-    m_side = cl2.selectbox("Side", ["Over", "Under"])
+    l1, l2 = st.columns(2)
+    m_line = l1.number_input("Prop Line", value=31.5, step=0.5)
+    m_side = l2.selectbox("Side", ["Over", "Under"])
 
     if st.button("🚀 EXECUTE GRADING ENGINE", use_container_width=True):
         try:
             v_list = [float(x.strip()) for x in st.session_state.l10.split(",") if x.strip()]
             weights = st.session_state.w_h2h * st.session_state.w_tier * st.session_state.w_map * st.session_state.w_int
             
-            # ELITE CALIBRATION MATH
+            # ELITE CALIBRATION
             avg_kpr = (st.session_state.m1_kpr_input + st.session_state.m2_kpr_input) / 2
             proj = avg_kpr * 48 * weights
             edge_pct = ((proj - m_line) / m_line * 100) if m_side == "Over" else ((m_line - proj) / m_line * 100)
             hit_rate = (sum(1 for v in v_list if (v > m_line if m_side == "Over" else v < m_line)) / len(v_list)) * 100
             
-            # THE S-GRADE SHIELD: High bar for entry
             grade = "B"
             if edge_pct > 22 and hit_rate >= 70: grade = "S"
             elif edge_pct > 15 and hit_rate >= 60: grade = "A+"
@@ -159,30 +153,34 @@ with col_l:
                 "grade": grade, "proj": proj, "edge": edge_pct, "line": m_line, 
                 "side": m_side, "hit": hit_rate, "units": 2.5 if grade == "S" else 1.0
             }
-        except: st.error("L10 formatting error. Ensure numbers are comma-separated.")
+        except: st.error("L10 Format Error.")
 
-# --- 💎 THE VISUAL SUITE ---
+# --- 📊 ANALYTICS & SOCIAL CARD ---
 with col_r:
     if st.session_state.results:
         res = st.session_state.results
         
-        # 🟢 INTERNAL DECISION BOARD
+        # 1. GRADE PLATE
         st.markdown(f"""
-        <div style="background:#1a1c23; border: 1px solid #333; border-radius: 15px; padding: 25px; text-align:center; margin-bottom:20px;">
-            <div style="color:#888; font-size:12px; font-weight:bold; letter-spacing:1px;">INTERNAL MODEL DECISION</div>
-            <div style="font-size: 110px; font-weight: 900; color: #FFD700; text-shadow: 0 0 20px rgba(255,215,0,0.4); line-height:1;">{res['grade']}</div>
-            <div style="color:{'#00FF00' if res['side'] == 'Over' else '#FF0000'}; font-weight:bold; font-size:24px; margin-top:10px;">{res['side'].upper()} {res['line']}</div>
+        <div style="background:#1a1c23; border:1px solid #333; border-radius:15px; padding:25px; text-align:center; margin-bottom:20px;">
+            <div style="color:#888; font-size:12px; font-weight:bold;">MODEL DECISION</div>
+            <div style="font-size: 110px; font-weight: 900; color: #FFD700; line-height:1;">{res['grade']}</div>
+            <div style="color:{'#00FF00' if res['side'] == 'Over' else '#FF0000'}; font-weight:bold; font-size:24px;">{res['side'].upper()} {res['line']}</div>
         </div>
         """, unsafe_allow_html=True)
         
-        m1, m2, m3 = st.columns(3)
-        m1.metric("Projection", f"{res['proj']:.1f}")
-        m2.metric("Edge", f"+{res['edge']:.1f}%")
-        m3.metric("L10 Hit", f"{res['hit']:.0f}%")
-        
+        # 2. COLOR-CODED ANALYTICS GRID
+        edge_color = "#00FF00" if res['edge'] > 15 else "#FFD700" if res['edge'] > 5 else "#FF0000"
+        hit_color = "#00FF00" if res['hit'] >= 60 else "#FFD700" if res['hit'] >= 40 else "#FF0000"
+
+        g1, g2, g3 = st.columns(3)
+        with g1: st.markdown(f"""<div class="metric-grid-box"><div style="color:#666; font-size:10px;">PROJECTION</div><div style="font-size:22px; font-weight:900;">{res['proj']:.1f}</div></div>""", unsafe_allow_html=True)
+        with g2: st.markdown(f"""<div class="metric-grid-box"><div style="color:#666; font-size:10px;">EDGE %</div><div style="font-size:22px; font-weight:900; color:{edge_color};">+{res['edge']:.1f}%</div></div>""", unsafe_allow_html=True)
+        with g3: st.markdown(f"""<div class="metric-grid-box"><div style="color:#666; font-size:10px;">L10 HIT</div><div style="font-size:22px; font-weight:900; color:{hit_color};">{res['hit']:.0f}%</div></div>""", unsafe_allow_html=True)
+
         st.divider()
-        
-        # 🟢 THE SOCIAL MEDIA SHARE CARD (CSS BLEED FIXED)
+
+        # 3. SOCIAL CARD (STRICTLY MARKDOWN)
         if st.checkbox("💎 Generate Social Media Share Card"):
             arrow = "▲" if res['side'] == "Over" else "▼"
             st.markdown(f"""
@@ -204,16 +202,15 @@ with col_r:
                 </div>
 
                 <div style="background:rgba(255,215,0,0.1); border:1px solid #FFD700; border-radius:15px; padding:15px; margin-bottom:25px;">
-                    <div style="color:#FFD700; font-size:12px; font-weight:bold; letter-spacing:1px;">SUGGESTED PLAY</div>
+                    <div style="color:#FFD700; font-size:12px; font-weight:bold;">SUGGESTED PLAY</div>
                     <div style="font-size:36px; font-weight:900;">{res['units']} UNITS</div>
                 </div>
 
                 <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; border-top:1px solid #333; padding-top:20px;">
                     <div><div style="font-size:10px; color:#666; font-weight:bold;">PROJ {"KILLS" if st.session_state.game_choice == "CS2" else "HS"}</div><div style="font-size:22px; font-weight:900;">{res['proj']:.1f}</div></div>
-                    <div><div style="font-size:10px; color:#666; font-weight:bold;">MODEL EDGE</div><div style="font-size:22px; font-weight:900;">+{res['edge']:.1f}%</div></div>
-                    <div><div style="font-size:10px; color:#666; font-weight:bold;">L10 HIT</div><div style="font-size:22px; font-weight:900;">{res['hit']:.0f}%</div></div>
+                    <div><div style="font-size:10px; color:#666; font-weight:bold;">MODEL EDGE</div><div style="font-size:22px; font-weight:900; color:{edge_color};">+{res['edge']:.1f}%</div></div>
+                    <div><div style="font-size:10px; color:#666; font-weight:bold;">L10 HIT</div><div style="font-size:22px; font-weight:900; color:{hit_color};">{res['hit']:.0f}%</div></div>
                 </div>
-                
                 <div style="color: #4A90E2; letter-spacing: 4px; font-size: 11px; margin-top: 30px; font-weight: bold;">ANALYSIS BY SLEEPER D. KID</div>
             </div>
             """, unsafe_allow_html=True)
