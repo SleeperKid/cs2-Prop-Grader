@@ -29,62 +29,61 @@ def load_intel_vault():
         with open("intel_vault.json", "r") as f: return json.load(f)
     return {}
 
-# --- 🧠 UPDATED GROQ AI ADVISOR ---
+# --- 🧠 GROQ AI ADVISOR (V106: NUMERICAL REASONING) ---
 def run_ai_advisor():
-    """Uses the updated Llama 3.3 model to scout matchups."""
+    """Uses Llama 3.3 to analyze vault data and output explicit slider values."""
     client = Groq(api_key=st.secrets["GROQ_API_KEY"])
     intel = load_intel_vault()
     
-    # Context pulling from sticky state
     context = st.session_state.m_context
     maps = st.session_state.p_maps
     game = st.session_state.game_choice
     is_hs = st.session_state.get('prop_type_select') == "Headshot Kills"
     
-    # System Prompt with specific 2026 Meta instructions
     sys_prompt = f"""
-    You are 'Sleeper D. Kid', an elite {game} betting analyst. 
+    You are 'Sleeper D. Kid', an elite betting scout. 
     Analyze the Match Context and Maps against the Intel Vault provided.
     
-    FORMULA LOGIC:
-    - Proj = (Avg KPR) * 48 * (Weights)
-    - H2H Slider (0.8-1.2): Matchup style/skill gap.
-    - Tier Slider (0.8-1.2): S-Tier Finals (0.92) vs Chaos qualifiers (1.15).
-    - Map Slider (0.8-1.2): Horizontal 'Aim Maps' vs Vertical 'Utility Maps'.
+    OUTPUT REQUIREMENTS:
+    1. Suggest H2H, Tier, and Map sliders (0.80 to 1.20).
+    2. Provide a 'report' that EXPLICITLY mentions each value and a brief 'why'.
     
-    DATA: {json.dumps(intel.get(game, {}))}
+    EXAMPLE REPORT: "H2H (1.10): Spirit aggressive style vs Vitality. Tier (0.92): Grand Final discipline. Map (1.05): Dust 2 favors pure aim."
+    
+    INTEL: {json.dumps(intel.get(game, {}))}
     
     RETURN JSON ONLY:
-    {{ "h2h": float, "tier": float, "map": float, "report": "Short scouting note" }}
+    {{ "h2h": float, "tier": float, "map": float, "report": "Scouting note with values" }}
     """
     
     try:
-        # 🟢 UPDATED MODEL NAME FOR 2026
         completion = client.chat.completions.create(
-            model="llama-3.3-70b-versatile", 
+            model="llama-3.3-70b-versatile",
             messages=[
                 {"role": "system", "content": sys_prompt},
-                {"role": "user", "content": f"Context: {context} | Maps: {maps} | Prop: {'Headshot' if is_hs else 'Kills'}"}
+                {"role": "user", "content": f"Match: {context} | Map: {maps} | Mode: {game} | HS: {is_hs}"}
             ],
             response_format={"type": "json_object"}
         )
         
         res = json.loads(completion.choices[0].message.content)
         
-        # Hard-Sync to State
+        # 🟢 PUSH TO SIDEBAR SLIDERS
         st.session_state.w_h2h = res.get("h2h", 1.0)
         st.session_state.w_tier = res.get("tier", 1.0)
         st.session_state.w_map = res.get("map", 1.0)
-        st.session_state.ai_note = res.get("report", "Analysis complete.")
+        st.session_state.ai_note = res.get("report", "Scouting complete.")
         st.rerun()
     except Exception as e:
-        st.error(f"Groq API Error: {e}")
+        st.error(f"Groq Advisor Offline: {e}")
 
 def sync_player_data():
-    """Triggered only on search—preserves subsequent manual edits."""
+    """Shielded Callback: Only overwrites context on a FRESH selection."""
     if st.session_state.player_selector != "Manual Entry":
         row = df[df['Player'] == st.session_state.player_selector].iloc[0]
         base = safe_float(row.get('KPR'), 0.82)
+        
+        # 🟢 Persistence Shield: Store values into session state keys
         st.session_state.p_tag = str(row.get('Player', ''))
         st.session_state.l10 = str(row.get('L10', '')).replace('"', '')
         st.session_state.m_context = f"{row.get('Team', 'FA')} vs "
@@ -96,6 +95,7 @@ def sync_player_data():
 st.set_page_config(page_title="Prop Grader Elite", layout="wide")
 df = load_vault()
 
+# 🛡️ THE PERSISTENCE INITIALIZATION
 if 'initialized' not in st.session_state:
     st.session_state.update({
         'p_tag': "", 'm_context': "", 'p_maps': "", 'opp_rank_input': 15, 'l10': "", 
@@ -107,10 +107,10 @@ if 'initialized' not in st.session_state:
 # --- 🛰️ SIDEBAR ---
 with st.sidebar:
     st.title("⚖️ Scrutiny Layer")
-    if st.button("🤖 CONSULT GROQ AI", use_container_width=True): run_ai_advisor()
+    if st.button("🤖 CONSULT GROQ SCOUT", use_container_width=True): run_ai_advisor()
     
     if st.session_state.ai_note:
-        st.info(st.session_state.ai_note)
+        st.success(st.session_state.ai_note)
     
     st.divider()
     st.slider("H2H Advantage", 0.8, 1.2, key="w_h2h", step=0.05)
@@ -118,15 +118,16 @@ with st.sidebar:
     st.slider("Map Fit", 0.8, 1.2, key="w_map", step=0.05)
     st.slider("Pressure/Form", 0.8, 1.2, key="w_int", step=0.05)
 
-# --- 🕵️ MAIN OPS ---
+# --- 🕵️ MAIN OPERATIONS ---
 col_l, col_r = st.columns([1, 1.2], gap="large")
 
 with col_l:
     st.radio("Game", ["CS2", "Valorant"], key="game_choice", horizontal=True)
     st.selectbox("Search Database", ["Manual Entry"] + (df[df['Game'] == st.session_state.game_choice]['Player'].tolist() if not df.empty else []), key="player_selector", on_change=sync_player_data)
     
+    # 🟢 WIDGETS ANCHORED TO KEYS (No value= parameter)
     st.text_input("Player Tag", key="p_tag")
-    st.text_input("Match Context", key="m_context")
+    st.text_input("Match Context", key="m_context") 
     st.text_input("Projected Maps", key="p_maps")
     st.number_input("Opponent Rank", key="opp_rank_input")
     
@@ -140,7 +141,7 @@ with col_l:
         st.number_input("Base ADR", key="adr_input", value=140.0)
         st.selectbox("Role", ["Duelist", "Support"], key="val_role_select")
     
-    st.text_area("L10 Data (CSV)", key="l10")
+    st.text_area("L10 Data", key="l10")
     line = st.number_input("Prop Line", value=28.5, step=0.5)
     side = st.selectbox("Side", ["Over", "Under"], key="side_select")
 
@@ -151,24 +152,23 @@ with col_l:
             
             if st.session_state.game_choice == "CS2":
                 proj = ((st.session_state.m1_kpr_input + st.session_state.m2_kpr_input) / 2) * 48 * weights
-                if st.session_state.prop_type_select == "Headshot Kills":
+                if st.session_state.get('prop_type_select') == "Headshot Kills":
                     proj = proj * (st.session_state.hs_pct_input / 100)
             else:
                 proj = (st.session_state.adr_input / 140) * 42 * weights * (1.15 if st.session_state.val_role_select == "Duelist" else 0.95)
             
             edge = ((proj - line) / line * 100) if side == "Over" else ((line - proj) / line * 100)
             hit = (sum(1 for v in v_list if (v > line if side == "Over" else v < line)) / len(v_list)) * 100
-            
             grade = "S" if edge > 22 and hit >= 70 else "A+" if edge > 15 and hit >= 60 else "A"
             st.session_state.results = {"grade": grade, "proj": proj, "edge": edge, "line": line, "side": side, "hit": hit, "units": 2.5 if grade == "S" else 1.0}
-        except: st.error("L10 Data format error.")
+        except: st.error("L10 Calculation Error.")
 
 # --- 💎 OUTPUT ---
 with col_r:
     if st.session_state.results:
         res = st.session_state.results
         
-        # Internal Dashboard Plate
+        # Internal Dashboard
         st.markdown(f"""
         <div style="background:#1a1c23; border:1px solid #333; border-radius:15px; padding:25px; text-align:center; margin-bottom:20px;">
             <div style="font-size: 110px; font-weight: 900; color: #FFD700; line-height:1;">{res['grade']}</div>
@@ -176,15 +176,13 @@ with col_r:
         </div>
         """, unsafe_allow_html=True)
         
-        g1, g2, g3 = st.columns(3)
-        g1.metric("Projection", f"{res['proj']:.1f}")
-        g2.metric("Edge", f"+{res['edge']:.1f}%")
-        g3.metric("L10 Hit", f"{res['hit']:.0f}%")
+        st.columns(3)[0].metric("Projection", f"{res['proj']:.1f}")
+        st.columns(3)[1].metric("Edge", f"+{res['edge']:.1f}%")
+        st.columns(3)[2].metric("L10 Hit", f"{res['hit']:.0f}%")
         
         st.divider()
         if st.checkbox("💎 Generate Social Media Share Card"):
             arrow = "▲" if res['side'] == "Over" else "▼"
-            # 🛡️ THE CSS SHIELD: NO PYTHON INDENTATION INSIDE MULTILINE STRINGS
             st.markdown(f"""
 <div style="background-color:#121212; border:2px solid #FFD700; border-radius:20px; padding:35px; width:450px; margin:auto; color:white; text-align:center; font-family:sans-serif;">
 <div style="font-size:48px; font-weight:900; margin:0; line-height:1;">{st.session_state.p_tag.upper()}</div>
