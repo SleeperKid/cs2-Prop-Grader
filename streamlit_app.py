@@ -6,7 +6,7 @@ import os
 from groq import Groq 
 from streamlit_gsheets import GSheetsConnection
 
-# --- ⚙️ CORE UTILITIES ---
+# --- ⚙️ UTILITIES & DATA ---
 def safe_float(val, default=0.0):
     try:
         if pd.isna(val) or val == "N/A" or val == "": return default
@@ -36,9 +36,8 @@ def run_ai_advisor():
     context, maps, game = st.session_state.m_context, st.session_state.p_maps, st.session_state.game_choice
     
     sys_prompt = f"""
-    You are 'Sleeper D. Kid' AI. Recommend sliders (0.85-1.15) for H2H, Tier, and Map.
-    OUTPUT: Provide the numbers and a brief logic for each. 
-    NOTE: In the current 2026 meta, S-Tier matches have higher utility usage, lowering KPR.
+    You are 'Sleeper D. Kid' AI Scout. Suggest sliders (0.85-1.15) for H2H, Tier, and Map.
+    STRICT: S-Tier matches (Rank < 10) require lower Tier weights (0.90-0.95) due to utility discipline.
     VAULT: {json.dumps(intel.get(game, {}))}
     RETURN JSON: {{ "h2h": float, "tier": float, "map": float, "report": "str" }}
     """
@@ -56,7 +55,6 @@ def run_ai_advisor():
     except Exception as e: st.error(f"Advisor Error: {e}")
 
 def sync_player_data():
-    """🟢 STATE-SANCTUARY: Only overwrites on NEW player selection."""
     if st.session_state.player_selector != "Manual Entry":
         if st.session_state.player_selector != st.session_state.get('last_player_locked'):
             row = df[df['Player'] == st.session_state.player_selector].iloc[0]
@@ -95,7 +93,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- 🕵️ MAIN OPERATIONS ---
+# --- 🕵️ MAIN OPS ---
 col_l, col_r = st.columns([1, 1.2], gap="large")
 
 with col_l:
@@ -123,41 +121,36 @@ with col_l:
 
     if st.button("🚀 EXECUTE GRADE", use_container_width=True):
         try:
-            # 🟢 STEP 1: CALCULATE L10 MEAN
             v_list = [float(x.strip()) for x in st.session_state.l10.split(",") if x.strip()]
             l10_avg = sum(v_list) / len(v_list)
             
-            # 🟢 STEP 2: DYNAMIC WEIGHTING
-            # Cap the weight product to prevent "runaway" projections
+            # 📐 QUANT LOCK MATH: Regressed Projection
             raw_weights = st.session_state.w_h2h * st.session_state.w_tier * st.session_state.w_map * st.session_state.w_int
-            capped_weights = min(1.35, max(0.65, raw_weights))
+            capped_weights = min(1.30, max(0.70, raw_weights))
             
-            # 🟢 STEP 3: GAME-SPECIFIC REGRESSION
-            if st.session_state.game_choice == "CS2":
-                # Anchor to L10 Average, then nudge by the delta of KPR weights
-                base_proj = l10_avg * capped_weights
-                if st.session_state.get('prop_type_select') == "Headshot Kills":
-                    proj = base_proj * (st.session_state.hs_pct_input / 100)
-                else:
-                    proj = base_proj
-            else:
-                # Valorant: ADR weight applied to L10 Average Kills
-                role_mod = 1.12 if st.session_state.val_role_select == "Duelist" else 0.92
-                proj = l10_avg * capped_weights * role_mod
+            proj = l10_avg * capped_weights
+            if st.session_state.game_choice == "CS2" and st.session_state.get('prop_type_select') == "Headshot Kills":
+                proj *= (st.session_state.hs_pct_input / 100)
+            elif st.session_state.game_choice == "Valorant":
+                proj *= (1.12 if st.session_state.val_role_select == "Duelist" else 0.92)
             
-            # 🟢 STEP 4: PROFITABILITY METRICS
-            edge = ((proj - line) / line * 100) if side == "Over" else ((line - proj) / line * 100)
+            # 🟢 SYMMETRIC EDGE CALCULATION
+            # Edge is how far projection is from the line, regardless of direction
+            raw_edge = ((proj - line) / line * 100) if side == "Over" else ((line - proj) / line * 100)
             hit = (sum(1 for v in v_list if (v > line if side == "Over" else v < line)) / len(v_list)) * 100
             
-            # THE SHARP'S MATRIX
+            # 🟢 THE SYMMETRIC SHARP'S MATRIX
+            # We use absolute edge to ensure "Under" plays get graded correctly
+            abs_edge = abs(raw_edge)
             grade = "B"
-            if edge > 18 and hit >= 70: grade = "S"
-            elif edge > 22: grade = "A+"
-            elif hit >= 80 and edge > 5: grade = "A+"
-            elif edge > 10 and hit >= 50: grade = "A"
+            if raw_edge > 18 and hit >= 70: grade = "S" # Only 'S' on positive model edge
+            elif raw_edge < -10: grade = "VOID" # Alert: Model strongly disagrees with your Side
+            elif abs_edge > 22: grade = "A+"
+            elif hit >= 80 and abs_edge > 5: grade = "A+"
+            elif abs_edge > 10 and hit >= 50: grade = "A"
             
-            conf = min(99, max(40, (80 + (edge / 1.5) if hit > 65 else 70 + (edge / 2))))
-            st.session_state.results = {"grade": grade, "proj": proj, "edge": edge, "line": line, "side": side, "hit": hit, "conf": conf, "units": 2.5 if grade == "S" else 1.0}
+            conf = min(99, max(40, (80 + (abs_edge / 1.5) if hit > 60 else 70 + (abs_edge / 2))))
+            st.session_state.results = {"grade": grade, "proj": proj, "edge": raw_edge, "line": line, "side": side, "hit": hit, "conf": conf, "units": 2.5 if grade == "S" else 1.0}
         except: st.error("L10 Calculation Error.")
 
 # --- 💎 OUTPUT ---
@@ -181,13 +174,12 @@ with col_r:
         
         g1, g2, g3, g4 = st.columns(4)
         g1.markdown(f"""<div class="metric-card"><div class="stat-lbl">PROJ</div><div class="stat-val">{res['proj']:.1f}</div></div>""", unsafe_allow_html=True)
-        g2.markdown(f"""<div class="metric-card"><div class="stat-lbl">EDGE %</div><div class="stat-val" style="color:#FFD700;">+{res['edge']:.1f}%</div></div>""", unsafe_allow_html=True)
+        g2.markdown(f"""<div class="metric-card"><div class="stat-lbl">EDGE %</div><div class="stat-val" style="color:#FFD700;">{res['edge']:+.1f}%</div></div>""", unsafe_allow_html=True)
         g3.markdown(f"""<div class="metric-card"><div class="stat-lbl">HIT %</div><div class="stat-val" style="color:#00FF00;">{res['hit']:.0f}%</div></div>""", unsafe_allow_html=True)
         g4.markdown(f"""<div class="metric-card"><div class="stat-lbl">CONF</div><div class="stat-val">{res['conf']:.0f}%</div></div>""", unsafe_allow_html=True)
 
         if st.checkbox("💎 Generate Social Media Share Card"):
             arrow = "▲" if res['side'] == "Over" else "▼"
-            # 🛡️ THE CSS SHIELD (STRICT HTML)
             st.markdown(f"""
 <div style="background-color:#121212; border:2px solid #FFD700; border-radius:20px; padding:35px; width:450px; margin:auto; color:white; text-align:center; font-family:sans-serif;">
 <div style="font-size:48px; font-weight:900; margin:0; line-height:1;">{st.session_state.p_tag.upper()}</div>
@@ -208,7 +200,7 @@ with col_r:
 </div>
 <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; border-top:1px solid #333; padding-top:20px;">
 <div><div style="font-size:10px; color:#666; font-weight:bold;">PROJ {"KILLS" if st.session_state.game_choice == "CS2" else "HS"}</div><div style="font-size:22px; font-weight:900;">{res['proj']:.1f}</div></div>
-<div><div style="font-size:10px; color:#666; font-weight:bold;">MODEL EDGE</div><div style="font-size:22px; font-weight:900;">+{res['edge']:.1f}%</div></div>
+<div><div style="font-size:10px; color:#666; font-weight:bold;">MODEL EDGE</div><div style="font-size:22px; font-weight:900;">{res['edge']:+.1f}%</div></div>
 <div><div style="font-size:10px; color:#666; font-weight:bold;">L10 HIT</div><div style="font-size:22px; font-weight:900;">{res['hit']:.0f}%</div></div>
 </div>
 <div style="color: #4A90E2; letter-spacing: 4px; font-size: 11px; margin-top: 30px; font-weight: bold;">ANALYSIS BY SLEEPER D. KID</div>
