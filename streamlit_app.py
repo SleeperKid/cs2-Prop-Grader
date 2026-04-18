@@ -113,58 +113,78 @@ with st.sidebar:
     map_veto = st.slider("Map Pool Depth", 0.95, 1.05, 1.0)
 
 # ==========================================
-# 🕵️ VAULT PROFILE ANALYZER
+# 🕵️ VAULT PROFILE ANALYZER (V139 FIXED)
 # ==========================================
 col_l, col_r = st.columns([1, 1.2], gap="large")
+df = load_vault()
 
 with col_l:
     st.subheader("📊 Deep Profile Intel")
     active_players = df[df['Game'] == game_choice]['Player'].tolist() if not df.empty else []
+    
+    # 1. THE TRIGGER: Selection Dropdown
     selected = st.selectbox("Search Vault", ["Manual Entry"] + active_players)
     
-    p_tag, l10_raw = "Player", ""
-    kpr_baseline = 0.82 if game_choice == "CS2" else 135.0 # ADR default for Val
+    # Initialize default local variables
+    p_tag_val = ""
+    m_context_val = ""
+    l10_val = ""
+    kpr_baseline = 0.82 if game_choice == "CS2" else 135.0
     
+    # 2. THE PUSH: Extract data if player is selected
     if selected != "Manual Entry":
         row = df[df['Player'] == selected].iloc[0]
-        p_tag, l10_raw = str(row['Player']), str(row['L10'])
+        p_tag_val = str(row['Player'])
+        # Auto-populates "Team vs " for the context
+        m_context_val = f"{row.get('Team', 'Team')} vs "
+        l10_val = str(row['L10'])
         kpr_baseline = safe_float(row.get('KPR' if game_choice == "CS2" else 'ADR'), kpr_baseline)
 
-    p_tag = st.text_input("Player Tag", value=p_tag)
+    # 3. THE UI: Force values into the inputs
+    # We use the extracted _val variables as the 'value' parameter
+    p_tag = st.text_input("Player Tag", value=p_tag_val, help="Auto-populated from Vault")
+    m_context = st.text_input("Match Context", value=m_context_val, placeholder="e.g. MIBR vs G2")
+    
     base_stat = st.number_input("Base KPR" if game_choice == "CS2" else "Base ADR", value=float(kpr_baseline))
-    l10_data = st.text_area("L10 Match History (Comma Separated)", value=l10_raw)
+    l10_data = st.text_area("L10 Match History (Comma Separated)", value=l10_val)
     
     m_line = st.number_input("Line", value=35.5, step=0.5)
     m_side = st.selectbox("Side", ["Over", "Under"])
     m_odds = st.number_input("Odds", value=-120)
 
-if st.button("🚀 GENERATE V138 ELITE GRADE"):
+if st.button("🚀 GENERATE V139 ELITE GRADE"):
     l10_list = parse_l10(l10_data)
-    stdev = max(np.std(l10_list, ddof=1) if len(l10_list) > 1 else 3.5, 3.5)
+    # Variance check
+    st_val = np.std(l10_list, ddof=1) if len(l10_list) > 1 else 3.5
+    stdev = max(st_val, 3.5)
     
-    # 1. Base Scaling (MR12 24-round standard)
+    # Base Projection Scaling
     if game_choice == "CS2":
         base_proj = base_stat * 24 * 2.0
     else:
-        base_proj = (base_stat / 150) * 26 * 2.0 # Normalized Val ADR to Kills
+        # Valorant ADR to Kill conversion for MR12
+        base_proj = (base_stat / 150) * 26 * 2.0 
     
-    # 2. V138 Momentum Logic (5-Game Window)
+    # Streak Logic (5-Game Window)
     streak_bonus = 1.0
     streak_hits = 0
     if len(l10_list) >= 5:
+        # Last 5 are the start of the list
         streak_hits = sum(1 for x in l10_list[:5] if x > m_line)
         if streak_hits >= 4: streak_bonus = 1.05
         elif streak_hits <= 1: streak_bonus = 0.95
     
-    # 3. Comprehensive Weights
+    # Final Weighted Projection
     final_proj = base_proj * h2h_val * lan_boost * econ_adj * map_veto * streak_bonus
     
-    # 4. Probability Engine
+    # Probabilities & Edges
     prob = (1 - norm.cdf(m_line, loc=final_proj, scale=stdev)) * 100 if m_side == "Over" else norm.cdf(m_line, loc=final_proj, scale=stdev) * 100
     implied = (abs(m_odds)/(abs(m_odds)+100))*100 if m_odds < 0 else (100/(m_odds+100))*100
     edge = prob - implied
     
     st.session_state.results = {
+        "player": p_tag,
+        "context": m_context,
         "grade": "S" if edge >= 12 else "A+" if edge >= 8 else "A" if edge >= 3 else "B",
         "units": 2.5 if edge >= 12 else 2.0 if edge >= 8 else 1.0,
         "proj": final_proj, "prob": prob, "edge": edge, "hits": streak_hits,
@@ -172,12 +192,14 @@ if st.button("🚀 GENERATE V138 ELITE GRADE"):
     }
 
 # ==========================================
-# 📊 RESULTS DISPLAY
+# 📊 RESULTS DISPLAY (V139)
 # ==========================================
 if st.session_state.results:
     res = st.session_state.results
     with col_r:
         st.markdown(f"""<div class="analyst-card" style="background: {res['color']};">
+            <p style="font-size: 18px; opacity: 0.8; margin-bottom: 0;">{res['context']}</p>
+            <h2 style="margin-top: 0;">{res['player']}</h2>
             <h1 class="analyst-grade">{res['grade']}</h1>
             <div style="font-size: 26px; font-weight: bold;">{res['units']} UNIT PLAY</div>
         </div>""", unsafe_allow_html=True)
@@ -188,6 +210,4 @@ if st.session_state.results:
         
         st.write(f"**Win Probability:** {res['prob']:.1f}%")
         if res['hits'] >= 4:
-            st.success(f"🔥 STREAK ACTIVE: Player cleared line in {res['hits']}/5 recent matches.")
-        elif res['hits'] <= 1 and len(parse_l10(l10_data)) >= 5:
-            st.error(f"❄️ SLUMP ACTIVE: Player cleared line in {res['hits']}/5 recent matches.")
+            st.success(f"🔥 STREAK: {res['player']} cleared the line in {res['hits']}/5 recent matches.")
