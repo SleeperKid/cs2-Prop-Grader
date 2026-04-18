@@ -1,70 +1,105 @@
 {
   "CS2": {
-    "tournaments": {
-      "S-Tier (Elite)": "Maximum pressure. Save-heavy meta. Lower variance for stars. Round counts 24+.",
-      "A-Tier (International)": "High skill. Aggressive CT limit-testing. Ideal for 'Over' props on entry fraggers.",
-      "Regional/Season Games": "The 'Grind' Meta. Wide skill gaps. Top seeds often farm stats. High 'Over' potential.",
-      "Qualifiers & Grassroots": "Chaos meta. High variance, aim-duel focus. Poor consistency (CV)."
+    "tier_1_foundation": {
+      "tournaments": {
+        "S-Tier (Elite)": "Maximum pressure. Save-heavy meta. Lower variance for stars. Round counts 24+.",
+        "A-Tier (International)": "High skill. Aggressive CT limit-testing. Ideal for 'Over' props on entry fraggers.",
+        "Regional/Season Games": "The 'Grind' Meta. Wide skill gaps. Top seeds often farm stats. High 'Over' potential.",
+        "Qualifiers & Grassroots": "Chaos meta. High variance, aim-duel focus. Poor consistency (CV)."
+      },
+      "maps": {
+        "Mirage": "High-exec map. Clean horizontal sightlines favor consistent HS% for riflers.",
+        "Nuke": "High verticality. Complex crosshair placement makes HS% more volatile.",
+        "Ancient": "Fast-paced, high-clutter. Mid-range duels favor spray-downs.",
+        "Anubis": "2026 Active Duty. Wide lanes, aim-heavy. High HS volume.",
+        "Inferno": "Cramped mid-rounds. High utility usage lowers pure aim duels.",
+        "Overpass": "Diverse elevations. Favors AWPers for Kills; riflers struggle with HS consistency at extreme ranges.",
+        "Dust 2": "The 'Aim Map.' Long, flat lanes favor pure mechanical skill.",
+        "Splinter": "Released April 2026. High verticality and narrow lanes. Lower HS% during learning phase."
+      },
+      "strat_archetypes": {
+        "Economic Disciplinarians": "High save frequency (2v4/3v5). Reduces total match duels.",
+        "Force-Buy Aggressors": "Constant 2nd-round forcing. Creates high-attrition, messy rounds. Inflates Kills.",
+        "Tactical Executioners": "Relies on set utility and late-round executes (<10s). Limits hero duels."
+      }
     },
-    "maps": {
-      "Mirage": "High-exec map. Clean horizontal sightlines favor consistent HS% for riflers. predictable angles.",
-      "Nuke": "High verticality. Complex crosshair placement makes HS% more volatile. Favor 'Under' for HS props.",
-      "Ancient": "Fast-paced, high-clutter. Mid-range duels favor spray-downs. HS volume follows high KPR on T-side.",
-      "Anubis": "2026 Active Duty. Wide lanes, aim-heavy. Predictable head-level angles in 'A' main. High HS volume.",
-      "Inferno": "Cramped mid-rounds. High utility usage lowers pure aim duels. HS% can be high but total volume is lower.",
-      "Dust 2": "The 'Aim Map.' Long, flat lanes favor pure mechanical skill. Highest HS% potential for elite riflers.",
-      "Overpass": "Diverse elevations. Favors AWPers for Kills; riflers struggle with HS consistency at extreme ranges.",
-      "Vertigo": "Close-quarters. High volume of 'spam' kills through wood; significantly lowers pure HS%.",
-      "Splinter": "Released April 2026. High verticality and narrow lanes. Early data suggests lower HS% as players learn heights.",
-      "Train": "Retired from Active Duty Jan 2026. High verticality and long lanes; AWPer dominant for kills."
-    },
-    "strat_archetypes": {
-      "Economic Disciplinarians": "High save frequency (2v4/3v5). Reduces total match duels. Favor 'Under' props.",
-      "Force-Buy Aggressors": "Constant 2nd-round forcing. Creates high-attrition, messy rounds. Inflates Kills.",
-      "Tactical Executioners": "Relies on set utility and late-round executes (<10s). Limits hero duels.",
-      "Star-Power Adaptive": "Looser defaults that rely on individual multi-kills and stars winning 1v1s."
-    },
-    "team_styles": {
+    "tier_2_refined_styles": {
       "Vitality": "Archetype: Tactical Executioners. Systematic dominance using ropz lurking and ZywOo gravity.",
       "Falcons": "Archetype: Star-Power Adaptive. High-aggression system built around NiKo and m0NESY opening picks.",
-      "Spirit": "Archetype: Force-Buy Aggressors. The 'Donk System.' Constant aim-duels and early-round contact.",
-      "NAVI": "Archetype: Tactical Executioners. Slowest pacing in pro CS. Extremely disciplined utility usage.",
-      "FaZe": "Archetype: Star-Power Adaptive. High reliance on individual veteran multi-kills.",
-      "MOUZ": "Archetype: Tactical Executioners. High-speed coordination and trade-fragging efficiency."
+      "Spirit": "Archetype: Force-Buy Aggressors. The 'Donk System.' Constant aim-duels.",
+      "NAVI": "Archetype: Tactical Executioners. Slowest pacing in pro CS. Extremely disciplined."
+    },
+    "tier_3_recon_overrides": {
+      "player_gravity": {
+        "Phantom": {"Kylar": "Star", "KEi": "Star", "mynio": "Support/IGL"},
+        "regain": {"fuzenko": "Star", "Zucar": "Star", "sasha": "Support"},
+        "1WIN": {"lattykk": "Star", "oz1k": "Star", "Qikert": "IGL/Support"},
+        "CYBERSHOKE": {"glowiing": "Star", "alpha": "Star", "Alkaren": "Support"},
+        "ESC Gaming": {"olimp": "Star", "Reiko": "Star", "Bajmi": "Support"},
+        "Nuclear TigeRES": {"m1QUSE": "Star","senka": "Star","z1k4": "Rifler","flouzer": "Support","ayuki": "Support"},
+        "EC BANGA": {
+        "mikeyss": "Star",
+        "sniegs": "Star",
+        "zenqjuu": "Rifler",
+        "ayriks": "Support",
+        "imyungandy": "Support"
+        },
+        "RUSTEC": {
+        "supra": "Star",
+        "Brilliance": "Star",
+        "anttzz": "Rifler",
+        "youka": "Support",
+        "jakekeS": "Support"
+        }
+      },
+      "h2h_scripts": {
+        "regain_vs_akimbo": "High Win-Script for regain; fuzenko farms Akimbo's mid-round aggression.",
+        "phantom_vs_favbet": "Survival Script. Phantom (#75) rank advantage suggests controlled map pacing.",
+        "cybershoke_vs_1win": "Volatility Script. Historical 5-3 lead for CYBERSHOKE creates back-and-forth brawl."
+      },
+      "match_pacing": {
+        "Nodwin_Clutch_Series": "Chaos Meta. High attrition elimination matches with inconsistent utility usage."
+      }
     }
   },
   "VAL": {
-    "tournaments": {
-      "S-Tier (Champions/Masters)": "Maximum utility discipline. Series often go to Map 3. Stars play for life; lower KPR but high Impact Rating. 24+ round average.",
-      "A-Tier (International Leagues)": "The 'Meta-Forge.' Highly structured executes. High 'Over' potential for entry duels as teams fight for regional seeding.",
-      "B-Tier (Challengers/VCL)": "The 'Hungry' Meta. High-aggression, high-variance. Teams favor aim-duels over set executes. Volatile stats.",
-      "Qualifiers & Game Changers": "Chaos meta. Unpredictable agent comps. High aim-check frequency; ideal for 'Under' props on inconsistent supports."
+    "tier_1_foundation": {
+      "tournaments": {
+        "S-Tier (Champions/Masters)": "Maximum utility discipline. Series often go to Map 3.",
+        "A-Tier (International Leagues)": "The 'Meta-Forge.' Highly structured executes. High 'Over' potential.",
+        "B-Tier (Challengers/VCL)": "The 'Hungry' Meta. High-aggression, high-variance."
+      },
+      "maps": {
+        "Ascent": "Tactical standard. Mid-control is king. High headshot consistency.",
+        "Lotus": "Triple-site complexity. Fast rotations favor high-mobility duelists.",
+        "Abyss": "High verticality. Vertical crosshair placement is erratic; lowers pure HS%.",
+        "Sanctum": "Released April 2026. Corridors and water audio cues. Lower consistency during learning."
+      },
+      "strat_archetypes": {
+        "Utility Executioners": "Set-heavy style. Combo-util limits hero duels. Favor 'Under' for individual stars.",
+        "Contact Aggressors": "Fast-paced, aim-heavy. Teams preserve util for post-plant.",
+        "Agent-Carry Focus": "Built entirely around one star (Jett/Neon/Iso) getting fed space."
+      }
     },
-    "maps": {
-      "Ascent": "Tactical standard. Mid-control is king. High headshot consistency for riflers. predictable lane duels.",
-      "Lotus": "Triple-site complexity. Fast rotations favor high-mobility duelists. Multi-kill potential high on 'A' and 'C' mounds.",
-      "Sunset": "Mid-brawl dominant. Close-quarters duels in 'B' market favor high-speed trading and utility-assisted kills.",
-      "Abyss": "High verticality and falling hazards. Vertical crosshair placement is erratic; lowers pure HS% but increases utility kills.",
-      "Haven": "Rotation-heavy. Constant 3-site pressure creates isolated 1v1s. Predictable retake angles favor consistent entry stats.",
-      "Icebox": "Long-range horizontal duels. Favors mechanical aim and 'Over' props for elite Jett/Chamber players.",
-      "Bind": "Teleporter-driven variance. High utility-dump frequency in 'U-Hall' and 'Hookah' lowers pure gun-duel volume.",
-      "Sanctum": "Released April 2026. Shifting corridors and water-based audio cues. Early data suggests lower consistency as players learn timings.",
-      "Split": "Cramped 'Heaven' duels. High 'spam' through wood/walls; lowers pure HS% stats significantly.",
-      "Breeze": "Extreme range duels. Riflers struggle with HS consistency; elite snipers (aspas/zekken) dominate total kill volume."
+    "tier_2_refined_styles": {
+      "Sentinels": "Archetype: Utility Executioners. Heavy reliance on coordinated utility.",
+      "Leviatán": "Archetype: Agent-Carry Focus. System built to create space for aspas.",
+      "LOUD": "Archetype: Mid-Round Adaptives. Known for creative agent comps.",
+      "Gen.G": "Archetype: Mid-Round Adaptives. High-speed coordination and elite trading."
     },
-    "strat_archetypes": {
-      "Utility Executioners": "Set-heavy style. Relies on smoke-timing and combo-util. Limits hero duels. Favor 'Under' for individual stars.",
-      "Contact Aggressors": "Fast-paced, aim-heavy. Teams walk into contact to preserve util for the post-plant. Inflates total kill volume.",
-      "Mid-Round Adaptives": "Slow map control focus. Teams wait for an opening and execute late (<15s). High pressure for clutch players.",
-      "Agent-Carry Focus": "Built entirely around one star (Jett/Neon/Iso) getting fed space. High 'Over' potential for the primary carry."
-    },
-    "team_styles": {
-      "Sentinels": "Archetype: Utility Executioners. Heavy reliance on coordinated utility and TenZ/zekken trade-fragging.",
-      "MIBR": "Archetype: Contact Aggressors. Brazilian 'Aggro' style focus. Fast entries and high-speed site hits.",
-      "Leviatán": "Archetype: Agent-Carry Focus. System built to create space for aspas. High variance for supporting cast.",
-      "LOUD": "Archetype: Mid-Round Adaptives. Known for creative agent comps and unconventional rotation timings.",
-      "Fnatic": "Archetype: Utility Executioners. Extremely disciplined, European-style coordination and crosshair placement.",
-      "Gen.G": "Archetype: Mid-Round Adaptives. High-speed coordination and elite trading efficiency from the Pacific region."
+    "tier_3_recon_overrides": {
+      "player_gravity": {
+        "Leviatán": {"aspas": "Superstar/Carry", "mazino": "Star", "kiNgg": "Support/IGL"},
+        "Gen.G": {"t3xture": "Star", "Ash": "Star/Entry", "Foxy9": "Support"},
+        "Nongshim RedForce": {"Dambi": "Superstar/Carry", "Rb": "Star/Firepower", "Ivy": "Controller"}
+      },
+      "h2h_scripts": {
+        "lev_vs_g2": "Carry Synergy Script. LEV win-condition relies on aspas hitting his floor (~18 kills/map).",
+        "geng_vs_ns": "Tactical Domination. Gen.G's mid-round depth creates high control against NS."
+      },
+      "match_pacing": {
+        "Pacific_League": "Mixed Pacing. Gen.G (Low Attrition) vs. NS (High Attrition/Aggro)."
+      }
     }
   }
 }

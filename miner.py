@@ -35,44 +35,83 @@ def upload_to_vault(new_df, worksheet_name):
 def get_cs2_team_lineup(sb, team_name, team_url):
     players_data = []
     try:
-        print(f"📡 [CS2] Accessing Team: {team_name}...")
-        sb.open(team_url); sb.sleep(5)
+        print(f"📡 [CS2] Stealth-Sync for {team_name}...")
+        # V133: Use UC Mode with a slightly longer reconnect window for HLTV Cloudflare
+        sb.uc_open_with_reconnect(team_url, 10)
+        sb.sleep(6) 
+        
+        # Ensure the roster element is actually visible before grabbing source
+        sb.wait_for_element(".team-lineup", timeout=15)
         soup = BeautifulSoup(sb.get_page_source(), 'lxml')
-        roster_links = soup.select('a[href^="/player/"]')[:5]
+        
+        # V133: Specifically target the 'current' lineup links within the lineup container
+        roster_container = soup.select_one('.team-lineup')
+        if not roster_container:
+            print(f"⚠️ [CS2] Could not find roster container for {team_name}. Check URL."); return []
+            
+        roster_links = roster_container.select('a[href^="/player/"]')[:5]
+        
         for link in roster_links:
             try:
                 p_tag, p_id = link.get_text().strip(), link.get('href').split('/')[2]
-                sb.open(f"https://www.hltv.org/stats/players/{p_id}/{p_tag.lower()}?startDate=2026-01-01")
+                print(f"      -> {p_tag}: Syncing History...")
+                
+                # Navigate to Stats Page (UC Mode)
+                sb.uc_open_with_reconnect(f"https://www.hltv.org/stats/players/{p_id}/{p_tag.lower()}?startDate=2026-01-01", 5)
                 sb.wait_for_element(".stats-row", timeout=10)
-                kpr = 0.82
+                
                 stat_soup = BeautifulSoup(sb.get_page_source(), 'lxml')
-                k_label = stat_soup.find(string=re.compile(r"Kills [/p] round", re.I))
+                kpr = 0.82 # Baseline if not found
+                
+                # More robust KPR search for 2026 Layout
+                k_label = stat_soup.find(string=re.compile(r"Kills per round", re.I))
                 if k_label:
-                    m = re.search(r"\d+\.\d+", k_label.find_parent().get_text())
+                    val_text = k_label.find_parent().select_one('span:last-child').get_text() if k_label.find_parent().select_one('span:last-child') else k_label.find_parent().get_text()
+                    m = re.search(r"\d+\.\d+", val_text)
                     if m: kpr = float(m.group())
                 
-                sb.open(f"https://www.hltv.org/stats/players/matches/{p_id}/{p_tag.lower()}?startDate=2026-01-01")
+                # Navigate to Matches Page (UC Mode)
+                sb.uc_open_with_reconnect(f"https://www.hltv.org/stats/players/matches/{p_id}/{p_tag.lower()}?startDate=2026-01-01", 5)
                 sb.sleep(4)
+                
                 m_soup = BeautifulSoup(sb.get_page_source(), 'lxml')
-                headers = [th.get_text().strip() for th in m_soup.select('.stats-table thead th')]
-                kd_idx, opp_idx = headers.index('K-D'), headers.index('Opponent')
+                table = m_soup.select_one('.stats-table')
+                if not table: continue
+                
+                headers = [th.get_text().strip().upper() for th in table.select('thead th')]
+                kd_idx, opp_idx = headers.index('K-D'), headers.index('OPPONENT')
+                
                 l10_totals, curr_match, last_opp = [], [], ""
-                for row in m_soup.select('.stats-table tbody tr'):
+                for row in table.select('tbody tr'):
                     cols = row.find_all('td')
-                    if len(cols) < 5: continue
-                    opp = re.sub(r'[^A-Z]', '', cols[opp_idx].text.upper())
-                    try: kills = int(re.split(r'[-–/]', cols[kd_idx].get_text())[0].strip())
+                    if len(cols) < opp_idx: continue
+                    
+                    # Grouping logic for series totals (Map 1 + Map 2)
+                    opp = re.sub(r'[^A-Z0-9]', '', cols[opp_idx].get_text().upper())
+                    try: 
+                        kills = int(re.split(r'[-–/]', cols[kd_idx].get_text())[0].strip())
                     except: continue
-                    if opp == last_opp: curr_match.append(kills)
+                    
+                    if opp == last_opp:
+                        curr_match.append(kills)
                     else:
-                        if len(curr_match) >= 2: l10_totals.append(curr_match[-1] + curr_match[-2])
+                        if len(curr_match) >= 2: 
+                            l10_totals.append(curr_match[0] + curr_match[1]) # Series Total
                         curr_match, last_opp = [kills], opp
+                        
                     if len(l10_totals) >= 10: break
-                players_data.append({"Player": p_tag, "Game": "CS2", "Team": team_name, "KPR": kpr, "L10": ", ".join(map(str, l10_totals))})
+                
+                players_data.append({
+                    "Player": p_tag, "Game": "CS2", "Team": team_name, 
+                    "KPR": kpr, "L10": ", ".join(map(str, l10_totals))
+                })
                 print(f"      ✅ [CS2] {p_tag}: {l10_totals[0] if l10_totals else 'N/A'}")
-            except: continue
+            except Exception as e: 
+                print(f"      ❌ Skipping {p_tag}: {e}"); continue
+                
         return players_data
-    except Exception as e: print(f"❌ CS2 Error: {e}"); return []
+    except Exception as e: 
+        print(f"❌ CS2 Engine Failure: {e}"); return []
 
 # ==========================================
 # 🎮 VALORANT ENGINE (V132: ALIAS-LOCKED)

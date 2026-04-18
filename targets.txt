@@ -1,6 +1,16 @@
-CS2: Team Spirit | https://www.hltv.org/team/7020/spirit
-CS2: Team Vitality | https://www.hltv.org/team/9565/vitality
-CS2: Team Falcons | https://www.hltv.org/team/11283/falcons
-VAL: MIBR | https://www.vlr.gg/team/7386/mibr
-VAL: Leviatan | https://www.vlr.gg/team/2359/leviat-n
-VAL: Sentinels | https://www.vlr.gg/team/2/sentinels
+CS2: FAVBET | https://www.hltv.org/team/12818/favbet
+CS2: Phantom | https://www.hltv.org/team/13173/phantom
+CS2: MIBR Academy | https://www.hltv.org/team/3044/mibr-academy
+CS2: Vasco | https://www.hltv.org/team/13413/vasco
+CS2: regain | https://www.hltv.org/team/12554/regain
+CS2: Akimbo | https://www.hltv.org/team/12567/akimbo
+CS2: 1WIN | https://www.hltv.org/team/10621/1win
+CS2: CYBERSHOKE | https://www.hltv.org/team/12380/cybershoke
+CS2: Nuclear TigeRES | https://www.hltv.org/team/12845/nuclear-tigeres
+CS2: ESC | https://www.hltv.org/team/5246/esc
+CS2: EC BANGA | https://www.hltv.org/team/12568/ec-banga
+CS2: RUSTEC | https://www.hltv.org/team/12834/rustec
+VAL: Gen.G | https://www.vlr.gg/team/17/gen-g
+VAL: Nongshim RedForce | https://www.vlr.gg/team/11195/nongshim-redforce
+VAL: RRQ | https://www.vlr.gg/team/878/rex-regum-qeon
+VAL: T1 | https://www.vlr.gg/team/14/t1
