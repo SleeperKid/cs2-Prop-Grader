@@ -11,3 +11,4 @@ daily_stats.csv
 __pycache__/
 .venv/
 service_account.json
+.streamlit
