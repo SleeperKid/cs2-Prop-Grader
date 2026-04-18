@@ -2,218 +2,190 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from scipy.stats import norm
-import os, json, re
-from groq import Groq
 from streamlit_gsheets import GSheetsConnection
 
 # ==========================================
-# 🛡️ DATA HYDRATION & REPOSITORY
+# 🛡️ ARCHITECT'S UTILITIES
 # ==========================================
-def safe_float(value, default=0.0):
+def safe_float(val, default=0.0):
+    """Prevents the 'ValueError' by shielding against 'N/A' or empty cells."""
     try:
-        if pd.isna(value) or str(value).strip() in ["N/A", "", "None"]: return default
-        return float(value)
+        if pd.isna(val) or val == "N/A" or val == "": return default
+        return float(val)
     except: return default
 
-def parse_l10(l10_str):
-    if not l10_str or str(l10_str).strip() == "N/A": return []
-    try:
-        clean_str = str(l10_str).replace('"', '').replace("'", "")
-        return [int(x.strip()) for x in clean_str.split(",") if x.strip().isdigit()]
-    except: return []
-
-def load_intel():
-    if os.path.exists("intel_vault.json"):
-        with open("intel_vault.json", "r") as f: return json.load(f)
-    return {}
-
-@st.cache_data(ttl=0)
+@st.cache_data(ttl=300)
 def load_vault():
-    sheet_url = st.secrets["connections"]["gsheets"]["spreadsheet"]
-    conn = st.connection("gsheets", type=GSheetsConnection)
-    val_df = conn.read(spreadsheet=sheet_url, worksheet="VAL_DATA", ttl=0)
-    cs_df = conn.read(spreadsheet=sheet_url, worksheet="CS2_DATA", ttl=0)
-    val_df['Game'], cs_df['Game'] = 'Valorant', 'CS2'
-    return pd.concat([val_df, cs_df], ignore_index=True).fillna("N/A")
+    """High-performance data fetch from Google Sheets."""
+    try:
+        conn = st.connection("gsheets", type=GSheetsConnection)
+        sheet_url = st.secrets["connections"]["gsheets"]["spreadsheet"]
+        # Separate pulls for sport isolation
+        val_df = conn.read(spreadsheet=sheet_url, worksheet="VAL_DATA", ttl=0)
+        cs_df = conn.read(spreadsheet=sheet_url, worksheet="CS2_DATA", ttl=0)
+        val_df['Game'], cs_df['Game'] = 'Valorant', 'CS2'
+        return pd.concat([val_df, cs_df], ignore_index=True).replace("N/A", np.nan)
+    except Exception as e:
+        st.error(f"Vault Connection Failure: {e}")
+        return pd.DataFrame()
 
 # ==========================================
-# 🎨 SOVEREIGN CSS (STEALTH + GOLD)
+# 🧠 UI STATE ENGINE (The Auto-Pop Fix)
 # ==========================================
-st.set_page_config(page_title="Prop Grader Elite V143", layout="wide", page_icon="🎯")
+def sync_player_data():
+    """
+    The Callback Engine: This fires the instant a player is selected.
+    It updates the session state BEFORE the widgets render.
+    """
+    if st.session_state.player_selector != "Manual Entry":
+        # Search the cached dataframe
+        row = df[df['Player'] == st.session_state.player_selector].iloc[0]
+        
+        # Force update state keys
+        st.session_state.p_tag = str(row.get('Player', ''))
+        st.session_state.l10 = str(row.get('L10', '')).replace('"', '')
+        
+        # Team context
+        team = str(row.get('Team', 'Free Agent'))
+        st.session_state.m_context = f"{team} vs "
+        
+        # Valorant ADR persistence
+        if st.session_state.game_choice == "Valorant":
+            st.session_state.adr = safe_float(row.get('ADR'), 140.0)
+
+# ==========================================
+# 🎨 PRODUCTION STYLING
+# ==========================================
+st.set_page_config(page_title="Prop Grader Elite", layout="wide")
+df = load_vault()
+
+# Initialize state keys if they don't exist
+for key, val in {'p_tag': "", 'l10': "", 'm_context': "", 'adr': 140.0, 'results': None}.items():
+    if key not in st.session_state: st.session_state[key] = val
+
 st.markdown("""
 <style>
-    .main { background-color: #0e1117; color: #c9d1d9; }
-    .stTextInput > div > div > input { background-color: #161b22; color: white; border: 1px solid #30363d; }
-    .analyst-card { 
-        padding: 40px; border-radius: 30px; text-align: center; 
-        box-shadow: 0 15px 45px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.15);
-        margin-bottom: 25px; color: white;
+    .main { background-color: #0e1117; }
+    /* Suggested Play Box */
+    .suggested-play {
+        background: linear-gradient(180deg, rgba(255,215,0,0.1) 0%, rgba(0,0,0,0) 100%);
+        border: 1px solid #FFD700; border-radius: 15px; padding: 20px; margin: 20px 0;
     }
-    .analyst-grade { font-size: 130px; font-weight: 900; margin: 0; line-height: 1; }
-    
-    /* THE h1ro SOVEREIGN CARD */
-    .share-container {
-        background-color: #121212; border: 3px solid #FFD700; border-radius: 20px;
-        padding: 30px; width: 420px; margin: 20px auto; color: white; text-align: center;
-        font-family: 'Helvetica', sans-serif;
+    /* Glow Grade */
+    .glow-s {
+        font-size: 120px; font-weight: 900; color: #FFD700;
+        text-shadow: 0 0 20px rgba(255, 215, 0, 0.5); line-height: 1;
     }
-    .hiro-grade { font-size: 100px; font-weight: 900; color: #FFD700; margin: 0; line-height: 1; }
+    .pill-over { color: #00FF00; border: 1px solid #00FF00; padding: 5px 15px; border-radius: 8px; font-weight: bold; }
+    .pill-under { color: #FF0000; border: 1px solid #FF0000; padding: 5px 15px; border-radius: 8px; font-weight: bold; }
 </style>
 """, unsafe_allow_html=True)
 
 # ==========================================
-# 🧠 SOVEREIGN STATE MANAGEMENT
+# 🕵️ INPUT SECTION
 # ==========================================
-slider_keys = ['h2h_val', 'tier_val', 'map_val', 'int_val', 'lan_val', 'econ_val']
-for k in slider_keys:
-    if k not in st.session_state: st.session_state[k] = 1.0
+game_choice = st.radio("Target Game", ["CS2", "Valorant"], key="game_choice", horizontal=True)
+players = df[df['Game'] == game_choice]['Player'].tolist() if not df.empty else []
 
-if 'ai_advice' not in st.session_state: st.session_state.ai_advice = ""
-if 'results' not in st.session_state: st.session_state.results = None
-
-# ==========================================
-# ⚙️ SIDEBAR: COMMAND CENTER
-# ==========================================
-df = load_vault()
-IV = load_intel()
-
-st.title("🎯 Prop Grader Elite")
-game_choice = st.radio("Target Game", ["CS2", "Valorant"], horizontal=True)
-game_key = "VAL" if "Val" in game_choice else "CS2"
-foundation = IV.get(game_key, {})
-
-with st.sidebar:
-    st.header("🛡️ Strategic Weights")
-    
-    if st.button("CONSULT AI ADVISOR"):
-        api_key = st.secrets.get("GROQ_API_KEY")
-        if api_key:
-            client = Groq(api_key=api_key)
-            # Use current inputs for context
-            p_context = st.session_state.get('p_tag_input', 'Selected Player')
-            m_context = st.session_state.get('m_context_input', '')
-            
-            prompt = f"""
-            Analyze {game_choice} prop. 
-            FOUNDATION: {foundation}
-            MATCH: {p_context} in {m_context}.
-            
-            Scan foundation for archetypes. Suggest 6 weights (0.85-1.15) for:
-            H2H, Tier, Map, Intensity, LAN, Economy.
-            Format EXACTLY: [1.05], [0.95], [1.10], [1.00], [1.02], [0.98].
-            """
-            res = client.chat.completions.create(model="llama-3.3-70b-versatile", messages=[{"role":"user","content":prompt}], temperature=0.01)
-            advice = res.choices[0].message.content
-            st.session_state.ai_advice = advice
-            
-            # Auto-Inject Weights
-            weights = re.findall(r"\[(\d+(?:\.\d+)?)\]", advice)
-            if len(weights) >= 6:
-                for idx, k in enumerate(slider_keys):
-                    st.session_state[k] = float(weights[idx])
-                st.rerun()
-
-    if st.session_state.ai_advice: st.info(st.session_state.ai_advice)
-    
-    st.slider("H2H Advantage", 0.80, 1.20, key="h2h_val")
-    st.slider("Opponent Tier", 0.80, 1.20, key="tier_val")
-    st.slider("Map Fit/Veto", 0.80, 1.20, key="map_val")
-    st.slider("Match Intensity", 0.70, 1.10, key="int_val")
-    st.slider("LAN/Rio Crowd", 0.90, 1.10, key="lan_val")
-    st.slider("Economy (MR12)", 0.85, 1.15, key="econ_val")
-
-# ==========================================
-# 🕵️ VAULT PROFILE ANALYZER
-# ==========================================
 col_l, col_r = st.columns([1, 1.2], gap="large")
 
 with col_l:
     st.subheader("🕵️ Deep Profile Intelligence")
-    active_players = df[df['Game'] == game_choice]['Player'].tolist() if not df.empty else []
-    selected = st.selectbox("Search Vault", ["Manual Entry"] + active_players)
+    st.selectbox("Search Database", ["Manual Entry"] + players, key="player_selector", on_change=sync_player_data)
     
-    # Initialize values
-    p_tag_init, m_context_init, l10_init = "Player", "", ""
-    kpr_baseline = 0.82 if game_choice == "CS2" else 135.0
-    
-    # RESTORED: Auto-Fill Logic
-    if selected != "Manual Entry":
-        row = df[df['Player'] == selected].iloc[0]
-        p_tag_init = str(row['Player'])
-        m_context_init = f"{row.get('Team', 'Team')} vs "
-        l10_init = str(row['L10'])
-        kpr_baseline = safe_float(row.get('KPR' if game_choice == "CS2" else 'ADR'), kpr_baseline)
-
-    p_tag = st.text_input("Player Tag", value=p_tag_init, key="p_tag_input")
-    m_context = st.text_input("Match Context", value=m_context_init, key="m_context_input")
-    opp_rank = st.number_input("Opponent Rank", value=10, step=1)
+    st.text_input("Player Tag", key="p_tag")
+    st.text_input("Match Context", key="m_context")
     
     if game_choice == "CS2":
-        ck1, ck2 = st.columns(2)
-        m1_kpr = ck1.number_input("M1 KPR", value=float(kpr_baseline), format="%.2f")
-        m2_kpr = ck2.number_input("M2 KPR", value=float(kpr_baseline), format="%.2f")
+        c1, c2 = st.columns(2)
+        m1_kpr = c1.number_input("Map 1 KPR (Manual)", value=0.82, format="%.2f")
+        m2_kpr = c2.number_input("Map 2 KPR (Manual)", value=0.82, format="%.2f")
     else:
-        base_stat = st.number_input("Projected ADR", value=float(kpr_baseline))
+        st.number_input("Base ADR", key="adr")
+        
+    l10_data = st.text_area("L10 Data (CSV)", key="l10")
+    
+    st.divider()
+    # Analysis Controls
+    c_line, c_odds = st.columns(2)
+    m_line = c_line.number_input("Line", value=31.5, step=0.5)
+    m_side = c_line.selectbox("Side", ["Over", "Under"])
+    m_odds = c_odds.number_input("Odds", value=-128)
+    m_scope = c_odds.selectbox("Scope", ["Full Match", "Map 1 Only", "Maps 1 & 2"])
 
-    l10_data = st.text_area("L10 Match History", value=l10_init)
-    m_line = st.number_input("Line", value=35.5, step=0.5)
-    m_side = st.selectbox("Side", ["Over", "Under"])
-    m_odds = st.number_input("Odds", value=-120)
+# ==========================================
+# 🚀 CALCULATION ENGINE
+# ==========================================
+if st.button("🚀 GENERATE SLEEPER D. KID GRADE"):
+    try:
+        vals = [float(x.strip()) for x in st.session_state.l10.split(",") if x.strip()]
+        if not vals: st.warning("Please enter L10 data."); st.stop()
+        
+        # Simple Math Mockup (Replace with your specific Normal Distribution logic)
+        mean_val = np.mean(vals)
+        std_val = max(np.std(vals), 2.5)
+        
+        # Projection Logic
+        if game_choice == "CS2":
+            base = (m1_kpr + m2_kpr) / 2 * 24 * 2.2 # MR12 Full Match
+        else:
+            base = (st.session_state.adr / 150) * 26 * 2.2
+            
+        prob = (1 - norm.cdf(m_line, loc=base, scale=std_val)) * 100 if m_side == "Over" else norm.cdf(m_line, loc=base, scale=std_val) * 100
+        edge = prob - 50 # Simplified edge for card rendering
+        hit_rate = (sum(1 for v in vals if (v > m_line if m_side == "Over" else v < m_line)) / len(vals)) * 100
+        
+        st.session_state.results = {
+            "grade": "S" if edge > 15 else "A+" if edge > 8 else "A" if edge > 2 else "B",
+            "units": 2.5 if edge > 15 else 1.0,
+            "proj": base, "edge": edge, "prob": prob, "hit": hit_rate,
+            "line": m_line, "side": m_side
+        }
+    except Exception as e:
+        st.error(f"Calculation Error: {e}")
 
-if st.button("🚀 GENERATE V143 ELITE GRADE"):
-    l10_list = parse_l10(l10_data)
-    stdev = max(np.std(l10_list, ddof=1) if len(l10_list) > 1 else 3.5, 3.5)
-    
-    # Base Scaling
-    base_proj = (m1_kpr * 24) + (m2_kpr * 24) if game_choice == "CS2" else (base_stat / 150) * 26 * 2.0 
-    
-    # Streak Check
-    streak_bonus = 1.0
-    streak_hits = sum(1 for x in l10_list[:5] if x > m_line) if len(l10_list) >= 5 else 0
-    if streak_hits >= 4: streak_bonus = 1.05
-    elif streak_hits <= 1 and len(l10_list) >= 5: streak_bonus = 0.95
-    
-    # Multi-Slider Projection
-    final_proj = base_proj * st.session_state.h2h_val * st.session_state.tier_val * \
-                 st.session_state.map_val * st.session_state.int_val * \
-                 st.session_state.lan_val * st.session_state.econ_val * streak_bonus
-    
-    prob = (1 - norm.cdf(m_line, loc=final_proj, scale=stdev)) * 100 if m_side == "Over" else norm.cdf(m_line, loc=final_proj, scale=stdev) * 100
-    implied = (abs(m_odds)/(abs(m_odds)+100))*100 if m_odds < 0 else (100/(m_odds+100))*100
-    edge = prob - implied
-    
-    st.session_state.results = {
-        "player": p_tag, "context": m_context, "line": m_line, "side": m_side,
-        "grade": "S" if edge >= 12 else "A+" if edge >= 8 else "A" if edge >= 3 else "B",
-        "units": 2.5 if edge >= 12 else 2.0 if edge >= 8 else 1.0,
-        "proj": final_proj, "prob": prob, "edge": edge, "hits": streak_hits,
-        "color": "linear-gradient(135deg, #FFD700 0%, #8B6508 100%)" if edge >= 12 else "linear-gradient(135deg, #00FF00 0%, #004d00 100%)"
-    }
-
+# ==========================================
+# 💎 THE SOCIAL CARD (Sleeper D. Kid Edition)
+# ==========================================
 if st.session_state.results:
     res = st.session_state.results
     with col_r:
-        st.markdown(f"""<div class="analyst-card" style="background: {res['color']};">
-            <p style="font-size: 18px; opacity: 0.8; margin-bottom: 0;">{res['context']} (Rank #{opp_rank})</p>
-            <h2 style="margin-top: 0;">{res['player']}</h2>
-            <h1 class="analyst-grade">{res['grade']}</h1>
-            <div style="font-size: 26px; font-weight: bold;">{res['units']} UNIT PLAY</div>
-        </div>""", unsafe_allow_html=True)
+        pill_style = "pill-over" if res['side'] == "Over" else "pill-under"
+        arrow = "▲" if res['side'] == "Over" else "▼"
         
-        c1, c2 = st.columns(2)
-        c1.metric("Projected Total", f"{res['proj']:.1f}")
-        c2.metric("Edge (%)", f"{res['edge']:.1f}%")
-        
-        # RESTORED: h1ro Sovereign Card
-        if st.checkbox("Generate h1ro Social Card"):
-            st.markdown(f"""
-            <div class="share-container">
-                <div style="color: #FFD700; font-weight: bold; letter-spacing: 2px;">🎯 PROP GRADER ELITE</div>
-                <hr style="border: 0.5px solid #333; margin: 15px 0;">
-                <div style="font-size: 28px; font-weight: bold;">{res['player']}</div>
-                <div style="font-size: 16px; opacity: 0.7; margin-bottom: 10px;">{res['context']}</div>
-                <div style="font-size: 42px; font-weight: 900; margin: 10px 0;">{res['line']} {res['side'].upper()}</div>
-                <h1 class="hiro-grade">{res['grade']}</h1>
-                <div style="font-size: 22px; font-weight: bold; color: white;">{res['units']} UNITS | {res['prob']:.1f}% PROB</div>
+        st.markdown(f"""
+        <div style="background-color: #121212; border: 2px solid #FFD700; border-radius: 25px; padding: 40px; width: 450px; margin: auto; color: white; text-align: center; font-family: sans-serif;">
+            <div style="color: #888; letter-spacing: 3px; font-size: 14px; margin-bottom:10px;">{game_choice.upper()} PROP ANALYSIS</div>
+            <div style="font-size: 55px; font-weight: 900; margin: 0; line-height:1;">{st.session_state.p_tag.upper()}</div>
+            <div style="color: #4A90E2; font-size: 18px; font-weight: bold; margin-bottom: 25px; border-bottom: 1px solid #333; padding-bottom: 15px;">
+                {st.session_state.m_context.upper()}
             </div>
-            """, unsafe_allow_html=True)
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0;">
+                <div style="text-align: left;">
+                    <div style="color:#888; font-size:12px; font-weight:bold;">THE PROP LINE</div>
+                    <div style="font-size: 85px; font-weight: 900; line-height:1;">{res['line']}</div>
+                    <div style="color:#888; font-size:18px; margin-bottom:15px;">KILLS</div>
+                    <span class="{pill_style}">{arrow} {res['side'].upper()}</span>
+                </div>
+                <div style="text-align: center;">
+                    <div style="color:#888; font-size:12px; font-weight:bold; margin-bottom:5px;">MODEL GRADE</div>
+                    <div class="glow-s">{res['grade']}</div>
+                </div>
+            </div>
+            
+            <div class="suggested-play">
+                <div style="color: #FFD700; letter-spacing: 2px; font-weight: bold; font-size: 14px;">SUGGESTED PLAY</div>
+                <div style="font-size: 42px; font-weight: 900;">{res['units']} UNITS</div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; border-top: 1px solid #333; padding-top: 25px;">
+                <div><div style="font-size: 10px; color: #666; font-weight:bold;">PROJ</div><div style="font-size: 20px; font-weight: 900;">{res['proj']:.1f}</div></div>
+                <div><div style="font-size: 10px; color: #666; font-weight:bold;">EDGE</div><div style="font-size: 20px; font-weight: 900;">+{max(res['edge'],0):.1f}%</div></div>
+                <div><div style="font-size: 10px; color: #666; font-weight:bold;">CONF</div><div style="font-size: 20px; font-weight: 900;">{res['prob']:.0f}%</div></div>
+                <div><div style="font-size: 10px; color: #666; font-weight:bold;">L10 HIT</div><div style="font-size: 20px; font-weight: 900;">{res['hit']:.0f}%</div></div>
+            </div>
+            
+            <div style="color: #4A90E2; letter-spacing: 4px; font-size: 12px; margin-top: 40px; font-weight: bold;">ANALYSIS BY SLEEPER D. KID</div>
+        </div>
+        """, unsafe_allow_html=True)
