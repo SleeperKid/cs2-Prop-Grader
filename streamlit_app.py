@@ -37,23 +37,27 @@ def load_vault():
     return pd.concat([val_df, cs_df], ignore_index=True).fillna("N/A")
 
 # ==========================================
-# 🎨 UI & SOVEREIGN STYLING
+# 🎨 SOVEREIGN CSS (STEALTH + GOLD)
 # ==========================================
-st.set_page_config(page_title="Prop Grader Elite V142", layout="wide", page_icon="🎯")
+st.set_page_config(page_title="Prop Grader Elite V143", layout="wide", page_icon="🎯")
 st.markdown("""
 <style>
-    .main { background-color: #0e1117; }
+    .main { background-color: #0e1117; color: #c9d1d9; }
+    .stTextInput > div > div > input { background-color: #161b22; color: white; border: 1px solid #30363d; }
     .analyst-card { 
         padding: 40px; border-radius: 30px; text-align: center; 
         box-shadow: 0 15px 45px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.15);
         margin-bottom: 25px; color: white;
     }
     .analyst-grade { font-size: 130px; font-weight: 900; margin: 0; line-height: 1; }
+    
+    /* THE h1ro SOVEREIGN CARD */
     .share-container {
         background-color: #121212; border: 3px solid #FFD700; border-radius: 20px;
-        padding: 30px; width: 450px; margin: 20px auto; color: white; text-align: center;
-        font-family: 'Courier New', monospace;
+        padding: 30px; width: 420px; margin: 20px auto; color: white; text-align: center;
+        font-family: 'Helvetica', sans-serif;
     }
+    .hiro-grade { font-size: 100px; font-weight: 900; color: #FFD700; margin: 0; line-height: 1; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -85,22 +89,25 @@ with st.sidebar:
         api_key = st.secrets.get("GROQ_API_KEY")
         if api_key:
             client = Groq(api_key=api_key)
+            # Use current inputs for context
             p_context = st.session_state.get('p_tag_input', 'Selected Player')
             m_context = st.session_state.get('m_context_input', '')
             
             prompt = f"""
             Analyze {game_choice} prop. 
-            INTEL FOUNDATION: {foundation}
+            FOUNDATION: {foundation}
             MATCH: {p_context} in {m_context}.
             
-            Scan the foundation for the team archetypes in the context.
-            Suggest 6 weights (0.85-1.15) for H2H, Tier, Map, Intensity, LAN, Economy.
-            Format EXACTLY like this: [1.05], [0.95], [1.10], [1.00], [1.02], [0.98].
+            Scan foundation for archetypes. Suggest 6 weights (0.85-1.15) for:
+            H2H, Tier, Map, Intensity, LAN, Economy.
+            Format EXACTLY: [1.05], [0.95], [1.10], [1.00], [1.02], [0.98].
             """
             res = client.chat.completions.create(model="llama-3.3-70b-versatile", messages=[{"role":"user","content":prompt}], temperature=0.01)
-            st.session_state.ai_advice = res.choices[0].message.content
+            advice = res.choices[0].message.content
+            st.session_state.ai_advice = advice
             
-            weights = re.findall(r"\[(\d+(?:\.\d+)?)\]", st.session_state.ai_advice)
+            # Auto-Inject Weights
+            weights = re.findall(r"\[(\d+(?:\.\d+)?)\]", advice)
             if len(weights) >= 6:
                 for idx, k in enumerate(slider_keys):
                     st.session_state[k] = float(weights[idx])
@@ -125,17 +132,20 @@ with col_l:
     active_players = df[df['Game'] == game_choice]['Player'].tolist() if not df.empty else []
     selected = st.selectbox("Search Vault", ["Manual Entry"] + active_players)
     
-    p_tag_val, m_context_val, l10_val = "Player", "", ""
+    # Initialize values
+    p_tag_init, m_context_init, l10_init = "Player", "", ""
     kpr_baseline = 0.82 if game_choice == "CS2" else 135.0
     
+    # RESTORED: Auto-Fill Logic
     if selected != "Manual Entry":
         row = df[df['Player'] == selected].iloc[0]
-        p_tag_val, l10_val = str(row['Player']), str(row['L10'])
-        m_context_val = f"{row.get('Team', 'Team')} vs "
+        p_tag_init = str(row['Player'])
+        m_context_init = f"{row.get('Team', 'Team')} vs "
+        l10_init = str(row['L10'])
         kpr_baseline = safe_float(row.get('KPR' if game_choice == "CS2" else 'ADR'), kpr_baseline)
 
-    p_tag = st.text_input("Player Tag", value=p_tag_val, key="p_tag_input")
-    m_context = st.text_input("Match Context", value=m_context_val, key="m_context_input")
+    p_tag = st.text_input("Player Tag", value=p_tag_init, key="p_tag_input")
+    m_context = st.text_input("Match Context", value=m_context_init, key="m_context_input")
     opp_rank = st.number_input("Opponent Rank", value=10, step=1)
     
     if game_choice == "CS2":
@@ -145,21 +155,25 @@ with col_l:
     else:
         base_stat = st.number_input("Projected ADR", value=float(kpr_baseline))
 
-    l10_data = st.text_area("L10 Match History", value=l10_val)
+    l10_data = st.text_area("L10 Match History", value=l10_init)
     m_line = st.number_input("Line", value=35.5, step=0.5)
     m_side = st.selectbox("Side", ["Over", "Under"])
     m_odds = st.number_input("Odds", value=-120)
 
-if st.button("🚀 GENERATE V142 ELITE GRADE"):
+if st.button("🚀 GENERATE V143 ELITE GRADE"):
     l10_list = parse_l10(l10_data)
     stdev = max(np.std(l10_list, ddof=1) if len(l10_list) > 1 else 3.5, 3.5)
+    
+    # Base Scaling
     base_proj = (m1_kpr * 24) + (m2_kpr * 24) if game_choice == "CS2" else (base_stat / 150) * 26 * 2.0 
     
+    # Streak Check
     streak_bonus = 1.0
     streak_hits = sum(1 for x in l10_list[:5] if x > m_line) if len(l10_list) >= 5 else 0
     if streak_hits >= 4: streak_bonus = 1.05
     elif streak_hits <= 1 and len(l10_list) >= 5: streak_bonus = 0.95
     
+    # Multi-Slider Projection
     final_proj = base_proj * st.session_state.h2h_val * st.session_state.tier_val * \
                  st.session_state.map_val * st.session_state.int_val * \
                  st.session_state.lan_val * st.session_state.econ_val * streak_bonus
@@ -190,15 +204,16 @@ if st.session_state.results:
         c1.metric("Projected Total", f"{res['proj']:.1f}")
         c2.metric("Edge (%)", f"{res['edge']:.1f}%")
         
-        if st.checkbox("Generate Social Media Card"):
+        # RESTORED: h1ro Sovereign Card
+        if st.checkbox("Generate h1ro Social Card"):
             st.markdown(f"""
             <div class="share-container">
-                <div style="color: #FFD700; font-weight: bold;">🎯 PROP GRADER ELITE</div>
-                <hr style="border: 1px solid #333;">
-                <div style="font-size: 24px;">{res['player']}</div>
-                <div style="font-size: 16px; opacity: 0.7;">{res['context']}</div>
-                <div style="font-size: 40px; margin: 15px 0;">{res['line']} {res['side'].upper()}</div>
-                <div style="font-size: 80px; font-weight: 900; color: #FFD700;">{res['grade']}</div>
-                <div style="font-size: 20px;">{res['units']} UNITS | {res['prob']:.1f}% PROB</div>
+                <div style="color: #FFD700; font-weight: bold; letter-spacing: 2px;">🎯 PROP GRADER ELITE</div>
+                <hr style="border: 0.5px solid #333; margin: 15px 0;">
+                <div style="font-size: 28px; font-weight: bold;">{res['player']}</div>
+                <div style="font-size: 16px; opacity: 0.7; margin-bottom: 10px;">{res['context']}</div>
+                <div style="font-size: 42px; font-weight: 900; margin: 10px 0;">{res['line']} {res['side'].upper()}</div>
+                <h1 class="hiro-grade">{res['grade']}</h1>
+                <div style="font-size: 22px; font-weight: bold; color: white;">{res['units']} UNITS | {res['prob']:.1f}% PROB</div>
             </div>
             """, unsafe_allow_html=True)
