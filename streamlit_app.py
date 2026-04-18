@@ -6,7 +6,7 @@ import os
 from scipy.stats import norm
 from streamlit_gsheets import GSheetsConnection
 
-# --- UTILITIES ---
+# --- 🛠️ UTILITIES ---
 def safe_float(val, default=0.0):
     try:
         if pd.isna(val) or val == "N/A" or val == "": return default
@@ -31,104 +31,108 @@ def load_intel_vault():
         with open("intel_vault.json", "r") as f: return json.load(f)
     return {"teams": {}, "maps": {}}
 
-# --- AI ADVISOR LOGIC ---
+# --- 🧠 AI ADVISOR ENGINE ---
 def run_ai_advisor():
-    """Restored logic: Explains every slider and auto-adjusts them."""
+    """Calculates numerical weights and explains reasoning for non-experts."""
     intel = load_intel_vault()
     maps = st.session_state.get('p_maps', "").lower()
     context = st.session_state.get('m_context', "").lower()
     m1_kpr = st.session_state.get('m1_kpr_input', 0.82)
     
-    # Structure for reasoning and values
+    # AI logic dictionary
     analysis = {
-        "w_h2h": {"val": 1.0, "note": "Standard matchup parity."},
-        "w_tier": {"val": 1.0, "note": "Standard opponent difficulty."},
-        "w_map": {"val": 1.0, "note": "Neutral map influence."},
-        "w_int": {"val": 1.0, "note": "No significant momentum detected."}
+        "w_h2h": {"val": 1.00, "reason": "Neutral matchup parity."},
+        "w_tier": {"val": 1.00, "reason": "Standard opponent tier."},
+        "w_map": {"val": 1.00, "reason": "Neutral map pool."},
+        "w_int": {"val": 1.00, "reason": "No significant form detected."}
     }
 
-    # 1. Team Intel
+    # 1. Team/Tier Intel
     for team, data in intel.get("teams", {}).items():
         if team.lower() in context:
             analysis["w_tier"]["val"] = data.get("tier_weight", 1.0)
-            analysis["w_tier"]["note"] = data.get("scouting_note", "Known opponent profiles.")
+            analysis["w_tier"]["reason"] = data.get("scouting_note", "Intel found in vault.")
 
-    # 2. Map Intel
+    # 2. Map Influence
     for m_name, m_data in intel.get("maps", {}).items():
         if m_name.lower() in maps:
             analysis["w_map"]["val"] = m_data.get("difficulty_modifier", 1.0)
-            analysis["w_map"]["note"] = f"{m_name.title()} favors {m_data.get('type', 'standard')} playstyle."
+            analysis["w_map"]["reason"] = f"{m_name.title()} favors this player's style."
 
-    # 3. Form/Momentum
+    # 3. Form Factor
     if m1_kpr > 0.88:
         analysis["w_int"]["val"] = 1.05
-        analysis["w_int"]["note"] = "Elevated manual KPR indicates hot form."
+        analysis["w_int"]["reason"] = "Recent high KPR suggests player is peaking."
 
-    # 🟢 UPDATE STATE: This physically moves the sliders
+    # 🟢 SYNC TO SLIDERS
     st.session_state.w_h2h = analysis["w_h2h"]["val"]
     st.session_state.w_tier = analysis["w_tier"]["val"]
     st.session_state.w_map = analysis["w_map"]["val"]
     st.session_state.w_int = analysis["w_int"]["val"]
-    st.session_state.ai_explanations = analysis
+    st.session_state.ai_report = analysis
     
+    # 🟢 RERUN TO LOCK VALUES
     st.rerun()
 
 def sync_player_data():
+    """Auto-populates fields and KPR immediately upon selection."""
     if st.session_state.player_selector != "Manual Entry":
         row = df[df['Player'] == st.session_state.player_selector].iloc[0]
         base_kpr = safe_float(row.get('KPR'), 0.82)
+        
+        # Write directly to session state keys used by widgets
         st.session_state.p_tag = str(row.get('Player', ''))
         st.session_state.l10 = str(row.get('L10', '')).replace('"', '')
         st.session_state.m_context = f"{row.get('Team', 'Free Agent')} vs "
         st.session_state.m1_kpr_input = base_kpr
         st.session_state.m2_kpr_input = base_kpr
 
-# --- UI SETUP ---
+# --- 🎨 UI SETUP ---
 st.set_page_config(page_title="Prop Grader Elite", layout="wide")
 df = load_vault()
 
-# Initialize State Keys
+# 🛡️ STATE LOCK: Initialize all keys so they never 'clear' on rerun
 defaults = {
     'p_tag': "", 'l10': "", 'm_context': "", 'p_maps': "", 
     'm1_kpr_input': 0.82, 'm2_kpr_input': 0.82, 'results': None,
-    'w_h2h': 1.0, 'w_tier': 1.0, 'w_map': 1.0, 'w_int': 1.0, 'ai_explanations': None
+    'w_h2h': 1.0, 'w_tier': 1.0, 'w_map': 1.0, 'w_int': 1.0, 'ai_report': None
 }
 for k, v in defaults.items():
     if k not in st.session_state: st.session_state[k] = v
 
-# --- SIDEBAR: AI & SLIDERS ---
+# --- 🛰️ SIDEBAR: AI ADVISOR & SLIDERS ---
 with st.sidebar:
     st.title("⚖️ Scrutiny Layer")
     
     if st.button("🤖 CONSULT AI ADVISOR", use_container_width=True):
         run_ai_advisor()
 
-    if st.session_state.ai_explanations:
-        st.subheader("AI Reasoning")
-        exp = st.session_state.ai_explanations
-        st.markdown(f"""
-        - **Matchup:** {exp['w_h2h']['note']}
-        - **Tier:** {exp['w_tier']['note']}
-        - **Map:** {exp['w_map']['note']}
-        - **Intangibles:** {exp['w_int']['note']}
-        """)
+    if st.session_state.ai_report:
+        st.subheader("AI Guidance")
+        report = st.session_state.ai_report
+        for key, data in report.items():
+            label = key.replace("w_", "").upper()
+            st.markdown(f"**{label}: {data['val']:.2f}**\n*{data['reason']}*")
     
     st.divider()
-    # Sliders locked to session state keys
+    # Sliders are physically linked to session state keys
     st.slider("H2H Advantage", 0.8, 1.2, key="w_h2h", step=0.05)
     st.slider("Opponent Tier", 0.8, 1.2, key="w_tier", step=0.05)
     st.slider("Map Fit", 0.8, 1.2, key="w_map", step=0.05)
     st.slider("Pressure/Form", 0.8, 1.2, key="w_int", step=0.05)
 
-# --- MAIN BODY ---
+# --- 🕵️ MAIN BODY: DATA ENTRY ---
 st.radio("Game Mode", ["CS2", "Valorant"], key="game_choice", horizontal=True)
 players = df[df['Game'] == st.session_state.game_choice]['Player'].tolist() if not df.empty else []
 
 col_l, col_r = st.columns([1, 1.2], gap="large")
 
 with col_l:
-    st.subheader("🕵️ Deep Profile Intelligence")
+    st.subheader("🕵️ Player Intel")
+    # Search dropdown triggers the auto-population callback
     st.selectbox("Search Database", ["Manual Entry"] + players, key="player_selector", on_change=sync_player_data)
+    
+    # 🟢 All inputs use persistent keys
     st.text_input("Player Tag", key="p_tag")
     st.text_input("Match Context", key="m_context")
     st.text_input("Projected Maps", key="p_maps")
@@ -139,7 +143,8 @@ with col_l:
         c2.number_input("Map 2 KPR", key="m2_kpr_input", format="%.2f")
     else:
         st.number_input("Base ADR", key="adr")
-    st.text_area("L10 Data (CSV)", key="l10")
+        
+    st.text_area("L10 Data", key="l10")
     
     cl, cs = st.columns(2)
     m_line = cl.number_input("Prop Line", value=31.5, step=0.5)
@@ -155,16 +160,17 @@ with col_l:
                 "grade": "S" if edge > 15 else "A", "edge": edge, "proj": proj, 
                 "line": m_line, "side": m_side, "hit": 70, "prob": 88, "units": 2.5
             }
-        except: st.error("Error in data entry.")
+        except: st.error("Verification failed. Check L10 formatting.")
 
+# --- 💎 OUTPUT SECTION ---
 with col_r:
     if st.session_state.results:
         res = st.session_state.results
         
-        # Plain text for copy-pasting
-        st.text_area("📋 Copy for Discord", f"🚨 {st.session_state.p_tag.upper()} {res['side'].upper()}\nLine: {res['line']} | Grade: {res['grade']}")
+        # Text Copy Box
+        st.text_area("📋 Copy Analysis", f"🚨 {st.session_state.p_tag.upper()} {res['side'].upper()}\nLine: {res['line']} | Grade: {res['grade']}")
 
-        if st.checkbox("💎 Generate Social Media Card"):
+        if st.checkbox("💎 Generate Sleeper D. Kid Social Card"):
             arrow = "▲" if res['side'] == "Over" else "▼"
             st.markdown(f"""
             <div style="background-color: #121212; border: 2px solid #FFD700; border-radius: 25px; padding: 40px; width: 450px; margin: auto; color: white; text-align: center; font-family: sans-serif;">
