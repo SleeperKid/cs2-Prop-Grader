@@ -6,7 +6,7 @@ import os
 from groq import Groq 
 from streamlit_gsheets import GSheetsConnection
 
-# --- ⚙️ UTILITIES & DATA ---
+# --- ⚙️ UTILITIES ---
 def safe_float(val, default=0.0):
     try:
         if pd.isna(val) or val == "N/A" or val == "": return default
@@ -29,28 +29,19 @@ def load_intel_vault():
         with open("intel_vault.json", "r") as f: return json.load(f)
     return {}
 
-# --- 🧠 GROQ AI ADVISOR (V117: EXPLICIT NUMERICAL OUTPUT) ---
+# --- 🧠 GROQ AI ADVISOR (V118: VAULT-LOCK) ---
 def run_ai_advisor():
-    """Llama 3.3 Scout: Forces numerical slider values into the report text."""
     client = Groq(api_key=st.secrets["GROQ_API_KEY"])
     intel = load_intel_vault()
     
     context = st.session_state.m_context
     maps = st.session_state.p_maps
     game = st.session_state.game_choice
-    is_hs = st.session_state.get('prop_type_select') == "Headshot Kills"
     
     sys_prompt = f"""
     You are 'Sleeper D. Kid' AI Scout. Recommend sliders (0.80-1.20) for H2H, Tier, and Map.
-    
-    OUTPUT RULES:
-    1. Your 'report' field MUST explicitly state the numerical value for each slider.
-    2. Format example: "H2H (1.05): Reason. Tier (0.90): Reason. Map (1.10): Reason."
-    3. Use Vault Archetypes or World Rank only. Do NOT invent history.
-    4. Only mention Headshots if HS is True ({is_hs}).
-    
+    OUTPUT: Provide the numbers and a brief logic for each in the 'report'.
     VAULT: {json.dumps(intel.get(game, {}))}
-    
     RETURN JSON: {{ "h2h": float, "tier": float, "map": float, "report": "str" }}
     """
     
@@ -62,23 +53,19 @@ def run_ai_advisor():
             response_format={"type": "json_object"}
         )
         res = json.loads(completion.choices[0].message.content)
-        
-        # Hard-Sync to State Sliders
         st.session_state.w_h2h = res.get("h2h", 1.0)
         st.session_state.w_tier = res.get("tier", 1.0)
         st.session_state.w_map = res.get("map", 1.0)
-        st.session_state.ai_note = res.get("report", "Analysis finished.")
+        st.session_state.ai_note = res.get("report", "")
         st.rerun()
     except Exception as e:
         st.error(f"Advisor Error: {e}")
 
 def sync_player_data():
-    """🟢 STATE-SANCTUARY: Only overwrites on FRESH player selection."""
     if st.session_state.player_selector != "Manual Entry":
         if st.session_state.player_selector != st.session_state.get('last_player_locked'):
             row = df[df['Player'] == st.session_state.player_selector].iloc[0]
             base = safe_float(row.get('KPR'), 0.82)
-            
             st.session_state.p_tag = str(row.get('Player', ''))
             st.session_state.l10 = str(row.get('L10', '')).replace('"', '')
             st.session_state.m_context = f"{row.get('Team', 'FA')} vs "
@@ -87,7 +74,7 @@ def sync_player_data():
             st.session_state.hs_pct_input = safe_float(row.get('HS%'), 45.0)
             st.session_state.last_player_locked = st.session_state.player_selector
 
-# --- 🎨 UI BOOT ---
+# --- 🎨 UI INITIALIZATION ---
 st.set_page_config(page_title="Prop Grader Elite", layout="wide")
 df = load_vault()
 
@@ -119,7 +106,6 @@ with col_l:
     st.radio("Game", ["CS2", "Valorant"], key="game_choice", horizontal=True)
     st.selectbox("Search", ["Manual Entry"] + (df[df['Game'] == st.session_state.game_choice]['Player'].tolist() if not df.empty else []), key="player_selector", on_change=sync_player_data)
     
-    # 🟢 IRONCLAD INPUTS: Linked solely to keys, NO 'value=' parameter.
     st.text_input("Player Tag", key="p_tag")
     st.text_input("Match Context", key="m_context") 
     st.text_input("Projected Maps", key="p_maps")
@@ -132,10 +118,10 @@ with col_l:
         c2.number_input("Map 2 KPR", key="m2_kpr_input", format="%.2f")
         c3.number_input("HS%", key="hs_pct_input", format="%.1f")
     else:
-        st.number_input("Base ADR", key="adr_input", value=140.0) # ADR is static, can use value
+        st.number_input("Base ADR", key="adr_input", value=140.0)
         st.selectbox("Role", ["Duelist", "Support"], key="val_role_select")
     
-    st.text_area("L10 Data (CSV)", key="l10")
+    st.text_area("L10 Data", key="l10")
     l_c1, l_c2 = st.columns(2)
     m_line = l_c1.number_input("Prop Line", value=28.5, step=0.5)
     m_side = l_c2.selectbox("Side", ["Over", "Under"], key="side_select")
@@ -155,20 +141,25 @@ with col_l:
             elif st.session_state.game_choice == "Valorant":
                 proj *= (1.12 if st.session_state.val_role_select == "Duelist" else 0.92)
             
-            # 🟢 SYMMETRIC EDGE
-            raw_edge = ((proj - m_line) / m_line * 100) if m_side == "Over" else ((m_line - proj) / m_line * 100)
-            hit = (sum(1 for v in v_list if (v > m_line if m_side == "Over" else v < m_line)) / len(v_list)) * 100
+            # 🟢 PIVOT LOGIC: IDENTIFY THE SHARP SIDE
+            sharp_side = "Over" if proj > m_line else "Under"
+            sharp_edge = ((proj - m_line) / m_line * 100) if sharp_side == "Over" else ((m_line - proj) / m_line * 100)
+            sharp_hit = (sum(1 for v in v_list if (v > m_line if sharp_side == "Over" else v < m_line)) / len(v_list)) * 100
             
-            # Grade Selection
-            abs_edge = abs(raw_edge)
+            # Grade the Sharp Side
             grade = "B"
-            if raw_edge > 18 and hit >= 70: grade = "S"
-            elif abs_edge > 22: grade = "A+"
-            elif hit >= 80 and abs_edge > 5: grade = "A+"
-            elif abs_edge > 10 and hit >= 50: grade = "A"
+            if sharp_edge > 18 and sharp_hit >= 70: grade = "S"
+            elif sharp_edge > 22: grade = "A+"
+            elif sharp_hit >= 80 and sharp_edge > 5: grade = "A+"
+            elif sharp_edge > 10 and sharp_hit >= 50: grade = "A"
             
-            conf = min(99, max(40, (80 + (abs_edge / 1.5) if hit > 60 else 70 + (abs_edge / 2))))
-            st.session_state.results = {"grade": grade, "proj": proj, "edge": raw_edge, "line": m_line, "side": m_side, "hit": hit, "conf": conf, "units": 2.5 if grade == "S" else 1.0}
+            conf = min(99, max(40, (80 + (sharp_edge / 1.5) if sharp_hit > 60 else 70 + (sharp_edge / 2))))
+            
+            st.session_state.results = {
+                "grade": grade, "proj": proj, "edge": sharp_edge, "line": m_line, 
+                "side": sharp_side, "hit": sharp_hit, "conf": conf, "units": 2.5 if grade == "S" else 1.0,
+                "is_pivot": sharp_side != m_side
+            }
         except: st.error("L10 Calculation Error.")
 
 # --- 💎 OUTPUT SECTION ---
@@ -184,28 +175,28 @@ with col_r:
     if st.session_state.results:
         res = st.session_state.results
         
-        # 🟢 THE "CONSIDER THE UNDER" ALERT
-        # If the model strongly disagrees with your chosen side, fire a warning.
-        if res['edge'] < -15:
-            st.warning(f"⚠️ HIGH VALUE OPPOSITE DETECTED! Model projects {res['proj']:.1f} vs Line {res['line']}. Consider taking the {'UNDER' if res['side'] == 'Over' else 'OVER'}.", icon="🚨")
+        # 🟢 PIVOT ALERT
+        if res['is_pivot']:
+            st.warning(f"⚠️ VALUE SHIFT: Model strongly favors the {res['side'].upper()}. Your manual pick ({st.session_state.side_select}) has negative edge.", icon="🚨")
 
         # 🟢 Internal Board
         st.markdown(f"""
         <div style="background:#1a1c23; border: 1px solid #333; border-radius:15px; padding:25px; text-align:center; margin-bottom:15px;">
-            <div style="color:#888; font-size:12px; font-weight:bold;">MODEL GRADE</div>
+            <div style="color:#888; font-size:12px; font-weight:bold;">SHARP CONSENSUS</div>
             <div style="font-size: 110px; font-weight: 900; color: #FFD700; line-height:1; white-space: nowrap;">{res['grade']}</div>
             <div style="color:{'#00FF00' if res['side'] == 'Over' else '#FF4B4B'}; font-weight:bold; font-size:24px;">{res['side'].upper()} {res['line']}</div>
         </div>""", unsafe_allow_html=True)
         
         g1, g2, g3, g4 = st.columns(4)
         g1.markdown(f"""<div class="metric-card"><div class="stat-lbl">PROJ</div><div class="stat-val">{res['proj']:.1f}</div></div>""", unsafe_allow_html=True)
-        g2.markdown(f"""<div class="metric-card"><div class="stat-lbl">EDGE %</div><div class="stat-val" style="color:#FFD700;">{res['edge']:+.1f}%</div></div>""", unsafe_allow_html=True)
+        g2.markdown(f"""<div class="metric-card"><div class="stat-lbl">EDGE %</div><div class="stat-val" style="color:#FFD700;">+{res['edge']:.1f}%</div></div>""", unsafe_allow_html=True)
         g3.markdown(f"""<div class="metric-card"><div class="stat-lbl">HIT %</div><div class="stat-val" style="color:#00FF00;">{res['hit']:.0f}%</div></div>""", unsafe_allow_html=True)
         g4.markdown(f"""<div class="metric-card"><div class="stat-lbl">CONF</div><div class="stat-val">{res['conf']:.0f}%</div></div>""", unsafe_allow_html=True)
 
+        st.divider()
         if st.checkbox("💎 Generate Social Media Share Card"):
             arrow = "▲" if res['side'] == "Over" else "▼"
-            # 🛡️ THE CSS SHIELD (STRICT HTML)
+            # 🛡️ THE CSS SHIELD
             st.markdown(f"""
 <div style="background-color:#121212; border:2px solid #FFD700; border-radius:20px; padding:35px; width:450px; margin:auto; color:white; text-align:center; font-family:sans-serif;">
 <div style="font-size:48px; font-weight:900; margin:0; line-height:1;">{st.session_state.p_tag.upper()}</div>
@@ -226,7 +217,7 @@ with col_r:
 </div>
 <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; border-top:1px solid #333; padding-top:20px;">
 <div><div style="font-size:10px; color:#666; font-weight:bold;">PROJ {"KILLS" if st.session_state.game_choice == "CS2" else "HS"}</div><div style="font-size:22px; font-weight:900;">{res['proj']:.1f}</div></div>
-<div><div style="font-size:10px; color:#666; font-weight:bold;">MODEL EDGE</div><div style="font-size:22px; font-weight:900;">{res['edge']:+.1f}%</div></div>
+<div><div style="font-size:10px; color:#666; font-weight:bold;">MODEL EDGE</div><div style="font-size:22px; font-weight:900;">+{res['edge']:.1f}%</div></div>
 <div><div style="font-size:10px; color:#666; font-weight:bold;">L10 HIT</div><div style="font-size:22px; font-weight:900;">{res['hit']:.0f}%</div></div>
 </div>
 <div style="color: #4A90E2; letter-spacing: 4px; font-size: 11px; margin-top: 30px; font-weight: bold;">ANALYSIS BY SLEEPER D. KID</div>
