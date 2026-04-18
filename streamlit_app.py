@@ -6,7 +6,7 @@ import os
 from groq import Groq 
 from streamlit_gsheets import GSheetsConnection
 
-# --- ⚙️ UTILITIES ---
+# --- ⚙️ CORE UTILITIES ---
 def safe_float(val, default=0.0):
     try:
         if pd.isna(val) or val == "N/A" or val == "": return default
@@ -29,50 +29,45 @@ def load_intel_vault():
         with open("intel_vault.json", "r") as f: return json.load(f)
     return {}
 
-# --- 🧠 GROQ AI ADVISOR (V118: VAULT-LOCK) ---
+# --- 🧠 GROQ AI ADVISOR (Llama 3.3 Versatile) ---
 def run_ai_advisor():
     client = Groq(api_key=st.secrets["GROQ_API_KEY"])
     intel = load_intel_vault()
-    
-    context = st.session_state.m_context
-    maps = st.session_state.p_maps
-    game = st.session_state.game_choice
+    ctx, maps, game = st.session_state.m_context, st.session_state.p_maps, st.session_state.game_choice
     
     sys_prompt = f"""
     You are 'Sleeper D. Kid' AI Scout. Recommend sliders (0.80-1.20) for H2H, Tier, and Map.
-    OUTPUT: Provide the numbers and a brief logic for each in the 'report'.
+    OUTPUT: Explicitly mention numerical values in 'report'.
     VAULT: {json.dumps(intel.get(game, {}))}
     RETURN JSON: {{ "h2h": float, "tier": float, "map": float, "report": "str" }}
     """
-    
     try:
         completion = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
             messages=[{"role": "system", "content": sys_prompt},
-                      {"role": "user", "content": f"Context: {context} | Map: {maps}"}],
+                      {"role": "user", "content": f"Context: {ctx} | Map: {maps}"}],
             response_format={"type": "json_object"}
         )
         res = json.loads(completion.choices[0].message.content)
-        st.session_state.w_h2h = res.get("h2h", 1.0)
-        st.session_state.w_tier = res.get("tier", 1.0)
-        st.session_state.w_map = res.get("map", 1.0)
-        st.session_state.ai_note = res.get("report", "")
+        st.session_state.w_h2h, st.session_state.w_tier, st.session_state.w_map = res['h2h'], res['tier'], res['map']
+        st.session_state.ai_note = res['report']
         st.rerun()
-    except Exception as e:
-        st.error(f"Advisor Error: {e}")
+    except Exception as e: st.error(f"Scout Offline: {e}")
 
 def sync_player_data():
+    """🟢 STATE-SANCTUARY: No overwrite on reruns."""
     if st.session_state.player_selector != "Manual Entry":
         if st.session_state.player_selector != st.session_state.get('last_player_locked'):
             row = df[df['Player'] == st.session_state.player_selector].iloc[0]
             base = safe_float(row.get('KPR'), 0.82)
-            st.session_state.p_tag = str(row.get('Player', ''))
-            st.session_state.l10 = str(row.get('L10', '')).replace('"', '')
-            st.session_state.m_context = f"{row.get('Team', 'FA')} vs "
-            st.session_state.m1_kpr_input = base
-            st.session_state.m2_kpr_input = base
-            st.session_state.hs_pct_input = safe_float(row.get('HS%'), 45.0)
-            st.session_state.last_player_locked = st.session_state.player_selector
+            st.session_state.update({
+                'p_tag': str(row.get('Player', '')),
+                'l10': str(row.get('L10', '')).replace('"', ''),
+                'm_context': f"{row.get('Team', 'FA')} vs ",
+                'm1_kpr_input': base, 'm2_kpr_input': base,
+                'hs_pct_input': safe_float(row.get('HS%'), 45.0),
+                'last_player_locked': st.session_state.player_selector
+            })
 
 # --- 🎨 UI INITIALIZATION ---
 st.set_page_config(page_title="Prop Grader Elite", layout="wide")
@@ -80,8 +75,8 @@ df = load_vault()
 
 if 'initialized' not in st.session_state:
     st.session_state.update({
-        'p_tag': "", 'm_context': "", 'p_maps': "", 'opp_rank_input': 15, 
-        'l10': "", 'm1_kpr_input': 0.82, 'm2_kpr_input': 0.82, 'hs_pct_input': 45.0,
+        'p_tag': "", 'm_context': "", 'p_maps': "", 'opp_rank_input': 15, 'l10': "", 
+        'm1_kpr_input': 0.82, 'm2_kpr_input': 0.82, 'hs_pct_input': 45.0,
         'w_h2h': 1.0, 'w_tier': 1.0, 'w_map': 1.0, 'w_int': 1.0, 
         'ai_note': "", 'results': None, 'last_player_locked': None, 'initialized': True
     })
@@ -95,7 +90,7 @@ st.markdown("""
     }
     .metric-card { background: #1a1c23; border: 1px solid #333; border-radius: 12px; padding: 15px; text-align: center; }
     .stat-lbl { color: #888; font-size: 10px; font-weight: bold; text-transform: uppercase; }
-    .stat-val { font-size: 24px; font-weight: 900; margin-top: 5px; }
+    .stat-val { font-size: 20px; font-weight: 900; margin-top: 5px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -131,33 +126,36 @@ with col_l:
             v_list = [float(x.strip()) for x in st.session_state.l10.split(",") if x.strip()]
             l10_avg = sum(v_list) / len(v_list)
             
-            # 📐 QUANT LOCK MATH
+            # 📐 OPTION B: VOLATILITY NUDGE
+            l10_std = np.std(v_list)
+            vol_nudge = 1.07 if l10_std > 9.0 else 1.0 # 7% Nudge for high-variance players
+            
             raw_weights = st.session_state.w_h2h * st.session_state.w_tier * st.session_state.w_map * st.session_state.w_int
             capped_weights = min(1.30, max(0.70, raw_weights))
             
-            proj = l10_avg * capped_weights
+            # Final Projected Volume
+            proj = l10_avg * capped_weights * vol_nudge
+            
             if st.session_state.game_choice == "CS2" and st.session_state.get('prop_type_select') == "Headshot Kills":
                 proj *= (st.session_state.hs_pct_input / 100)
             elif st.session_state.game_choice == "Valorant":
                 proj *= (1.12 if st.session_state.val_role_select == "Duelist" else 0.92)
             
-            # 🟢 PIVOT LOGIC: IDENTIFY THE SHARP SIDE
+            # 🟢 PIVOT PROTOCOL
             sharp_side = "Over" if proj > m_line else "Under"
-            sharp_edge = ((proj - m_line) / m_line * 100) if sharp_side == "Over" else ((m_line - proj) / m_line * 100)
-            sharp_hit = (sum(1 for v in v_list if (v > m_line if sharp_side == "Over" else v < m_line)) / len(v_list)) * 100
+            edge = ((proj - m_line) / m_line * 100) if sharp_side == "Over" else ((m_line - proj) / m_line * 100)
+            hit = (sum(1 for v in v_list if (v > m_line if sharp_side == "Over" else v < m_line)) / len(v_list)) * 100
             
-            # Grade the Sharp Side
+            # THE SHARP'S MATRIX (S-Grade: Edge 18+ & Hit 70+)
             grade = "B"
-            if sharp_edge > 18 and sharp_hit >= 70: grade = "S"
-            elif sharp_edge > 22: grade = "A+"
-            elif sharp_hit >= 80 and sharp_edge > 5: grade = "A+"
-            elif sharp_edge > 10 and sharp_hit >= 50: grade = "A"
+            if edge > 18 and hit >= 70: grade = "S"
+            elif edge > 22 or (hit >= 80 and edge > 5): grade = "A+"
+            elif edge > 10 and hit >= 50: grade = "A"
             
-            conf = min(99, max(40, (80 + (sharp_edge / 1.5) if sharp_hit > 60 else 70 + (sharp_edge / 2))))
-            
+            conf = min(99, max(40, (80 + (edge / 1.5) if hit > 60 else 70 + (edge / 2))))
             st.session_state.results = {
-                "grade": grade, "proj": proj, "edge": sharp_edge, "line": m_line, 
-                "side": sharp_side, "hit": sharp_hit, "conf": conf, "units": 2.5 if grade == "S" else 1.0,
+                "grade": grade, "proj": proj, "edge": edge, "line": m_line, 
+                "side": sharp_side, "hit": hit, "conf": conf, "units": 2.5 if grade == "S" else 1.0,
                 "is_pivot": sharp_side != m_side
             }
         except: st.error("L10 Calculation Error.")
@@ -174,12 +172,9 @@ with col_r:
 
     if st.session_state.results:
         res = st.session_state.results
-        
-        # 🟢 PIVOT ALERT
         if res['is_pivot']:
-            st.warning(f"⚠️ VALUE SHIFT: Model strongly favors the {res['side'].upper()}. Your manual pick ({st.session_state.side_select}) has negative edge.", icon="🚨")
+            st.warning(f"⚠️ VALUE SHIFT: Model favors {res['side'].upper()}.", icon="🚨")
 
-        # 🟢 Internal Board
         st.markdown(f"""
         <div style="background:#1a1c23; border: 1px solid #333; border-radius:15px; padding:25px; text-align:center; margin-bottom:15px;">
             <div style="color:#888; font-size:12px; font-weight:bold;">SHARP CONSENSUS</div>
@@ -193,23 +188,22 @@ with col_r:
         g3.markdown(f"""<div class="metric-card"><div class="stat-lbl">HIT %</div><div class="stat-val" style="color:#00FF00;">{res['hit']:.0f}%</div></div>""", unsafe_allow_html=True)
         g4.markdown(f"""<div class="metric-card"><div class="stat-lbl">CONF</div><div class="stat-val">{res['conf']:.0f}%</div></div>""", unsafe_allow_html=True)
 
-        st.divider()
         if st.checkbox("💎 Generate Social Media Share Card"):
             arrow = "▲" if res['side'] == "Over" else "▼"
-            # 🛡️ THE CSS SHIELD
+            # 🛡️ THE CSS SHIELD: Locked width and nowrap for the Grade badge
             st.markdown(f"""
 <div style="background-color:#121212; border:2px solid #FFD700; border-radius:20px; padding:35px; width:450px; margin:auto; color:white; text-align:center; font-family:sans-serif;">
-<div style="font-size:48px; font-weight:900; margin:0; line-height:1;">{st.session_state.p_tag.upper()}</div>
-<div style="color:#4A90E2; font-size:18px; font-weight:bold; margin:10px 0 20px 0;">{st.session_state.m_context.upper()}</div>
-<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px;">
+<div style="font-size:42px; font-weight:900; margin:0; line-height:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{st.session_state.p_tag.upper()}</div>
+<div style="color:#4A90E2; font-size:16px; font-weight:bold; margin:10px 0 20px 0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{st.session_state.m_context.upper()}</div>
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
 <div style="text-align:left; flex:1;">
 <div style="color:#888; font-size:11px; font-weight:bold;">PROP LINE</div>
 <div style="font-size:75px; font-weight:900; line-height:1;">{res['line']}</div>
 <span style="color:{'#00FF00' if res['side'] == 'Over' else '#FF0000'}; border:1px solid {'#00FF00' if res['side'] == 'Over' else '#FF0000'}; padding:4px 10px; border-radius:8px; font-weight:900; font-size:14px;">{arrow} {res['side'].upper()}</span>
 </div>
-<div style="text-align:center; min-width:160px;">
+<div style="text-align:center; min-width:180px; display:inline-block;">
 <div style="color:#888; font-size:11px; font-weight:bold;">GRADE</div>
-<div style="font-size:100px; font-weight:900; color:#FFD700; text-shadow:0 0 20px rgba(255,215,0,0.5); line-height:0.9; white-space:nowrap;">{res['grade']}</div>
+<div style="font-size:100px; font-weight:900; color:#FFD700; text-shadow:0 0 20px rgba(255,215,0,0.5); line-height:0.9; white-space:nowrap; display:block;">{res['grade']}</div>
 </div>
 </div>
 <div style="background:rgba(255,215,0,0.1); border:1px solid #FFD700; border-radius:15px; padding:15px; margin-bottom:25px;">
