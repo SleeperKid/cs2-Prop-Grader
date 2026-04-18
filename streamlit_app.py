@@ -29,23 +29,30 @@ def load_intel_vault():
         with open("intel_vault.json", "r") as f: return json.load(f)
     return {}
 
-# --- 🧠 GROQ AI ADVISOR (Llama 3.3 Versatile) ---
+# --- 🧠 GROQ AI ADVISOR (MODULAR) ---
 def run_ai_advisor():
+    """Llama 3.3 Scout: Analyzes context and explains numerical slider shifts."""
     client = Groq(api_key=st.secrets["GROQ_API_KEY"])
     intel = load_intel_vault()
-    ctx, maps, game = st.session_state.m_context, st.session_state.p_maps, st.session_state.game_choice
+    
+    context = st.session_state.m_context
+    maps = st.session_state.p_maps
+    game = st.session_state.game_choice
+    prop_type = st.session_state.get('prop_type_select', 'Kills')
     
     sys_prompt = f"""
-    You are 'Sleeper D. Kid' AI Scout. Recommend sliders (0.80-1.20) for H2H, Tier, and Map.
-    OUTPUT: Explicitly mention numerical values in 'report'.
+    You are 'Sleeper D. Kid' AI. Recommend sliders (0.80-1.20) for H2H, Tier, and Map.
+    OUTPUT: Provide the numbers and a brief logic for each in the 'report'.
+    RULES: Use Vault data and World Rank only. Do NOT invent history.
     VAULT: {json.dumps(intel.get(game, {}))}
     RETURN JSON: {{ "h2h": float, "tier": float, "map": float, "report": "str" }}
     """
+    
     try:
         completion = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
             messages=[{"role": "system", "content": sys_prompt},
-                      {"role": "user", "content": f"Context: {ctx} | Map: {maps}"}],
+                      {"role": "user", "content": f"Context: {context} | Maps: {maps} | Prop: {prop_type}"}],
             response_format={"type": "json_object"}
         )
         res = json.loads(completion.choices[0].message.content)
@@ -55,7 +62,7 @@ def run_ai_advisor():
     except Exception as e: st.error(f"Scout Offline: {e}")
 
 def sync_player_data():
-    """🟢 STATE-SANCTUARY: No overwrite on reruns."""
+    """🟢 STATE-SANCTUARY: Only overwrites on FRESH selection."""
     if st.session_state.player_selector != "Manual Entry":
         if st.session_state.player_selector != st.session_state.get('last_player_locked'):
             row = df[df['Player'] == st.session_state.player_selector].iloc[0]
@@ -70,7 +77,7 @@ def sync_player_data():
             })
 
 # --- 🎨 UI INITIALIZATION ---
-st.set_page_config(page_title="Prop Grader Elite", layout="wide")
+st.set_page_config(page_title="Prop Grader Elite V120", layout="wide")
 df = load_vault()
 
 if 'initialized' not in st.session_state:
@@ -117,25 +124,21 @@ with col_l:
         st.selectbox("Role", ["Duelist", "Support"], key="val_role_select")
     
     st.text_area("L10 Data", key="l10")
-    l_c1, l_c2 = st.columns(2)
-    m_line = l_c1.number_input("Prop Line", value=28.5, step=0.5)
-    m_side = l_c2.selectbox("Side", ["Over", "Under"], key="side_select")
+    m_line = st.number_input("Prop Line", value=28.5, step=0.5)
+    m_side = st.selectbox("Side", ["Over", "Under"], key="side_select")
 
     if st.button("🚀 EXECUTE GRADE", use_container_width=True):
         try:
             v_list = [float(x.strip()) for x in st.session_state.l10.split(",") if x.strip()]
             l10_avg = sum(v_list) / len(v_list)
-            
-            # 📐 OPTION B: VOLATILITY NUDGE
             l10_std = np.std(v_list)
-            vol_nudge = 1.07 if l10_std > 9.0 else 1.0 # 7% Nudge for high-variance players
             
+            # 📐 VOLATILITY NUDGE (Option B)
+            vol_nudge = 1.07 if l10_std > 9.0 else 1.0
             raw_weights = st.session_state.w_h2h * st.session_state.w_tier * st.session_state.w_map * st.session_state.w_int
             capped_weights = min(1.30, max(0.70, raw_weights))
             
-            # Final Projected Volume
             proj = l10_avg * capped_weights * vol_nudge
-            
             if st.session_state.game_choice == "CS2" and st.session_state.get('prop_type_select') == "Headshot Kills":
                 proj *= (st.session_state.hs_pct_input / 100)
             elif st.session_state.game_choice == "Valorant":
@@ -146,7 +149,6 @@ with col_l:
             edge = ((proj - m_line) / m_line * 100) if sharp_side == "Over" else ((m_line - proj) / m_line * 100)
             hit = (sum(1 for v in v_list if (v > m_line if sharp_side == "Over" else v < m_line)) / len(v_list)) * 100
             
-            # THE SHARP'S MATRIX (S-Grade: Edge 18+ & Hit 70+)
             grade = "B"
             if edge > 18 and hit >= 70: grade = "S"
             elif edge > 22 or (hit >= 80 and edge > 5): grade = "A+"
@@ -160,7 +162,7 @@ with col_l:
             }
         except: st.error("L10 Calculation Error.")
 
-# --- 💎 OUTPUT SECTION ---
+# --- 💎 OUTPUT ---
 with col_r:
     with st.sidebar:
         if st.button("🤖 CONSULT GROQ SCOUT", use_container_width=True): run_ai_advisor()
@@ -172,8 +174,7 @@ with col_r:
 
     if st.session_state.results:
         res = st.session_state.results
-        if res['is_pivot']:
-            st.warning(f"⚠️ VALUE SHIFT: Model favors {res['side'].upper()}.", icon="🚨")
+        if res['is_pivot']: st.warning(f"⚠️ VALUE SHIFT: Model favors {res['side'].upper()}.", icon="🚨")
 
         st.markdown(f"""
         <div style="background:#1a1c23; border: 1px solid #333; border-radius:15px; padding:25px; text-align:center; margin-bottom:15px;">
@@ -190,10 +191,9 @@ with col_r:
 
         if st.checkbox("💎 Generate Social Media Share Card"):
             arrow = "▲" if res['side'] == "Over" else "▼"
-            # 🛡️ THE CSS SHIELD: Locked width and nowrap for the Grade badge
             st.markdown(f"""
 <div style="background-color:#121212; border:2px solid #FFD700; border-radius:20px; padding:35px; width:450px; margin:auto; color:white; text-align:center; font-family:sans-serif;">
-<div style="font-size:42px; font-weight:900; margin:0; line-height:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{st.session_state.p_tag.upper()}</div>
+<div style="font-size:42px; font-weight:900; margin:0; line-height:1.1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{st.session_state.p_tag.upper()}</div>
 <div style="color:#4A90E2; font-size:16px; font-weight:bold; margin:10px 0 20px 0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{st.session_state.m_context.upper()}</div>
 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
 <div style="text-align:left; flex:1;">
