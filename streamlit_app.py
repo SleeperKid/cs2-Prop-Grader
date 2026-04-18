@@ -29,54 +29,56 @@ def load_intel_vault():
         with open("intel_vault.json", "r") as f: return json.load(f)
     return {}
 
-# --- 🧠 GROQ AI ADVISOR (V109: VAULT-ONLY) ---
+# --- 🧠 GROQ AI ADVISOR (V110: NUMERICAL SLIDER SCOUT) ---
 def run_ai_advisor():
-    """Uses Llama 3.3 to scout using ONLY vault archetypes and World Rank."""
+    """Llama 3.3 Scout: Analyzes context and explains numerical slider shifts."""
     client = Groq(api_key=st.secrets["GROQ_API_KEY"])
     intel = load_intel_vault()
     
-    # 🟢 Pulls directly from the current UI state
+    # 🟢 Pulling directly from the State-Locked keys
     context = st.session_state.m_context
     maps = st.session_state.p_maps
     game = st.session_state.game_choice
-    rank = st.session_state.opp_rank_input
+    prop_type = st.session_state.get('prop_type_select', 'Kills')
     
     sys_prompt = f"""
     You are 'Sleeper D. Kid' AI. Suggest sliders (0.80-1.20) for H2H, Tier, and Map.
     
     RULES:
-    1. H2H: Base ONLY on Vault Archetype or World Rank {rank}. Do NOT hallucinate history.
-    2. TIER: S-Tier Finals (0.90) vs Chaos Qualifiers (1.15).
-    3. MAP: Use provided vault map data only.
+    1. EXPLAIN each value numerically in the 'report'.
+    2. ONLY mention Headshots if Prop Type is 'Headshot Kills'.
+    3. Use Vault Archetypes or World Rank for H2H. Do NOT invent history.
     
-    VAULT: {json.dumps(intel.get(game, {}))}
+    VAULT DATA: {json.dumps(intel.get(game, {}))}
     
-    RETURN JSON: {{ "h2h": float, "tier": float, "map": float, "report": "Numerical justification" }}
+    RETURN JSON: {{ "h2h": float, "tier": float, "map": float, "report": "str" }}
     """
     
     try:
         completion = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
             messages=[{"role": "system", "content": sys_prompt},
-                      {"role": "user", "content": f"Context: {context} | Map: {maps}"}],
+                      {"role": "user", "content": f"Match: {context} | Maps: {maps} | Prop: {prop_type}"}],
             response_format={"type": "json_object"}
         )
         res = json.loads(completion.choices[0].message.content)
+        
+        # 🟢 Physical Slider Sync
         st.session_state.w_h2h = res.get("h2h", 1.0)
         st.session_state.w_tier = res.get("tier", 1.0)
         st.session_state.w_map = res.get("map", 1.0)
         st.session_state.ai_note = res.get("report", "")
         st.rerun()
     except Exception as e:
-        st.error(f"Advisor Offline: {e}")
+        st.error(f"Groq Advisor Offline: {e}")
 
 def sync_player_data():
-    """🟢 State Lock Callback: Only populates when a NEW player is selected."""
+    """🟢 State Lock: ONLY runs when the player selection changes."""
     if st.session_state.player_selector != "Manual Entry":
         row = df[df['Player'] == st.session_state.player_selector].iloc[0]
         base = safe_float(row.get('KPR'), 0.82)
         
-        # Directly updating session state; widgets will pick these up via 'key'
+        # These updates sync to the widgets via the 'key' parameter
         st.session_state.p_tag = str(row.get('Player', ''))
         st.session_state.l10 = str(row.get('L10', '')).replace('"', '')
         st.session_state.m_context = f"{row.get('Team', 'FA')} vs "
@@ -84,15 +86,15 @@ def sync_player_data():
         st.session_state.m2_kpr_input = base
         st.session_state.hs_pct_input = safe_float(row.get('HS%'), 45.0)
 
-# --- 🎨 UI BOOT ---
+# --- 🎨 UI INITIALIZATION ---
 st.set_page_config(page_title="Prop Grader Elite", layout="wide")
 df = load_vault()
 
-# Initialize Persistence
+# 🛡️ THE PERSISTENCE INITIALIZATION
 if 'initialized' not in st.session_state:
     st.session_state.update({
-        'p_tag': "", 'm_context': "", 'p_maps': "", 'opp_rank_input': 15, 
-        'l10': "", 'm1_kpr_input': 0.82, 'm2_kpr_input': 0.82, 'hs_pct_input': 45.0,
+        'p_tag': "", 'm_context': "", 'p_maps': "", 'opp_rank_input': 15, 'l10': "", 
+        'm1_kpr_input': 0.82, 'm2_kpr_input': 0.82, 'hs_pct_input': 45.0,
         'w_h2h': 1.0, 'w_tier': 1.0, 'w_map': 1.0, 'w_int': 1.0, 
         'ai_note': "", 'results': None, 'initialized': True
     })
@@ -102,22 +104,26 @@ st.markdown("""
     div.stButton > button:first-child {
         background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
         color: black !important; font-weight: 900 !important; font-size: 22px !important;
-        border: none; border-radius: 15px; height: 60px; margin-top: 20px;
+        border: none; border-radius: 15px; height: 65px; margin-top: 20px;
+        box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
     }
-    .metric-card {
+    .analytics-card {
         background: #1a1c23; border: 1px solid #333; border-radius: 12px;
         padding: 15px; text-align: center;
     }
-    .stat-label { color: #888; font-size: 10px; font-weight: bold; letter-spacing: 1px; }
-    .stat-value { font-size: 22px; font-weight: 900; margin-top: 5px; }
+    .label-pro { color: #888; font-size: 10px; font-weight: bold; letter-spacing: 1px; }
+    .value-pro { font-size: 22px; font-weight: 900; margin-top: 5px; }
 </style>
 """, unsafe_allow_html=True)
 
 # --- 🛰️ SIDEBAR ---
 with st.sidebar:
     st.title("⚖️ Scrutiny Layer")
-    if st.button("🤖 CONSULT GROQ AI"): run_ai_advisor()
-    if st.session_state.ai_note: st.success(st.session_state.ai_note)
+    if st.button("🤖 CONSULT GROQ AI", use_container_width=True): run_ai_advisor()
+    
+    if st.session_state.ai_note:
+        st.success(st.session_state.ai_note)
+    
     st.divider()
     st.slider("H2H Advantage", 0.8, 1.2, key="w_h2h", step=0.05)
     st.slider("Opponent Tier", 0.8, 1.2, key="w_tier", step=0.05)
@@ -131,7 +137,7 @@ with col_l:
     st.radio("Game", ["CS2", "Valorant"], key="game_choice", horizontal=True)
     st.selectbox("Search", ["Manual Entry"] + (df[df['Game'] == st.session_state.game_choice]['Player'].tolist() if not df.empty else []), key="player_selector", on_change=sync_player_data)
     
-    # 🟢 KEY-ONLY INPUTS: Prevents Reset by anchoring solely to state keys
+    # 🟢 STATE-LOCKED INPUTS (No 'value=' or 'default=' parameters)
     st.text_input("Player Tag", key="p_tag")
     st.text_input("Match Context", key="m_context") 
     st.text_input("Projected Maps", key="p_maps")
@@ -148,15 +154,15 @@ with col_l:
         st.selectbox("Role", ["Duelist", "Support"], key="val_role_select")
     
     st.text_area("L10 Data", key="l10")
-    line = st.number_input("Prop Line", value=28.5, step=0.5)
-    side = st.selectbox("Side", ["Over", "Under"], key="side_select")
+    l_c1, l_c2 = st.columns(2)
+    m_line = l_c1.number_input("Prop Line", value=28.5, step=0.5)
+    m_side = l_c2.selectbox("Side", ["Over", "Under"], key="side_select")
 
     if st.button("🚀 EXECUTE GRADE", use_container_width=True):
         try:
             v_list = [float(x.strip()) for x in st.session_state.l10.split(",") if x.strip()]
             weights = st.session_state.w_h2h * st.session_state.w_tier * st.session_state.w_map * st.session_state.w_int
             
-            # MATH
             if st.session_state.game_choice == "CS2":
                 proj = ((st.session_state.m1_kpr_input + st.session_state.m2_kpr_input) / 2) * 48 * weights
                 if st.session_state.get('prop_type_select') == "Headshot Kills":
@@ -164,43 +170,44 @@ with col_l:
             else:
                 proj = (st.session_state.adr_input / 140) * 42 * weights * (1.15 if st.session_state.val_role_select == "Duelist" else 0.95)
             
-            edge = ((proj - line) / line * 100) if side == "Over" else ((line - proj) / line * 100)
-            hit = (sum(1 for v in v_list if (v > line if side == "Over" else v < line)) / len(v_list)) * 100
+            edge = ((proj - m_line) / m_line * 100) if m_side == "Over" else ((m_line - proj) / m_line * 100)
+            hit = (sum(1 for v in v_list if (v > m_line if m_side == "Over" else v < m_line)) / len(v_list)) * 100
             
-            # 🟢 Confidence Calculation
+            # Confidence Logic
             conf = min(99, max(40, (82 + (edge / 1.5) if hit > 60 else 70 + (edge / 2))))
             
             grade = "S" if edge > 22 and hit >= 70 else "A+" if edge > 15 and hit >= 60 else "A"
-            st.session_state.results = {"grade": grade, "proj": proj, "edge": edge, "line": line, "side": side, "hit": hit, "conf": conf, "units": 2.5 if grade == "S" else 1.0}
-        except: st.error("Verification failed.")
+            st.session_state.results = {"grade": grade, "proj": proj, "edge": edge, "line": m_line, "side": m_side, "hit": hit, "conf": conf, "units": 2.5 if grade == "S" else 1.0}
+        except: st.error("L10 Calculation Error.")
 
 # --- 💎 OUTPUT ---
 with col_r:
     if st.session_state.results:
         res = st.session_state.results
         
-        # 🟢 Decision Plate
+        # 🟢 Internal Grade Board
         st.markdown(f"""
-        <div style="background:#1a1c23; border:1px solid #333; border-radius:15px; padding:25px; text-align:center; margin-bottom:15px;">
+        <div style="background:#1a1c23; border: 1px solid #333; border-radius:15px; padding:25px; text-align:center; margin-bottom:15px;">
             <div style="color:#888; font-size:12px; font-weight:bold;">MODEL GRADE</div>
             <div style="font-size: 110px; font-weight: 900; color: #FFD700; line-height:1;">{res['grade']}</div>
             <div style="color:{'#00FF00' if res['side'] == 'Over' else '#FF4B4B'}; font-weight:bold; font-size:24px;">{res['side'].upper()} {res['line']}</div>
         </div>
         """, unsafe_allow_html=True)
         
-        # 🟢 Professional 4-Column Grid
+        # 🟢 Optimized Analytics Grid (4 Columns)
         e_color = "#00FF00" if res['edge'] > 18 else "#FFD700" if res['edge'] > 8 else "#FF4B4B"
         h_color = "#00FF00" if res['hit'] >= 65 else "#FFD700" if res['hit'] >= 45 else "#FF4B4B"
 
         g1, g2, g3, g4 = st.columns(4)
-        with g1: st.markdown(f"""<div class="metric-card"><div class="stat-label">PROJ</div><div class="stat-value">{res['proj']:.1f}</div></div>""", unsafe_allow_html=True)
-        with g2: st.markdown(f"""<div class="metric-card"><div class="stat-label">EDGE %</div><div class="stat-value" style="color:{e_color};">+{res['edge']:.1f}%</div></div>""", unsafe_allow_html=True)
-        with g3: st.markdown(f"""<div class="metric-card"><div class="stat-label">HIT %</div><div class="stat-value" style="color:{h_color};">{res['hit']:.0f}%</div></div>""", unsafe_allow_html=True)
-        with g4: st.markdown(f"""<div class="metric-card"><div class="stat-label">CONF</div><div class="stat-value">{res['conf']:.0f}%</div></div>""", unsafe_allow_html=True)
+        with g1: st.markdown(f"""<div class="analytics-card"><div class="label-pro">PROJ</div><div class="value-pro">{res['proj']:.1f}</div></div>""", unsafe_allow_html=True)
+        with g2: st.markdown(f"""<div class="analytics-card"><div class="label-pro">EDGE %</div><div class="value-pro" style="color:{e_color};">+{res['edge']:.1f}%</div></div>""", unsafe_allow_html=True)
+        with g3: st.markdown(f"""<div class="analytics-card"><div class="label-pro">HIT %</div><div class="value-pro" style="color:{h_color};">{res['hit']:.0f}%</div></div>""", unsafe_allow_html=True)
+        with g4: st.markdown(f"""<div class="analytics-card"><div class="label-pro">CONF</div><div class="value-pro">{res['conf']:.0f}%</div></div>""", unsafe_allow_html=True)
 
         st.divider()
         if st.checkbox("💎 Generate Social Media Share Card"):
             arrow = "▲" if res['side'] == "Over" else "▼"
+            # 🛡️ THE CSS SHIELD
             st.markdown(f"""
 <div style="background-color:#121212; border:2px solid #FFD700; border-radius:20px; padding:35px; width:450px; margin:auto; color:white; text-align:center; font-family:sans-serif;">
 <div style="font-size:48px; font-weight:900; margin:0; line-height:1;">{st.session_state.p_tag.upper()}</div>
@@ -217,12 +224,12 @@ with col_r:
 </div>
 </div>
 <div style="background:rgba(255,215,0,0.1); border:1px solid #FFD700; border-radius:15px; padding:15px; margin-bottom:25px;">
-<div style="color:#FFD700; font-size:12px; font-weight:bold;">CONFIDENCE: {res['conf']:.0f}% | {res['units']} UNITS</div>
+<div style="color:#FFD700; font-size:12px; font-weight:bold;">CONFIDENCE: {res['conf']:.0f}% | SUGGESTED PLAY: {res['units']} UNITS</div>
 </div>
 <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; border-top:1px solid #333; padding-top:20px;">
 <div><div style="font-size:10px; color:#666; font-weight:bold;">PROJ</div><div style="font-size:22px; font-weight:900;">{res['proj']:.1f}</div></div>
 <div><div style="font-size:10px; color:#666; font-weight:bold;">EDGE</div><div style="font-size:22px; font-weight:900;">+{res['edge']:.1f}%</div></div>
-<div><div style="font-size:10px; color:#666; font-weight:bold;">HIT HIT</div><div style="font-size:22px; font-weight:900;">{res['hit']:.0f}%</div></div>
+<div><div style="font-size:10px; color:#666; font-weight:bold;">L10 HIT</div><div style="font-size:22px; font-weight:900;">{res['hit']:.0f}%</div></div>
 </div>
 <div style="color: #4A90E2; letter-spacing: 4px; font-size: 11px; margin-top: 30px; font-weight: bold;">ANALYSIS BY SLEEPER D. KID</div>
 </div>
