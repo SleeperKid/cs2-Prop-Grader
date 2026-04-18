@@ -28,20 +28,63 @@ def load_vault():
         st.error(f"Vault Connection Failure: {e}")
         return pd.DataFrame()
 
+def load_intel_vault():
+    """Loads proprietary scouting data."""
+    if os.path.exists("intel_vault.json"):
+        with open("intel_vault.json", "r") as f: return json.load(f)
+    return {"teams": {}, "maps": {}}
+
 # ==========================================
-# 🧠 AI & STATE ENGINE (V84: KPR AUTO-POP)
+# 🧠 AI ADVISOR ENGINE (V85: SLIDER AUTOMATION)
 # ==========================================
+def ai_advisor_engine():
+    """
+    Analyzes all inputs + Intel Vault to physically move sliders.
+    """
+    intel = load_intel_vault()
+    # Temporary weights for calculation
+    weights = {"h2h": 1.0, "tier": 1.0, "map": 1.0, "int": 1.0}
+    reasons = []
+
+    # Contextual awareness
+    maps = st.session_state.get('p_maps', "").lower()
+    context = st.session_state.get('m_context', "").lower()
+    m1_kpr = st.session_state.get('m1_kpr_input', 0.82)
+
+    # 1. Team Intel Check
+    for team, data in intel.get("teams", {}).items():
+        if team.lower() in context:
+            weights["tier"] = data.get("tier_weight", 1.0)
+            reasons.append(f"📡 Intel Found: {data.get('scouting_note', 'Opponent data synced.')}")
+
+    # 2. Map Intel Check
+    for m_name, m_data in intel.get("maps", {}).items():
+        if m_name.lower() in maps:
+            weights["map"] = m_data.get("difficulty_modifier", 1.0)
+            reasons.append(f"🗺️ Map Data: {m_name.title()} is {m_data.get('type', 'standard')}.")
+
+    # 3. KPR Momentum
+    if m1_kpr > 0.88:
+        weights["int"] = 1.05
+        reasons.append("🔥 Momentum: High manual KPR suggests player is peaking.")
+
+    # Apply findings to Session State (This physically moves the sliders)
+    st.session_state.w_h2h = weights["h2h"]
+    st.session_state.w_tier = weights["tier"]
+    st.session_state.w_map = weights["map"]
+    st.session_state.w_int = weights["int"]
+    st.session_state.ai_thoughts = reasons
+
 def sync_player_data():
-    """CALLBACK: Snaps data from Sheet to UI."""
+    """CALLBACK: Auto-populates KPR and basic info."""
     if st.session_state.player_selector != "Manual Entry":
         row = df[df['Player'] == st.session_state.player_selector].iloc[0]
         
-        # 🟢 AUTO-POPULATE BASELINE KPR
+        # Snap global baseline to Map 1/2 fields
         base_kpr = safe_float(row.get('KPR'), 0.82)
         st.session_state.m1_kpr_input = base_kpr
         st.session_state.m2_kpr_input = base_kpr
         
-        # Standard Info
         st.session_state.p_tag = str(row.get('Player', ''))
         st.session_state.l10 = str(row.get('L10', '')).replace('"', '')
         st.session_state.m_context = f"{row.get('Team', 'Free Agent')} vs "
@@ -50,34 +93,24 @@ def sync_player_data():
             st.session_state.adr = safe_float(row.get('ADR'), 140.0)
 
 # ==========================================
-# 🎨 PRODUCTION CSS (OPTIMIZED CARD)
+# 🎨 PRODUCTION UI & CSS (FIXED CARD)
 # ==========================================
 st.set_page_config(page_title="Prop Grader Elite", layout="wide")
 df = load_vault()
 
-# Initialize State
+# Persistent state initialization
 defaults = {
     'p_tag': "", 'l10': "", 'm_context': "", 'p_maps': "", 
-    'm1_kpr_input': 0.82, 'm2_kpr_input': 0.82, 'results': None
+    'm1_kpr_input': 0.82, 'm2_kpr_input': 0.82, 'results': None,
+    'w_h2h': 1.0, 'w_tier': 1.0, 'w_map': 1.0, 'w_int': 1.0, 'ai_thoughts': []
 }
 for key, val in defaults.items():
     if key not in st.session_state: st.session_state[key] = val
 
 st.markdown("""
 <style>
-    /* THE GLOW S-GRADE FIX */
-    .grade-container {
-        position: relative; width: 140px; text-align: center;
-    }
-    .glow-grade {
-        font-size: 130px; font-weight: 900; color: #FFD700;
-        text-shadow: 0 0 30px rgba(255, 215, 0, 0.6); line-height: 0.8;
-        margin: 0; padding: 0;
-    }
-    .suggested-play-box {
-        background: linear-gradient(180deg, rgba(255,215,0,0.1) 0%, rgba(0,0,0,0) 100%);
-        border: 1px solid #FFD700; border-radius: 18px; padding: 22px; margin: 25px 0;
-    }
+    .ai-bubble { background-color: #1a1c23; border-left: 5px solid #4A90E2; padding: 12px; border-radius: 8px; margin-top: 10px; font-size: 13px; color: #d1d1d1; }
+    .glow-grade { font-size: 130px; font-weight: 900; color: #FFD700; text-shadow: 0 0 30px rgba(255, 215, 0, 0.6); line-height: 0.8; }
     .pill-over { color: #00FF00; border: 1px solid #00FF00; padding: 6px 16px; border-radius: 10px; font-weight: 900; font-size: 20px; }
     .pill-under { color: #FF0000; border: 1px solid #FF0000; padding: 6px 16px; border-radius: 10px; font-weight: 900; font-size: 20px; }
 </style>
@@ -88,15 +121,22 @@ st.markdown("""
 # ==========================================
 with st.sidebar:
     st.title("⚖️ Scrutiny Layer")
-    w_h2h = st.slider("H2H Advantage", 0.8, 1.2, 1.0, 0.05)
-    w_tier = st.slider("Opponent Tier", 0.8, 1.2, 1.0, 0.05)
-    w_map = st.slider("Map Fit", 0.8, 1.2, 1.0, 0.05)
-    w_int = st.slider("Pressure/Form", 0.8, 1.2, 1.0, 0.05)
+    
+    st.subheader("🤖 AI Advisor")
+    if st.button("🧠 CONSULT AI & ADJUST SLIDERS", use_container_width=True):
+        ai_advisor_engine() # This moves the session state
+        st.success("AI Scout successful. Sliders adjusted.")
+
+    if st.session_state.ai_thoughts:
+        thought_html = "".join([f"<li>{t}</li>" for t in st.session_state.ai_thoughts])
+        st.markdown(f'<div class="ai-bubble"><ul>{thought_html}</ul></div>', unsafe_allow_html=True)
     
     st.divider()
-    # 🟢 RESTORED: THE AI ADVISOR BUTTON
-    if st.button("🤖 CONSULT AI ADVISOR", use_container_width=True):
-        st.info("AI Analysis: Based on weighted projection, current form suggests a +12% edge on frag-heavy maps.")
+    # Sliders pull directly from the session state updated by the AI
+    st.session_state.w_h2h = st.slider("H2H Advantage", 0.8, 1.2, st.session_state.w_h2h, 0.05)
+    st.session_state.w_tier = st.slider("Opponent Tier", 0.8, 1.2, st.session_state.w_tier, 0.05)
+    st.session_state.w_map = st.slider("Map Fit", 0.8, 1.2, st.session_state.w_map, 0.05)
+    st.session_state.w_int = st.slider("Pressure/Form", 0.8, 1.2, st.session_state.w_int, 0.05)
 
 # ==========================================
 # 🕵️ MAIN BODY: OPERATIONS
@@ -116,7 +156,6 @@ with col_l:
     
     if st.session_state.game_choice == "CS2":
         c1, c2 = st.columns(2)
-        # 🟢 THESE NOW AUTO-POPULATE VIA CALLBACK
         c1.number_input("Map 1 KPR", key="m1_kpr_input", format="%.2f")
         c2.number_input("Map 2 KPR", key="m2_kpr_input", format="%.2f")
     else:
@@ -124,33 +163,31 @@ with col_l:
         
     st.text_area("L10 Data (CSV)", key="l10")
     
-    st.divider()
     cl, cs = st.columns(2)
     m_line = cl.number_input("Prop Line", value=31.5, step=0.5)
     m_side = cs.selectbox("Target Side", ["Over", "Under"])
     
-    if st.button("🚀 EXECUTE GRADING ENGINE", use_container_width=True):
-        # Calculation Logic
+    if st.button("🚀 EXECUTE ENGINE", use_container_width=True):
         try:
             vals = [float(x.strip()) for x in st.session_state.l10.split(",") if x.strip()]
-            t_weight = w_h2h * w_tier * w_map * w_int
+            t_weight = st.session_state.w_h2h * st.session_state.w_tier * st.session_state.w_map * st.session_state.w_int
             proj = ((st.session_state.m1_kpr_input + st.session_state.m2_kpr_input) / 2) * 48 * t_weight
             edge = (proj - m_line) / m_line * 100 if m_side == "Over" else (m_line - proj) / m_line * 100
             st.session_state.results = {"grade": "S" if edge > 15 else "A", "edge": edge, "proj": proj, "line": m_line, "side": m_side, "hit": 70, "prob": 88, "units": 2.5}
-        except: st.error("Check L10 Data")
+        except: st.error("Calc Error")
 
 with col_r:
     if st.session_state.results:
         res = st.session_state.results
         
-        # 🟢 RESTORED: THE SHARE TEXT BOX
-        st.text_area("📋 Copy for Discord", f"🚨 {st.session_state.p_tag.upper()} {res['side'].upper()}\nLine: {res['line']} | Proj: {res['proj']:.1f}\nGrade: {res['grade']}")
+        # Discord Copy Box
+        st.text_area("📋 Copy for Discord", f"🚨 {st.session_state.p_tag.upper()} {res['side'].upper()}\nLine: {res['line']} | Grade: {res['grade']}")
 
         if st.checkbox("💎 Generate Sleeper D. Kid Social Card"):
             pill = "pill-over" if res['side'] == "Over" else "pill-under"
             arrow = "▲" if res['side'] == "Over" else "▼"
             
-            # 🟢 OPTIMIZED CSS SIZING
+            # FIXED HTML INJECTION
             st.markdown(f"""
             <div style="background-color: #121212; border: 2px solid #FFD700; border-radius: 25px; padding: 40px; width: 450px; margin: auto; color: white; text-align: center; font-family: sans-serif;">
                 <div style="color: #888; letter-spacing: 3px; font-size: 13px; margin-bottom:12px;">{st.session_state.game_choice.upper()} PROP ANALYSIS</div>
@@ -164,13 +201,13 @@ with col_r:
                         <div style="color:#888; font-size:18px; margin-bottom:18px;">KILLS</div>
                         <span class="{pill}">{arrow} {res['side'].upper()}</span>
                     </div>
-                    <div class="grade-container">
+                    <div style="width: 140px; text-align: center;">
                         <div style="color:#888; font-size:11px; font-weight:bold; margin-bottom:12px;">MODEL GRADE</div>
                         <div class="glow-grade">{res['grade']}</div>
                     </div>
                 </div>
                 
-                <div class="suggested-play-box">
+                <div style="background: linear-gradient(180deg, rgba(255,215,0,0.1) 0%, rgba(0,0,0,0) 100%); border: 1px solid #FFD700; border-radius: 18px; padding: 22px; margin: 25px 0;">
                     <div style="color: #FFD700; font-weight: bold; font-size: 14px; letter-spacing:2px;">SUGGESTED PLAY</div>
                     <div style="font-size: 44px; font-weight: 900;">{res['units']} UNITS</div>
                 </div>
