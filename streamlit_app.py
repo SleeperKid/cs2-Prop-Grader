@@ -22,14 +22,9 @@ def parse_l10(l10_str):
         return [int(x.strip()) for x in clean_str.split(",") if x.strip().isdigit()]
     except: return []
 
-def load_intel(game_choice):
+def load_intel():
     if os.path.exists("intel_vault.json"):
-        try:
-            with open("intel_vault.json", "r") as f: 
-                full_vault = json.load(f)
-                key = "VAL" if "Val" in game_choice else "CS2"
-                return full_vault.get(key, {})
-        except: return {}
+        with open("intel_vault.json", "r") as f: return json.load(f)
     return {}
 
 @st.cache_data(ttl=0)
@@ -42,44 +37,48 @@ def load_vault():
     return pd.concat([val_df, cs_df], ignore_index=True).fillna("N/A")
 
 # ==========================================
-# 🎨 UI & STYLING
+# 🎨 UI & SOVEREIGN CSS
 # ==========================================
-st.set_page_config(page_title="Prop Grader Elite V140", layout="wide", page_icon="🎯")
+st.set_page_config(page_title="Prop Grader Elite V141", layout="wide", page_icon="🎯")
 st.markdown("""
 <style>
     .main { background-color: #0e1117; }
-    div.stButton > button:first-child {
-        background: linear-gradient(135deg, #238636 0%, #2ea043 100%);
-        color: white; border: none; padding: 18px; border-radius: 12px; width: 100%; font-weight: bold;
-    }
     .analyst-card { 
         padding: 40px; border-radius: 30px; text-align: center; 
         box-shadow: 0 15px 45px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.15);
         margin-bottom: 25px; color: white;
     }
     .analyst-grade { font-size: 130px; font-weight: 900; margin: 0; line-height: 1; }
+    .share-container {
+        background-color: #121212; border: 3px solid #FFD700; border-radius: 20px;
+        padding: 30px; width: 450px; margin: 20px auto; color: white; text-align: center;
+        font-family: 'Courier New', monospace;
+    }
 </style>
 """, unsafe_allow_html=True)
 
 # ==========================================
 # 🧠 SOVEREIGN STATE MANAGEMENT
 # ==========================================
-if 'h2h_val' not in st.session_state: st.session_state.h2h_val = 1.0
-if 'lan_boost' not in st.session_state: st.session_state.lan_boost = 1.0
-if 'econ_adj' not in st.session_state: st.session_state.econ_adj = 1.0
-if 'map_veto' not in st.session_state: st.session_state.map_veto = 1.0
+# Slider keys must exist in session state to be auto-adjusted
+slider_keys = ['h2h_val', 'tier_val', 'map_val', 'int_val', 'lan_val', 'econ_val']
+for k in slider_keys:
+    if k not in st.session_state: st.session_state[k] = 1.0
+
 if 'ai_advice' not in st.session_state: st.session_state.ai_advice = ""
 if 'results' not in st.session_state: st.session_state.results = None
-
-st.title("🎯 Prop Grader Elite")
-st.caption("Strategic Context: V140 Active Slider Injection | MR12 Multi-KPR")
-
-game_choice = st.radio("Target Game", ["CS2", "Valorant"], horizontal=True)
-intel_context = load_intel(game_choice)
 
 # ==========================================
 # ⚙️ SIDEBAR: COMMAND CENTER
 # ==========================================
+df = load_vault()
+IV = load_intel()
+
+st.title("🎯 Prop Grader Elite")
+game_choice = st.radio("Target Game", ["CS2", "Valorant"], horizontal=True)
+game_key = "VAL" if "Val" in game_choice else "CS2"
+foundation = IV.get(game_key, {})
+
 with st.sidebar:
     st.header("🛡️ Strategic Weights")
     
@@ -87,33 +86,44 @@ with st.sidebar:
         api_key = st.secrets.get("GROQ_API_KEY")
         if api_key:
             client = Groq(api_key=api_key)
-            prompt = f"Expert {game_choice} Analyst. Tournament Tiers: {intel_context.get('tournaments')}. Archetypes: {intel_context.get('strat_archetypes')}. Suggest 4 weights (0.85-1.15) for H2H, LAN, Econ, Map in brackets [1.05]."
+            # Context Building
+            p_context = st.session_state.get('p_tag_input', 'Selected Player')
+            m_context = st.session_state.get('m_context_input', '')
+            
+            prompt = f"""
+            Expert {game_choice} Analyst. 
+            FOUNDATION DATA: {foundation}
+            MATCH CONTEXT: {p_context} in {m_context}.
+            
+            Using the archetypes and map data provided, suggest 6 weights (0.85-1.15) for:
+            H2H, Tier, Map, Intensity, LAN, Economy.
+            Format EXACTLY like this: [1.05], [0.95], [1.10], [1.00], [1.02], [0.98].
+            Explain your reasoning based on the .json archetypes.
+            """
             res = client.chat.completions.create(model="llama-3.3-70b-versatile", messages=[{"role":"user","content":prompt}], temperature=0.01)
             advice = res.choices[0].message.content
             st.session_state.ai_advice = advice
             
-            # V140: Slider Auto-Injection
+            # V141: Active Slider Injection
             weights = re.findall(r"\[(\d+(?:\.\d+)?)\]", advice)
-            if len(weights) >= 4:
-                st.session_state.h2h_val = float(weights[0])
-                st.session_state.lan_boost = float(weights[1])
-                st.session_state.econ_adj = float(weights[2])
-                st.session_state.map_veto = float(weights[3])
+            if len(weights) >= 6:
+                for idx, k in enumerate(slider_keys):
+                    st.session_state[k] = float(weights[idx])
                 st.rerun()
 
     if st.session_state.ai_advice: st.info(st.session_state.ai_advice)
     
-    # Use key parameter to link sliders to session state
     st.slider("H2H Advantage", 0.80, 1.20, key="h2h_val")
-    st.slider("LAN/Rio Crowd Factor", 0.90, 1.10, key="lan_boost")
-    st.slider("Economy Discipline", 0.85, 1.15, key="econ_adj")
-    st.slider("Map Pool Depth", 0.95, 1.05, key="map_veto")
+    st.slider("Opponent Tier", 0.80, 1.20, key="tier_val")
+    st.slider("Map Fit/Veto", 0.80, 1.20, key="map_val")
+    st.slider("Match Intensity", 0.70, 1.10, key="int_val")
+    st.slider("LAN/Rio Crowd", 0.90, 1.10, key="lan_val")
+    st.slider("Economy (MR12)", 0.85, 1.15, key="econ_val")
 
 # ==========================================
 # 🕵️ DEEP PROFILE ANALYZER
 # ==========================================
 col_l, col_r = st.columns([1, 1.2], gap="large")
-df = load_vault()
 
 with col_l:
     st.subheader("🕵️ Vault Intelligence")
@@ -130,23 +140,22 @@ with col_l:
         l10_val = str(row['L10'])
         kpr_baseline = safe_float(row.get('KPR' if game_choice == "CS2" else 'ADR'), kpr_baseline)
 
-    p_tag = st.text_input("Player Tag", value=p_tag_val)
-    m_context = st.text_input("Match Context", value=m_context_val)
-    opp_rank = st.number_input("Opponent World Rank", value=10, step=1)
+    p_tag = st.text_input("Player Tag", value=p_tag_val, key="p_tag_input")
+    m_context = st.text_input("Match Context", value=m_context_val, key="m_context_input")
     
     if game_choice == "CS2":
         ck1, ck2 = st.columns(2)
-        m1_kpr = ck1.number_input("Map 1 Projected KPR", value=float(kpr_baseline), format="%.2f")
-        m2_kpr = ck2.number_input("Map 2 Projected KPR", value=float(kpr_baseline), format="%.2f")
+        m1_kpr = ck1.number_input("M1 Projected KPR", value=float(kpr_baseline), format="%.2f")
+        m2_kpr = ck2.number_input("M2 Projected KPR", value=float(kpr_baseline), format="%.2f")
     else:
         base_stat = st.number_input("Projected ADR", value=float(kpr_baseline))
 
-    l10_data = st.text_area("L10 Match History (Comma Separated)", value=l10_val)
+    l10_data = st.text_area("L10 Match History", value=l10_val)
     m_line = st.number_input("Prop Line", value=35.5, step=0.5)
     m_side = st.selectbox("Side", ["Over", "Under"])
     m_odds = st.number_input("Odds", value=-120)
 
-if st.button("🚀 GENERATE V140 ELITE GRADE"):
+if st.button("🚀 GENERATE V141 ELITE GRADE"):
     l10_list = parse_l10(l10_data)
     stdev = max(np.std(l10_list, ddof=1) if len(l10_list) > 1 else 3.5, 3.5)
     
@@ -165,14 +174,16 @@ if st.button("🚀 GENERATE V140 ELITE GRADE"):
         elif streak_hits <= 1: streak_bonus = 0.95
     
     # 3. Comprehensive Weights (Linked to Sidebar)
-    final_proj = base_proj * st.session_state.h2h_val * st.session_state.lan_boost * st.session_state.econ_adj * st.session_state.map_veto * streak_bonus
+    final_proj = base_proj * st.session_state.h2h_val * st.session_state.tier_val * \
+                 st.session_state.map_val * st.session_state.int_val * \
+                 st.session_state.lan_val * st.session_state.econ_val * streak_bonus
     
     prob = (1 - norm.cdf(m_line, loc=final_proj, scale=stdev)) * 100 if m_side == "Over" else norm.cdf(m_line, loc=final_proj, scale=stdev) * 100
     implied = (abs(m_odds)/(abs(m_odds)+100))*100 if m_odds < 0 else (100/(m_odds+100))*100
     edge = prob - implied
     
     st.session_state.results = {
-        "player": p_tag, "context": m_context,
+        "player": p_tag, "context": m_context, "line": m_line, "side": m_side,
         "grade": "S" if edge >= 12 else "A+" if edge >= 8 else "A" if edge >= 3 else "B",
         "units": 2.5 if edge >= 12 else 2.0 if edge >= 8 else 1.0,
         "proj": final_proj, "prob": prob, "edge": edge, "hits": streak_hits,
@@ -180,13 +191,13 @@ if st.button("🚀 GENERATE V140 ELITE GRADE"):
     }
 
 # ==========================================
-# 📊 RESULTS DISPLAY
+# 📊 RESULTS & SOCIAL CARD
 # ==========================================
 if st.session_state.results:
     res = st.session_state.results
     with col_r:
         st.markdown(f"""<div class="analyst-card" style="background: {res['color']};">
-            <p style="font-size: 18px; opacity: 0.8; margin-bottom: 0;">{res['context']} (Rank #{opp_rank})</p>
+            <p style="font-size: 18px; opacity: 0.8; margin-bottom: 0;">{res['context']}</p>
             <h2 style="margin-top: 0;">{res['player']}</h2>
             <h1 class="analyst-grade">{res['grade']}</h1>
             <div style="font-size: 26px; font-weight: bold;">{res['units']} UNIT PLAY</div>
@@ -195,4 +206,18 @@ if st.session_state.results:
         c1, c2 = st.columns(2)
         c1.metric("Projected Total", f"{res['proj']:.1f}")
         c2.metric("Edge (%)", f"{res['edge']:.1f}%")
-        st.write(f"**Win Probability:** {res['prob']:.1f}%")
+        
+        # SOCIAL MEDIA EXPORT
+        st.divider()
+        if st.checkbox("Generate Social Media Card"):
+            st.markdown(f"""
+            <div class="share-container">
+                <div style="color: #FFD700; font-weight: bold;">🎯 PROP GRADER ELITE</div>
+                <hr style="border: 1px solid #333;">
+                <div style="font-size: 24px;">{res['player']}</div>
+                <div style="font-size: 16px; opacity: 0.7;">{res['context']}</div>
+                <div style="font-size: 40px; margin: 15px 0;">{res['line']} {res['side'].upper()}</div>
+                <div style="font-size: 80px; font-weight: 900; color: #FFD700;">{res['grade']}</div>
+                <div style="font-size: 20px;">{res['units']} UNITS | {res['prob']:.1f}% PROB</div>
+            </div>
+            """, unsafe_allow_html=True)
