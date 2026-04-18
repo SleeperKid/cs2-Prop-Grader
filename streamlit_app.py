@@ -6,7 +6,7 @@ import os
 from scipy.stats import norm
 from streamlit_gsheets import GSheetsConnection
 
-# --- 🛠️ DATA PERSISTENCE & UTILITIES ---
+# --- ⚙️ UTILITIES & DATA ---
 def safe_float(val, default=0.0):
     try:
         if pd.isna(val) or val == "N/A" or val == "": return default
@@ -29,50 +29,40 @@ def load_intel_vault():
         with open("intel_vault.json", "r") as f: return json.load(f)
     return {}
 
-# --- 🧠 AI ADVISOR: THE BRAIN ---
+# --- 🧠 AI & STATE ENGINE ---
 def run_ai_advisor():
-    """Reads deep from the Intel Vault JSON and moves sliders."""
+    """Reads deep intel and nudges sliders."""
     full_intel = load_intel_vault()
     game_key = "CS2" if st.session_state.game_choice == "CS2" else "VAL"
     intel = full_intel.get(game_key, {})
     
-    # 🟢 STEP 1: READ LIVE TEXT BOX DATA
-    context = st.session_state.get('m_context', "").lower()
-    maps = st.session_state.get('p_maps', "").lower()
-    m1_kpr = st.session_state.get('m1_kpr_input', 0.82)
-    tier_choice = st.session_state.get('tier_select', "S-Tier (Elite)")
+    # Read current state
+    context = st.session_state.m_context.lower()
+    maps = st.session_state.p_maps.lower()
+    m1_kpr = st.session_state.m1_kpr_input
+    tier_choice = st.session_state.tier_select
     
-    # Defaults
     analysis = {
-        "w_h2h": {"val": 1.00, "note": "Matchup looks standard."},
-        "w_tier": {"val": 1.00, "note": "Standard competition tier."},
-        "w_map": {"val": 1.00, "note": "Neutral map fit."},
-        "w_int": {"val": 1.00, "note": "Baseline momentum."}
+        "w_h2h": {"val": 1.00, "note": "Neutral."},
+        "w_tier": {"val": 1.00, "note": "Standard."},
+        "w_map": {"val": 1.00, "note": "Standard."},
+        "w_int": {"val": 1.00, "note": "Standard."}
     }
 
-    # 🟢 STEP 2: PARSE TOURNAMENT PRESSURE
-    tourney_data = intel.get("tournaments", {})
-    if tier_choice in tourney_data:
-        # Mapping Tier to Logic (Expert Guidance)
-        if "S-Tier" in tier_choice: analysis["w_tier"]["val"] = 0.90
-        elif "Regional" in tier_choice: analysis["w_tier"]["val"] = 1.15
-        analysis["w_tier"]["note"] = f"TIER INTEL: {tourney_data[tier_choice]}"
-
-    # 🟢 STEP 3: PARSE TEAM ARCHETYPES & STYLES
-    for team, style_info in intel.get("team_styles", {}).items():
+    # Intel Logic
+    for team, style in intel.get("team_styles", {}).items():
         if team.lower() in context:
-            analysis["w_h2h"]["note"] = f"TEAM INTEL ({team}): {style_info}"
-            if "Tactical Executioners" in style_info: analysis["w_h2h"]["val"] = 0.95
-            if "Force-Buy Aggressors" in style_info: analysis["w_h2h"]["val"] = 1.10
+            analysis["w_tier"]["note"] = f"Intel: {style}"
+            if "Tactical" in style: analysis["w_tier"]["val"] = 0.90
+            if "Aggressors" in style: analysis["w_tier"]["val"] = 1.10
 
-    # 🟢 STEP 4: PARSE MAP DESCRIPTIONS
-    for map_name, map_desc in intel.get("maps", {}).items():
-        if map_name.lower() in maps:
-            analysis["w_map"]["note"] = f"MAP INTEL ({map_name}): {map_desc}"
-            if "High-exec" in map_desc or "Tactical" in map_desc: analysis["w_map"]["val"] = 0.95
-            if "Aim Map" in map_desc or "Fast-paced" in map_desc: analysis["w_map"]["val"] = 1.15
+    for m_name, m_desc in intel.get("maps", {}).items():
+        if m_name.lower() in maps:
+            analysis["w_map"]["note"] = f"Map: {m_desc[:50]}..."
+            if "High-exec" in m_desc: analysis["w_map"]["val"] = 0.95
+            if "Aim Map" in m_desc: analysis["w_map"]["val"] = 1.10
 
-    # 🟢 STEP 5: SYNC & RERUN
+    # Apply & Rerun
     st.session_state.w_h2h = analysis["w_h2h"]["val"]
     st.session_state.w_tier = analysis["w_tier"]["val"]
     st.session_state.w_map = analysis["w_map"]["val"]
@@ -81,58 +71,47 @@ def run_ai_advisor():
     st.rerun()
 
 def sync_player_data():
-    """Auto-populates fields and KPR upon selection."""
+    """Auto-populates and locks data to state."""
     if st.session_state.player_selector != "Manual Entry":
         row = df[df['Player'] == st.session_state.player_selector].iloc[0]
         base_kpr = safe_float(row.get('KPR'), 0.82)
+        
         st.session_state.p_tag = str(row.get('Player', ''))
         st.session_state.l10 = str(row.get('L10', '')).replace('"', '')
         st.session_state.m_context = f"{row.get('Team', 'Free Agent')} vs "
-        # 🟢 THIS ENSURES THE KPR BOXES UPDATE ON SELECTION
         st.session_state.m1_kpr_input = base_kpr
         st.session_state.m2_kpr_input = base_kpr
 
-# --- 🎨 UI INITIALIZATION ---
+# --- 🎨 UI CONFIG ---
 st.set_page_config(page_title="Prop Grader Elite", layout="wide")
 df = load_vault()
 
-# 🛡️ THE PERSISTENCE LOCK (No clearing on rerun)
-if 'initialized' not in st.session_state:
-    st.session_state.p_tag = ""
-    st.session_state.m_context = ""
-    st.session_state.p_maps = ""
-    st.session_state.l10 = ""
-    st.session_state.m1_kpr_input = 0.82
-    st.session_state.m2_kpr_input = 0.82
-    st.session_state.w_h2h = 1.0
-    st.session_state.w_tier = 1.0
-    st.session_state.w_map = 1.0
-    st.session_state.w_int = 1.0
-    st.session_state.ai_report = None
-    st.session_state.results = None
-    st.session_state.initialized = True
+# Initialize all keys globally to prevent resets
+defaults = {
+    'p_tag': "", 'm_context': "", 'p_maps': "", 'l10': "", 
+    'm1_kpr_input': 0.82, 'm2_kpr_input': 0.82, 'w_h2h': 1.0, 
+    'w_tier': 1.0, 'w_map': 1.0, 'w_int': 1.0, 'ai_report': None, 'results': None
+}
+for k, v in defaults.items():
+    if k not in st.session_state: st.session_state[k] = v
 
-# --- 🛰️ SIDEBAR: AI ADVISOR ---
+# --- 🛰️ SIDEBAR: AI & WEIGHTS ---
 with st.sidebar:
     st.title("⚖️ Scrutiny Layer")
-    
     if st.button("🤖 CONSULT AI ADVISOR", use_container_width=True):
         run_ai_advisor()
-
+    
     if st.session_state.ai_report:
-        st.write("---")
         for k, data in st.session_state.ai_report.items():
-            st.markdown(f"**{k.split('_')[1].upper()}: {data['val']:.2f}**")
-            st.caption(data['note'])
+            st.caption(f"**{k.upper()}: {data['val']}** - {data['note']}")
     
     st.divider()
-    # 🟢 SLIDERS ARE HARD-KEYED
     st.slider("H2H Advantage", 0.8, 1.2, key="w_h2h", step=0.05)
     st.slider("Opponent Tier", 0.8, 1.2, key="w_tier", step=0.05)
     st.slider("Map Fit", 0.8, 1.2, key="w_map", step=0.05)
     st.slider("Pressure/Form", 0.8, 1.2, key="w_int", step=0.05)
 
-# --- 🕵️ MAIN BODY: OPERATIONS ---
+# --- 🕵️ MAIN BODY: DATA ENTRY ---
 st.radio("Game Mode", ["CS2", "Valorant"], key="game_choice", horizontal=True)
 players = df[df['Game'] == st.session_state.game_choice]['Player'].tolist() if not df.empty else []
 
@@ -146,13 +125,13 @@ with col_l:
     st.text_input("Match Context", key="m_context")
     st.text_input("Projected Maps", key="p_maps")
     
-    # 🟢 TIER SELECTOR FOR AI
-    tiers = list(load_intel_vault().get(st.session_state.game_choice, {}).get("tournaments", {}).keys())
-    st.selectbox("Tournament Tier", tiers if tiers else ["S-Tier (Elite)"], key="tier_select")
+    # Tournament Tier
+    t_intel = load_intel_vault().get(st.session_state.game_choice, {}).get("tournaments", {})
+    st.selectbox("Tournament Tier", list(t_intel.keys()) if t_intel else ["S-Tier (Elite)"], key="tier_select")
     
     if st.session_state.game_choice == "CS2":
         c1, c2 = st.columns(2)
-        # 🟢 USE KEY TO PREVENT WIPE
+        # 🟢 CRITICAL: Removed 'value=' to allow 'key=' to manage state without resetting
         c1.number_input("Map 1 KPR", key="m1_kpr_input", format="%.2f")
         c2.number_input("Map 2 KPR", key="m2_kpr_input", format="%.2f")
     else:
@@ -160,53 +139,71 @@ with col_l:
         
     st.text_area("L10 Data (CSV)", key="l10")
     
-    cl, cs = st.columns(2)
-    m_line = cl.number_input("Prop Line", value=31.5, step=0.5)
-    m_side = cs.selectbox("Target Side", ["Over", "Under"])
-    
+    # Lines
+    l_c1, l_c2 = st.columns(2)
+    m_line = l_c1.number_input("Prop Line", value=31.5, step=0.5)
+    m_side = l_c2.selectbox("Side", ["Over", "Under"])
+
     if st.button("🚀 EXECUTE GRADING ENGINE", use_container_width=True):
         try:
-            vals = [float(x.strip()) for x in st.session_state.l10.split(",") if x.strip()]
-            t_weight = st.session_state.w_h2h * st.session_state.w_tier * st.session_state.w_map * st.session_state.w_int
+            v_list = [float(x.strip()) for x in st.session_state.l10.split(",") if x.strip()]
+            weights = st.session_state.w_h2h * st.session_state.w_tier * st.session_state.w_map * st.session_state.w_int
             
             # MATH
-            proj = ((st.session_state.m1_kpr_input + st.session_state.m2_kpr_input) / 2) * 48 * t_weight
-            edge = (proj - m_line) / m_line * 100 if m_side == "Over" else (m_line - proj) / m_line * 100
+            avg_kpr = (st.session_state.m1_kpr_input + st.session_state.m2_kpr_input) / 2
+            proj = avg_kpr * 48 * weights
+            edge = (proj - m_line) if m_side == "Over" else (m_line - proj)
+            edge_pct = (edge / m_line) * 100
+            hit_rate = (sum(1 for v in v_list if (v > m_line if m_side == "Over" else v < m_line)) / len(v_list)) * 100
             
             st.session_state.results = {
-                "grade": "S" if edge > 15 else "A", "edge": edge, "proj": proj, 
-                "line": m_line, "side": m_side, "hit": 70, "prob": 88, "units": 2.5
+                "grade": "S" if edge_pct > 18 else "A+" if edge_pct > 10 else "A",
+                "proj": proj, "edge": edge_pct, "line": m_line, "side": m_side,
+                "hit": hit_rate, "prob": 85 + (edge_pct/5), "units": 2.5 if edge_pct > 18 else 1.0
             }
-        except: st.error("Verification failed.")
+        except: st.error("Data error. Check L10 values.")
 
-# --- 💎 OUTPUT SECTION (NO CSS BLEED) ---
+# --- 📊 MODEL BREAKDOWN & SOCIAL CARD ---
 with col_r:
     if st.session_state.results:
         res = st.session_state.results
-        st.metric("Mathematical Edge", f"+{res['edge']:.1f}%", delta=res['grade'])
-        st.write(f"**AI Recommendation:** Projection is {res['proj']:.1f} kills.")
+        
+        # 🟢 RESTORED DETAILS
+        st.subheader("📊 Model Breakdown")
+        m1, m2, m3 = st.columns(3)
+        m1.metric("Projection", f"{res['proj']:.1f}")
+        m2.metric("Edge", f"+{res['edge']:.1f}%", delta=res['grade'])
+        m3.metric("L10 Hit", f"{res['hit']:.0f}%")
         
         st.write("---")
         
-        # 🟢 CONDITIONAL SHARE CARD
         if st.checkbox("💎 Generate Sleeper D. Kid Social Card"):
             arrow = "▲" if res['side'] == "Over" else "▼"
-            # 🛡️ THE CSS SHIELD (STRICT HTML)
+            # CSS Shielded Card
             st.markdown(f"""
-            <div style="background-color:#121212; border:2px solid #FFD700; border-radius:25px; padding:35px; width:450px; margin:auto; color:white; text-align:center; font-family:sans-serif;">
-                <div style="color:#888; letter-spacing:3px; font-size:13px; margin-bottom:12px;">{st.session_state.game_choice.upper()} PROP ANALYSIS</div>
-                <div style="font-size:50px; font-weight:900; margin:0; line-height:1;">{st.session_state.p_tag.upper()}</div>
-                <div style="color:#4A90E2; font-size:18px; font-weight:bold; margin-bottom:25px; border-bottom:1px solid #333; padding-bottom:18px;">{st.session_state.m_context.upper()}</div>
-                <div style="display:flex; justify-content:space-between; align-items:flex-start; padding:10px 0;">
-                    <div style="text-align:left; flex:1;">
-                        <div style="color:#888; font-size:11px; font-weight:bold;">THE PROP LINE</div>
-                        <div style="font-size:80px; font-weight:900; line-height:1;">{res['line']}</div>
-                        <span style="color:{'#00FF00' if res['side'] == 'Over' else '#FF0000'}; border:1px solid {'#00FF00' if res['side'] == 'Over' else '#FF0000'}; padding:5px 12px; border-radius:8px; font-weight:900;">{arrow} {res['side'].upper()}</span>
+            <div style="background-color:#121212; border:2px solid #FFD700; border-radius:20px; padding:35px; width:450px; margin:auto; color:white; text-align:center; font-family:sans-serif;">
+                <div style="color:#888; font-size:12px; margin-bottom:10px;">{st.session_state.game_choice.upper()} PROP ANALYSIS</div>
+                <div style="font-size:48px; font-weight:900; margin:0;">{st.session_state.p_tag.upper()}</div>
+                <div style="color:#4A90E2; font-size:18px; margin-bottom:20px;">{st.session_state.m_context.upper()}</div>
+                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                    <div style="text-align:left;">
+                        <div style="color:#888; font-size:11px;">PROP LINE</div>
+                        <div style="font-size:75px; font-weight:900; line-height:1;">{res['line']}</div>
+                        <span style="color:{'#00FF00' if res['side'] == 'Over' else '#FF0000'}; border:1px solid {'#00FF00' if res['side'] == 'Over' else '#FF0000'}; padding:4px 10px; border-radius:8px; font-weight:900;">{arrow} {res['side'].upper()}</span>
                     </div>
-                    <div style="width:140px; text-align:center;">
-                        <div style="color:#888; font-size:11px; font-weight:bold; margin-bottom:12px;">MODEL GRADE</div>
-                        <div style="font-size:110px; font-weight:900; color:#FFD700; text-shadow:0 0 25px rgba(255,215,0,0.5); line-height:0.9;">{res['grade']}</div>
+                    <div style="text-align:center;">
+                        <div style="color:#888; font-size:11px;">MODEL GRADE</div>
+                        <div style="font-size:100px; font-weight:900; color:#FFD700; text-shadow:0 0 20px rgba(255,215,0,0.5); line-height:0.9;">{res['grade']}</div>
                     </div>
+                </div>
+                <div style="background:rgba(255,215,0,0.1); border:1px solid #FFD700; border-radius:15px; padding:15px; margin:20px 0;">
+                    <div style="font-size:32px; font-weight:900;">{res['units']} UNITS</div>
+                </div>
+                <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:5px;">
+                    <div><div style="font-size:10px; color:#666;">PROJ</div><div style="font-size:16px; font-weight:900;">{res['proj']:.1f}</div></div>
+                    <div><div style="font-size:10px; color:#666;">EDGE</div><div style="font-size:16px; font-weight:900;">+{res['edge']:.1f}%</div></div>
+                    <div><div style="font-size:10px; color:#666;">CONF</div><div style="font-size:16px; font-weight:900;">{res['prob']:.0f}%</div></div>
+                    <div><div style="font-size:10px; color:#666;">L10 HIT</div><div style="font-size:16px; font-weight:900;">{res['hit']:.0f}%</div></div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
