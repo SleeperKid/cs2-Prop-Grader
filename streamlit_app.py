@@ -36,8 +36,9 @@ def run_ai_advisor():
     context, maps, game = st.session_state.m_context, st.session_state.p_maps, st.session_state.game_choice
     
     sys_prompt = f"""
-    You are 'Sleeper D. Kid' AI. Recommend sliders (0.80-1.20) for H2H, Tier, and Map.
-    OUTPUT: Provide the numbers and a brief logic for each. Stick to Vault data and World Rank.
+    You are 'Sleeper D. Kid' AI. Recommend sliders (0.85-1.15) for H2H, Tier, and Map.
+    OUTPUT: Provide the numbers and a brief logic for each. 
+    NOTE: In the current 2026 meta, S-Tier matches have higher utility usage, lowering KPR.
     VAULT: {json.dumps(intel.get(game, {}))}
     RETURN JSON: {{ "h2h": float, "tier": float, "map": float, "report": "str" }}
     """
@@ -94,7 +95,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- 🕵️ MAIN OPS ---
+# --- 🕵️ MAIN OPERATIONS ---
 col_l, col_r = st.columns([1, 1.2], gap="large")
 
 with col_l:
@@ -117,34 +118,47 @@ with col_l:
         st.selectbox("Role", ["Duelist", "Support"], key="val_role_select")
     
     st.text_area("L10 Data", key="l10")
-    m_line = st.number_input("Prop Line", value=28.5, step=0.5)
-    m_side = st.selectbox("Side", ["Over", "Under"], key="side_select")
+    line = st.number_input("Prop Line", value=28.5, step=0.5)
+    side = st.selectbox("Side", ["Over", "Under"], key="side_select")
 
     if st.button("🚀 EXECUTE GRADE", use_container_width=True):
         try:
+            # 🟢 STEP 1: CALCULATE L10 MEAN
             v_list = [float(x.strip()) for x in st.session_state.l10.split(",") if x.strip()]
-            weights = st.session_state.w_h2h * st.session_state.w_tier * st.session_state.w_map * st.session_state.w_int
+            l10_avg = sum(v_list) / len(v_list)
             
-            # MATH LOGIC
+            # 🟢 STEP 2: DYNAMIC WEIGHTING
+            # Cap the weight product to prevent "runaway" projections
+            raw_weights = st.session_state.w_h2h * st.session_state.w_tier * st.session_state.w_map * st.session_state.w_int
+            capped_weights = min(1.35, max(0.65, raw_weights))
+            
+            # 🟢 STEP 3: GAME-SPECIFIC REGRESSION
             if st.session_state.game_choice == "CS2":
-                proj = ((st.session_state.m1_kpr_input + st.session_state.m2_kpr_input) / 2) * 48 * weights
-                if st.session_state.get('prop_type_select') == "Headshot Kills": proj *= (st.session_state.hs_pct_input / 100)
+                # Anchor to L10 Average, then nudge by the delta of KPR weights
+                base_proj = l10_avg * capped_weights
+                if st.session_state.get('prop_type_select') == "Headshot Kills":
+                    proj = base_proj * (st.session_state.hs_pct_input / 100)
+                else:
+                    proj = base_proj
             else:
-                proj = (st.session_state.adr_input / 140) * 42 * weights * (1.15 if st.session_state.val_role_select == "Duelist" else 0.95)
+                # Valorant: ADR weight applied to L10 Average Kills
+                role_mod = 1.12 if st.session_state.val_role_select == "Duelist" else 0.92
+                proj = l10_avg * capped_weights * role_mod
             
-            edge = ((proj - m_line) / m_line * 100) if m_side == "Over" else ((m_line - proj) / m_line * 100)
-            hit = (sum(1 for v in v_list if (v > m_line if m_side == "Over" else v < m_line)) / len(v_list)) * 100
+            # 🟢 STEP 4: PROFITABILITY METRICS
+            edge = ((proj - line) / line * 100) if side == "Over" else ((line - proj) / line * 100)
+            hit = (sum(1 for v in v_list if (v > line if side == "Over" else v < line)) / len(v_list)) * 100
             
-            # 🟢 THE SHARP'S MATRIX: S-Grade = Perfect Math + Perfect History
+            # THE SHARP'S MATRIX
             grade = "B"
-            if edge > 20 and hit >= 70: grade = "S"
-            elif edge > 25: grade = "A+" # Pure math edge
-            elif hit >= 80 and edge > 8: grade = "A+" # Pure consistency edge
-            elif edge > 12 and hit >= 50: grade = "A"
+            if edge > 18 and hit >= 70: grade = "S"
+            elif edge > 22: grade = "A+"
+            elif hit >= 80 and edge > 5: grade = "A+"
+            elif edge > 10 and hit >= 50: grade = "A"
             
             conf = min(99, max(40, (80 + (edge / 1.5) if hit > 65 else 70 + (edge / 2))))
-            st.session_state.results = {"grade": grade, "proj": proj, "edge": edge, "line": m_line, "side": m_side, "hit": hit, "conf": conf, "units": 2.5 if grade == "S" else 1.0}
-        except: st.error("Verification failed.")
+            st.session_state.results = {"grade": grade, "proj": proj, "edge": edge, "line": line, "side": side, "hit": hit, "conf": conf, "units": 2.5 if grade == "S" else 1.0}
+        except: st.error("L10 Calculation Error.")
 
 # --- 💎 OUTPUT ---
 with col_r:
@@ -173,6 +187,7 @@ with col_r:
 
         if st.checkbox("💎 Generate Social Media Share Card"):
             arrow = "▲" if res['side'] == "Over" else "▼"
+            # 🛡️ THE CSS SHIELD (STRICT HTML)
             st.markdown(f"""
 <div style="background-color:#121212; border:2px solid #FFD700; border-radius:20px; padding:35px; width:450px; margin:auto; color:white; text-align:center; font-family:sans-serif;">
 <div style="font-size:48px; font-weight:900; margin:0; line-height:1;">{st.session_state.p_tag.upper()}</div>
