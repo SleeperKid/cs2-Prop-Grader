@@ -37,9 +37,9 @@ def load_vault():
     return pd.concat([val_df, cs_df], ignore_index=True).fillna("N/A")
 
 # ==========================================
-# 🎨 UI & SOVEREIGN CSS
+# 🎨 UI & SOVEREIGN STYLING
 # ==========================================
-st.set_page_config(page_title="Prop Grader Elite V141", layout="wide", page_icon="🎯")
+st.set_page_config(page_title="Prop Grader Elite V142", layout="wide", page_icon="🎯")
 st.markdown("""
 <style>
     .main { background-color: #0e1117; }
@@ -60,7 +60,6 @@ st.markdown("""
 # ==========================================
 # 🧠 SOVEREIGN STATE MANAGEMENT
 # ==========================================
-# Slider keys must exist in session state to be auto-adjusted
 slider_keys = ['h2h_val', 'tier_val', 'map_val', 'int_val', 'lan_val', 'econ_val']
 for k in slider_keys:
     if k not in st.session_state: st.session_state[k] = 1.0
@@ -86,26 +85,22 @@ with st.sidebar:
         api_key = st.secrets.get("GROQ_API_KEY")
         if api_key:
             client = Groq(api_key=api_key)
-            # Context Building
             p_context = st.session_state.get('p_tag_input', 'Selected Player')
             m_context = st.session_state.get('m_context_input', '')
             
             prompt = f"""
-            Expert {game_choice} Analyst. 
-            FOUNDATION DATA: {foundation}
-            MATCH CONTEXT: {p_context} in {m_context}.
+            Analyze {game_choice} prop. 
+            INTEL FOUNDATION: {foundation}
+            MATCH: {p_context} in {m_context}.
             
-            Using the archetypes and map data provided, suggest 6 weights (0.85-1.15) for:
-            H2H, Tier, Map, Intensity, LAN, Economy.
+            Scan the foundation for the team archetypes in the context.
+            Suggest 6 weights (0.85-1.15) for H2H, Tier, Map, Intensity, LAN, Economy.
             Format EXACTLY like this: [1.05], [0.95], [1.10], [1.00], [1.02], [0.98].
-            Explain your reasoning based on the .json archetypes.
             """
             res = client.chat.completions.create(model="llama-3.3-70b-versatile", messages=[{"role":"user","content":prompt}], temperature=0.01)
-            advice = res.choices[0].message.content
-            st.session_state.ai_advice = advice
+            st.session_state.ai_advice = res.choices[0].message.content
             
-            # V141: Active Slider Injection
-            weights = re.findall(r"\[(\d+(?:\.\d+)?)\]", advice)
+            weights = re.findall(r"\[(\d+(?:\.\d+)?)\]", st.session_state.ai_advice)
             if len(weights) >= 6:
                 for idx, k in enumerate(slider_keys):
                     st.session_state[k] = float(weights[idx])
@@ -121,12 +116,12 @@ with st.sidebar:
     st.slider("Economy (MR12)", 0.85, 1.15, key="econ_val")
 
 # ==========================================
-# 🕵️ DEEP PROFILE ANALYZER
+# 🕵️ VAULT PROFILE ANALYZER
 # ==========================================
 col_l, col_r = st.columns([1, 1.2], gap="large")
 
 with col_l:
-    st.subheader("🕵️ Vault Intelligence")
+    st.subheader("🕵️ Deep Profile Intelligence")
     active_players = df[df['Game'] == game_choice]['Player'].tolist() if not df.empty else []
     selected = st.selectbox("Search Vault", ["Manual Entry"] + active_players)
     
@@ -135,45 +130,36 @@ with col_l:
     
     if selected != "Manual Entry":
         row = df[df['Player'] == selected].iloc[0]
-        p_tag_val = str(row['Player'])
+        p_tag_val, l10_val = str(row['Player']), str(row['L10'])
         m_context_val = f"{row.get('Team', 'Team')} vs "
-        l10_val = str(row['L10'])
         kpr_baseline = safe_float(row.get('KPR' if game_choice == "CS2" else 'ADR'), kpr_baseline)
 
     p_tag = st.text_input("Player Tag", value=p_tag_val, key="p_tag_input")
     m_context = st.text_input("Match Context", value=m_context_val, key="m_context_input")
+    opp_rank = st.number_input("Opponent Rank", value=10, step=1)
     
     if game_choice == "CS2":
         ck1, ck2 = st.columns(2)
-        m1_kpr = ck1.number_input("M1 Projected KPR", value=float(kpr_baseline), format="%.2f")
-        m2_kpr = ck2.number_input("M2 Projected KPR", value=float(kpr_baseline), format="%.2f")
+        m1_kpr = ck1.number_input("M1 KPR", value=float(kpr_baseline), format="%.2f")
+        m2_kpr = ck2.number_input("M2 KPR", value=float(kpr_baseline), format="%.2f")
     else:
         base_stat = st.number_input("Projected ADR", value=float(kpr_baseline))
 
     l10_data = st.text_area("L10 Match History", value=l10_val)
-    m_line = st.number_input("Prop Line", value=35.5, step=0.5)
+    m_line = st.number_input("Line", value=35.5, step=0.5)
     m_side = st.selectbox("Side", ["Over", "Under"])
     m_odds = st.number_input("Odds", value=-120)
 
-if st.button("🚀 GENERATE V141 ELITE GRADE"):
+if st.button("🚀 GENERATE V142 ELITE GRADE"):
     l10_list = parse_l10(l10_data)
     stdev = max(np.std(l10_list, ddof=1) if len(l10_list) > 1 else 3.5, 3.5)
+    base_proj = (m1_kpr * 24) + (m2_kpr * 24) if game_choice == "CS2" else (base_stat / 150) * 26 * 2.0 
     
-    # 1. Base Projection
-    if game_choice == "CS2":
-        base_proj = (m1_kpr * 24) + (m2_kpr * 24)
-    else:
-        base_proj = (base_stat / 150) * 26 * 2.0 
-    
-    # 2. V135 Streak Logic
     streak_bonus = 1.0
-    streak_hits = 0
-    if len(l10_list) >= 5:
-        streak_hits = sum(1 for x in l10_list[:5] if x > m_line)
-        if streak_hits >= 4: streak_bonus = 1.05
-        elif streak_hits <= 1: streak_bonus = 0.95
+    streak_hits = sum(1 for x in l10_list[:5] if x > m_line) if len(l10_list) >= 5 else 0
+    if streak_hits >= 4: streak_bonus = 1.05
+    elif streak_hits <= 1 and len(l10_list) >= 5: streak_bonus = 0.95
     
-    # 3. Comprehensive Weights (Linked to Sidebar)
     final_proj = base_proj * st.session_state.h2h_val * st.session_state.tier_val * \
                  st.session_state.map_val * st.session_state.int_val * \
                  st.session_state.lan_val * st.session_state.econ_val * streak_bonus
@@ -190,14 +176,11 @@ if st.button("🚀 GENERATE V141 ELITE GRADE"):
         "color": "linear-gradient(135deg, #FFD700 0%, #8B6508 100%)" if edge >= 12 else "linear-gradient(135deg, #00FF00 0%, #004d00 100%)"
     }
 
-# ==========================================
-# 📊 RESULTS & SOCIAL CARD
-# ==========================================
 if st.session_state.results:
     res = st.session_state.results
     with col_r:
         st.markdown(f"""<div class="analyst-card" style="background: {res['color']};">
-            <p style="font-size: 18px; opacity: 0.8; margin-bottom: 0;">{res['context']}</p>
+            <p style="font-size: 18px; opacity: 0.8; margin-bottom: 0;">{res['context']} (Rank #{opp_rank})</p>
             <h2 style="margin-top: 0;">{res['player']}</h2>
             <h1 class="analyst-grade">{res['grade']}</h1>
             <div style="font-size: 26px; font-weight: bold;">{res['units']} UNIT PLAY</div>
@@ -207,8 +190,6 @@ if st.session_state.results:
         c1.metric("Projected Total", f"{res['proj']:.1f}")
         c2.metric("Edge (%)", f"{res['edge']:.1f}%")
         
-        # SOCIAL MEDIA EXPORT
-        st.divider()
         if st.checkbox("Generate Social Media Card"):
             st.markdown(f"""
             <div class="share-container">
