@@ -6,10 +6,9 @@ import numpy as np
 from groq import Groq
 from tavily import TavilyClient
 
-# --- 1. CORE SETUP & MONOLITH V34.4 STYLING ---
-st.set_page_config(page_title="Iron Guard V34.4", layout="wide", page_icon="📡")
+# --- 1. CORE SETUP & MONOLITH V34.5 STYLING ---
+st.set_page_config(page_title="Iron Guard V34.5", layout="wide", page_icon="📡")
 
-# Initialize Session State Persistence
 if 'last_intel' not in st.session_state: st.session_state['last_intel'] = None
 if 'auto_duel' not in st.session_state: st.session_state['auto_duel'] = 5.0
 if 'p_rank' not in st.session_state: st.session_state['p_rank'] = 60
@@ -33,13 +32,15 @@ st.markdown("""
     }
     .grade-display { 
         font-family: 'Inter', sans-serif; font-weight: 900; letter-spacing: -60px; 
-        line-height: 1; margin: 0; font-size: 850px; color: rgba(255, 255, 255, 0.02); 
-        -webkit-text-stroke: 4px #FFD700; position: absolute; top: 50%; left: 50%; 
-        transform: translate(-50%, -50%); z-index: 0; pointer-events: none;
+        line-height: 1; margin: 0; font-size: 850px; 
+        color: rgba(255, 255, 255, 0.05); /* Outline Removed */
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        z-index: 0; pointer-events: none;
     }
     .card-content { position: relative; z-index: 1; text-align: left; }
     .player-name { font-family: 'Inter', sans-serif; font-weight: 900; font-size: 40px; text-transform: uppercase; color: white; margin-bottom: 5px; }
     .match-header { font-family: 'JetBrains Mono'; color: #FFD700; margin-bottom: 30px; font-weight: 800; font-size: 24px; text-transform: uppercase; }
+    .decision-line { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 42px; text-transform: uppercase; margin-top: 25px; }
     .stat-val { color: white; font-size: 42px; font-weight: 800; margin-bottom: 25px; }
     .stat-lbl { font-size: 12px; color: rgba(255,255,255,0.4); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 2px; }
 </style>
@@ -59,7 +60,7 @@ def safe_float(v, d=0.0):
     try: return float(str(v).replace('%', '').strip()) if v else d
     except: return d
 
-# --- 2. SOVEREIGN ENGINE (V34.4: FINAL) ---
+# --- 2. SOVEREIGN ENGINE (V34.5: PRECISION) ---
 def apply_sovereign_math(data, locked_player, locked_line, locked_team, opp_team, targets, m_kprs, heat, pacing, opp_dpr, r_total, swing_pct, duel_override, p_rank, o_rank, metric="KILLS", theater="CS2"):
     k_glob = safe_float(data.get('base_kpr'), 0.70)
     ok_win = safe_float(data.get('opening_win_pct'), 50.0)
@@ -104,11 +105,11 @@ def run_precision_research(cmd, metric, targets, m_kprs, heat, pacing, opp_dpr, 
     
     with st.status(f"🛰️ {theater} SCAN: {t_p.upper()}"):
         domain = "vlr.gg" if theater == "VALORANT" else "hltv.org"
-        q = f"site:{domain} {t_p} {t_t} 2026 combined map 1 and 2 kills totals world rank vs {opp}"
+        q = f"site:{domain} {t_p} {t_t} world rank vs {opp} last 10 series total kills"
         res = tavily_client.search(query=q, max_results=5)
         w_data = "\n".join([r['content'] for r in res['results']])[:4500]
-        sys_msg = "Return JSON ONLY. You must provide the FULL team names. Keys: full_team_name (str), full_opp_name (str), team_rank (int), opp_rank (int), base_kpr (float), opening_win_pct (float), last_10_kills (list of ints)."
-        c = groq_client.chat.completions.create(model="llama-3.1-8b-instant", messages=[{"role": "system", "content": sys_msg}, {"role": "user", "content": f"Stats for {t_p}: {w_data}"}], response_format={"type": "json_object"}, temperature=0)
+        sys_msg = f"Return JSON ONLY. Do not mention Vitality. Provide the full name for {t_t} and {opp}. Keys: full_team_name (str), full_opp_name (str), team_rank (int), opp_rank (int), base_kpr (float), opening_win_pct (float), last_10_kills (list of ints)."
+        c = groq_client.chat.completions.create(model="llama-3.1-8b-instant", messages=[{"role": "system", "content": sys_msg}, {"role": "user", "content": f"Stats for {t_p} vs {opp}: {w_data}"}], response_format={"type": "json_object"}, temperature=0)
         raw = json.loads(c.choices[0].message.content)
     
     if sync_duel: st.session_state['auto_duel'] = safe_float(raw.get('opening_win_pct', 50.0)) / 10.0
@@ -122,29 +123,29 @@ def run_precision_research(cmd, metric, targets, m_kprs, heat, pacing, opp_dpr, 
 # --- 3. UI LAYER ---
 with st.sidebar:
     st.header("📡 COMMAND CENTER")
-    theater_sel = st.sidebar.radio("Theater", ["CS2", "VALORANT"], help="HINT: Switches between HLTV/VLR archetypes and gravity weights.")
-    force_live = st.sidebar.checkbox("Force Live Strike", value=True, help="HINT: Bypasses vault for a fresh 2026 circuit scan.")
+    theater_sel = st.sidebar.radio("Theater", ["CS2", "VALORANT"], help="HINT: Switches between HLTV/VLR archetypes.")
+    force_live = st.sidebar.checkbox("Force Live Strike", value=True, help="HINT: Fresh 2026 circuit scan.")
     metric_sel = st.sidebar.segmented_control("Metric", options=["KILLS", "HEADSHOTS"], default="KILLS")
     
     with st.expander("👤 PLAYER TACTICAL", expanded=True):
         label = "Map" if theater_sel == "CS2" else "Agent"
         target_list = list(CS2_ARCHETYPES.keys()) if theater_sel == "CS2" else list(VAL_ROLES.keys())
-        t1, t1_k = st.selectbox(f"{label} 1", target_list, help="HINT: Determines map gravity multiplier."), safe_float(st.text_input(f"M1 KPR", "", help="HINT: Leave blank to use historical baseline."))
-        t2, t2_k = st.selectbox(f"{label} 2", target_list, help="HINT: Determines map/agent gravity."), safe_float(st.text_input(f"M2 KPR", "", help="HINT: Manual Map 2 efficiency."))
+        t1, t1_k = st.selectbox(f"{label} 1", target_list, help="HINT: Select Map/Agent."), safe_float(st.text_input(f"M1 KPR", "", help="HINT: Manual KPR."))
+        t2, t2_k = st.selectbox(f"{label} 2", target_list), safe_float(st.text_input(f"M2 KPR", ""))
         st.write("---")
-        sync_ranks = st.checkbox("🛰️ Auto-Sync Ranks", value=True, help="HINT: AI pulls world rankings to determine Stomp Penalty.")
-        st.session_state['p_rank'] = st.number_input("Your Team Rank", 1, 300, value=st.session_state['p_rank'], disabled=sync_ranks, help="HINT: 1 is best. Gap > 70 triggers 0.92x penalty.")
-        sync_duel = st.checkbox("🛰️ Auto-Sync Open Duel", value=True, help="HINT: Pulls HLTV/VLR opening stat and converts to 1-10 scale.")
-        st.session_state['auto_duel'] = st.slider("Open Duel (1-10)", 1.0, 10.0, value=st.session_state['auto_duel'], step=0.1, disabled=sync_duel, help="HINT: 5.0 is neutral. 10.0 is hyper-aggressive.")
-        r_total_v = safe_float(st.text_input("Total Rounds", "44.0", help="HINT: Map 1 + Map 2 total expected rounds."))
-        heat_val = st.slider("Teammate Heat", 0, 100, 0, help="HINT: Represents frag-stealing potential from teammates on a heater.")
+        sync_ranks = st.checkbox("🛰️ Auto-Sync Ranks", value=True, help="HINT: Pulls 2026 Rankings.")
+        st.session_state['p_rank'] = st.number_input("Your Team Rank", 1, 300, value=st.session_state['p_rank'], disabled=sync_ranks, help="HINT: Gap > 70 triggers 0.92x penalty.")
+        sync_duel = st.checkbox("🛰️ Auto-Sync Open Duel", value=True)
+        st.session_state['auto_duel'] = st.slider("Open Duel (1-10)", 1.0, 10.0, value=st.session_state['auto_duel'], step=0.1, disabled=sync_duel, help="HINT: 5.0 is neutral.")
+        r_total_v = safe_float(st.text_input("Total Rounds", "44.0", help="HINT: Map 1+2 rounds."))
+        heat_val = st.slider("Teammate Heat", 0, 100, 0)
         
     with st.expander("🛡️ OPPONENT TACTICAL", expanded=True):
-        opp_name, opp_dpr = st.text_input("Opponent Team", "PCIFIC"), safe_float(st.text_input("Opponent DPR", "0.65", help="HINT: Damage Per Round. 0.65 is the 2026 pro baseline."))
+        opp_name, opp_dpr = st.text_input("Opponent Team", "PCIFIC"), safe_float(st.text_input("Opponent DPR", "0.65"))
         st.session_state['o_rank'] = st.number_input("Opponent Rank", 1, 300, value=st.session_state['o_rank'], disabled=sync_ranks)
-        pacing_val = st.selectbox("Pacing", ["Auto", "Fast", "Slow"], help="HINT: Fast adds 5% volume boost.")
+        pacing_val = st.selectbox("Pacing", ["Auto", "Fast", "Slow"])
 
-# RENDERER (Persistence)
+# RENDERER
 if st.session_state['last_intel']:
     intel = st.session_state['last_intel']
     card_html = f"""
