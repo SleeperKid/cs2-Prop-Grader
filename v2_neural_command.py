@@ -6,10 +6,10 @@ import numpy as np
 from groq import Groq
 from tavily import TavilyClient
 
-# --- 1. CORE SETUP & MONOLITH V38.0 STYLING ---
-st.set_page_config(page_title="Iron Guard V38.0", layout="wide", page_icon="📡")
+# --- 1. CORE SETUP & MONOLITH V39.0 STYLING ---
+st.set_page_config(page_title="Iron Guard V39.0", layout="wide", page_icon="📡")
 
-# Initialize Session State Persistence
+# Initialize Session State
 if 'last_intel' not in st.session_state: st.session_state['last_intel'] = None
 if 'auto_duel' not in st.session_state: st.session_state['auto_duel'] = 5.0
 if 'p_rank' not in st.session_state: st.session_state['p_rank'] = 60
@@ -57,31 +57,27 @@ MANIFEST = {
         "EF": {"full": "Eternal Fire", "rank": 11}, "PCF": {"full": "PCIFIC Esports", "rank": 120},
         "FNC": {"full": "Fnatic", "rank": 1}, "TL": {"full": "Team Liquid", "rank": 2},
         "SEN": {"full": "Sentinels", "rank": 3}, "PRX": {"full": "Paper Rex", "rank": 4},
-        "LOUD": {"full": "LOUD", "rank": 5}, "GENG": {"full": "Gen.G", "rank": 6},
-        "VIT": {"full": "Team Vitality", "rank": 16}, "GE": {"full": "Global Esports", "rank": 15},
-        "TH": {"full": "Team Heretics", "rank": 18}
+        "QOR": {"full": "QoR", "rank": 35}, "ADG": {"full": "Azure Dragon Gaming", "rank": 120}
     },
     "CS2": {
         "VIT": {"full": "Team Vitality", "rank": 1}, "NAVI": {"full": "Natus Vincere", "rank": 2},
-        "SPIRIT": {"full": "Team Spirit", "rank": 5}, "EF": {"full": "Eternal Fire", "rank": 8},
-        "ASTR": {"full": "Astralis", "rank": 14}, "MOUZ": {"full": "MOUZ", "rank": 3}
+        "SPIRIT": {"full": "Team Spirit", "rank": 5}, "ASTR": {"full": "Astralis", "rank": 14},
+        "EF": {"full": "Eternal Fire", "rank": 8}
     }
 }
 
 CS2_ARCHETYPES = {"Anubis": 1.12, "Ancient": 1.12, "Dust 2": 1.15, "Inferno": 0.90, "Mirage": 1.05, "Nuke": 0.90, "Overpass": 1.00}
 VAL_GRAVITY = {"Duelist": 1.15, "Hybrid": 1.10, "Initiator": 1.00, "Controller": 0.88, "Sentinel": 0.80}
+VAL_AGENTS = ["Neon", "Jett", "Waylay", "Phoenix", "Reyna", "Raze", "Yoru", "Iso", "Clove", "Gekko", "Sova", "Fade", "Skye", "Tejo", "Breach", "KAY/O", "Omen", "Viper", "Astra", "Brimstone", "Miks", "Harbor", "Cypher", "Killjoy", "Vyse", "Veto", "Sage", "Deadlock", "Chamber"]
 
 def safe_float(v, d=0.0):
     try: return float(str(v).replace('%', '').strip()) if v else d
     except: return d
 
-# --- 2. SOVEREIGN ENGINE (V38.0: HARDENED) ---
+# --- 2. SOVEREIGN ENGINE (V39.0: AGENT-LOCKED) ---
 def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, heat, pacing, opp_dpr, r_total, theater):
-    # ADR to KPR conversion logic
     raw_stat = safe_float(data.get('base_stat'), 150.0 if theater == "VALORANT" else 0.70)
     k_glob = (raw_stat / 150) if theater == "VALORANT" else raw_stat
-    
-    ok_win = safe_float(data.get('opening_win_pct'), 50.0)
     rank_gap = st.session_state['o_rank'] - st.session_state['p_rank']
     
     hist_kills = [safe_float(k) for k in data.get('last_10_kills', []) if safe_float(k) > 10]
@@ -99,7 +95,7 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
         weighted_kpr = m_kpr * spec_mult * match_mult * (opp_dpr / 0.65) * duel_mult * pacing_mult * (1 - (heat / 100) * 0.12)
         per_map_proj.append(weighted_kpr * (r_total / 2))
 
-    final_proj = sum(per_map_proj) * (1.08 if ok_win > 55 else 1.0)
+    final_proj = sum(per_map_proj) * (1.08 if safe_float(data.get('opening_win_pct')) > 55 else 1.0)
     delta = final_proj - u_line
     win_prob = (np.random.normal(final_proj, 5.5, 10000) > u_line).mean() * 100
 
@@ -150,10 +146,12 @@ with st.sidebar:
     theater_sel = st.sidebar.radio("Theater", ["VALORANT", "CS2"])
     
     with st.expander("👤 PLAYER TACTICAL", expanded=True):
+        label = "Agent" if theater_sel == "VALORANT" else "Map"
         stat_lbl = "ADR" if theater_sel == "VALORANT" else "KPR"
-        target_list = list(VAL_GRAVITY.keys()) if theater_sel == "VALORANT" else list(CS2_ARCHETYPES.keys())
-        t1, t1_v = st.selectbox("Role 1", target_list), safe_float(st.text_input(f"M1 {stat_lbl}", ""))
-        t2, t2_v = st.selectbox("Role 2", target_list), safe_float(st.text_input(f"M2 {stat_lbl}", ""))
+        target_list = VAL_AGENTS if theater_sel == "VALORANT" else list(CS2_ARCHETYPES.keys())
+        
+        t1, t1_v = st.selectbox(f"{label} 1", target_list), safe_float(st.text_input(f"M1 {stat_lbl}", ""))
+        t2, t2_v = st.selectbox(f"{label} 2", target_list), safe_float(st.text_input(f"M2 {stat_lbl}", ""))
         st.write("---")
         sync_ranks = st.checkbox("🛰️ Auto-Sync Ranks", value=True)
         st.session_state['p_rank'] = st.number_input("Team Rank", 1, 300, value=st.session_state['p_rank'], disabled=sync_ranks)
@@ -186,7 +184,7 @@ if st.session_state['last_intel']:
 </div></div>"""
     st.markdown(card_html, unsafe_allow_html=True)
     
-    # Grid: Metrics ONLY
+    # 5-Column Grid: Metrics ONLY (No Badges)
     c1, c2, c3, c4, c5 = st.columns(5)
     stat_type = "ADR" if theater_sel == "VALORANT" else "KPR"
     with c1: st.metric("DELTA", f"{i['delta']:+.1f}")
