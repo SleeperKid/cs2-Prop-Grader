@@ -107,30 +107,57 @@ def apply_sovereign_math(data, locked_player, locked_line, p_team_full, o_team_f
     }
 
 def run_precision_research(cmd, metric, targets, m_kprs, heat, pacing, opp_dpr, r_total, swing, sync_duel, sync_ranks, opp_abbr, theater, live):
+    # 1. Manifest Resolution
     theater_key = "VALORANT" if theater == "VALORANT" else "CS2"
+    domain = "vlr.gg" if theater == "VALORANT" else "hltv.org"
+    
     match = re.search(r"Grade\s+([A-Za-z0-9_]+)\s*\((.*?)\)", cmd, re.IGNORECASE)
+    if not match: st.error("Format Error: Grade Player (Abbr) Line"); st.stop()
+    
     t_p, t_t_abbr = match.group(1).lower().strip(), match.group(2).upper().strip()
     u_line = float(re.findall(r"(\d+\.\d+|\d+)", cmd)[-1])
     
-    # Manifest Resolution
+    # HALLUCINATION SHIELD: Map Abbr to Full Name
     p_team_data = MANIFEST[theater_key].get(t_t_abbr, {"full": t_t_abbr, "rank": 60})
     o_team_data = MANIFEST[theater_key].get(opp_abbr.upper(), {"full": opp_abbr.upper(), "rank": 110})
 
+    # 2. Targeted Strike Scan
     with st.status(f"🛰️ {theater} SCAN: {t_p.upper()} ({p_team_data['full']})"):
-        domain = "vlr.gg" if theater == "VALORANT" else "hltv.org"
-        q = f"site:{domain} {t_p} {p_team_data['full']} 2026 last 10 series combined map 1 2 kills vs {o_team_data['full']}"
+        # Explicitly asking for "Combined Map 1+2" and "Season KPR" to stop hallucinations
+        q = f"site:{domain} {t_p} {p_team_data['full']} 2026 combined map 1 and 2 total kills season KPR stats vs {o_team_data['full']}"
         res = tavily_client.search(query=q, max_results=5)
         w_data = "\n".join([r['content'] for r in res['results']])[:4500]
-        sys_msg = "Return JSON ONLY. Keys: base_kpr (float), opening_win_pct (float), last_10_kills (list of ints)."
-        c = groq_client.chat.completions.create(model="llama-3.1-8b-instant", messages=[{"role": "system", "content": sys_msg}, {"role": "user", "content": f"Extract stats for {t_p} on {p_team_data['full']}: {w_data}"}], response_format={"type": "json_object"}, temperature=0)
+        
+        sys_msg = (
+            f"You are a parser. Focus strictly on {t_p} with {p_team_data['full']}. "
+            "Ignore RRQ or Vitality unless specified. Return ONLY JSON."
+        )
+        user_p = (
+            f"Extract for {t_p} vs {o_team_data['full']}: {w_data}. "
+            "Keys: base_kpr (float), opening_win_pct (float), last_10_kills (list of combined series total ints)."
+        )
+        
+        c = groq_client.chat.completions.create(
+            model="llama-3.1-8b-instant", 
+            messages=[{"role": "system", "content": sys_msg}, {"role": "user", "content": user_p}], 
+            response_format={"type": "json_object"}, 
+            temperature=0
+        )
         raw = json.loads(c.choices[0].message.content)
-    
+
+    # 3. Empirical Update
     if sync_duel: st.session_state['auto_duel'] = safe_float(raw.get('opening_win_pct', 50.0)) / 10.0
     if sync_ranks:
         st.session_state['p_rank'] = p_team_data['rank']
         st.session_state['o_rank'] = o_team_data['rank']
 
-    st.session_state['last_intel'] = apply_sovereign_math(raw, t_p, u_line, p_team_data['full'], o_team_data['full'], targets, m_kprs, heat, pacing, opp_dpr, r_total, swing, st.session_state['auto_duel'], st.session_state['p_rank'], st.session_state['o_rank'], metric, theater)
+    # Final Strike Calculation
+    st.session_state['last_intel'] = apply_sovereign_math(
+        raw, t_p, u_line, p_team_data['full'], o_team_data['full'], 
+        targets, m_kprs, heat, pacing, opp_dpr, r_total, swing, 
+        st.session_state['auto_duel'], st.session_state['p_rank'], st.session_state['o_rank'], 
+        metric, theater
+    )
     st.rerun()
 
 # --- 3. UI LAYER ---
