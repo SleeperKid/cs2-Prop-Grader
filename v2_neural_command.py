@@ -6,8 +6,8 @@ import numpy as np
 from groq import Groq
 from tavily import TavilyClient
 
-# --- 1. CORE SETUP & MONOLITH V28.0 STYLING ---
-st.set_page_config(page_title="Iron Guard V28.0", layout="wide", page_icon="📡")
+# --- 1. CORE SETUP & MONOLITH V29.1 STYLING ---
+st.set_page_config(page_title="Iron Guard V29.1", layout="wide", page_icon="📡")
 
 st.markdown("""
 <style>
@@ -22,6 +22,19 @@ st.markdown("""
         position: relative; overflow: hidden;
     }
     
+    .nuclear-alert {
+        background: rgba(255, 69, 0, 0.2);
+        color: #FF4500;
+        border: 1px solid #FF4500;
+        padding: 5px 15px;
+        border-radius: 10px;
+        font-family: 'JetBrains Mono';
+        font-size: 14px;
+        font-weight: 800;
+        display: inline-block;
+        margin-bottom: 15px;
+    }
+
     .grade-display { 
         font-family: 'Inter', sans-serif; font-weight: 900; 
         letter-spacing: -60px; line-height: 1; margin: 0;
@@ -44,19 +57,12 @@ st.markdown("""
 try:
     groq_client = Groq(api_key=st.secrets["GROQ_API_KEY"])
     tavily_client = TavilyClient(api_key=st.secrets["TAVILY_API_KEY"])
-except Exception: 
-    st.error("📡 CONNECTION ERROR: Verify API Secrets in Streamlit Dashboard.")
-    st.stop()
+except Exception: st.error("API Error: Check Secrets."); st.stop()
 
 # --- 🧠 THEATER DATA ---
 CS2_ARCHETYPES = {"Ancient": 1.12, "Anubis": 1.12, "Dust 2": 1.15, "Mirage": 1.05, "Nuke": 0.90, "Inferno": 0.90, "Overpass": 1.00, "Vertigo": 1.05}
+VAL_ROLES = {"Neon": "Duelist", "Phoenix": "Duelist", "Jett": "Duelist", "Waylay": "Duelist", "Reyna": "Duelist", "Raze": "Duelist", "Yoru": "Duelist", "Iso": "Duelist", "Clove": "Hybrid", "Gekko": "Initiator", "Sova": "Initiator", "Fade": "Initiator", "Skye": "Initiator", "Tejo": "Initiator", "Breach": "Initiator", "KAY/O": "Initiator", "Omen": "Controller", "Viper": "Controller", "Astra": "Controller", "Brimstone": "Controller", "Miks": "Controller", "Harbor": "Controller", "Cypher": "Sentinel", "Killjoy": "Sentinel", "Vyse": "Sentinel", "Veto": "Sentinel", "Sage": "Sentinel", "Deadlock": "Sentinel", "Chamber": "Sentinel"}
 VAL_GRAVITY = {"Duelist": 1.12, "Hybrid": 1.08, "Initiator": 1.00, "Controller": 0.88, "Sentinel": 0.82}
-VAL_ROLES = {
-    "Neon": "Duelist", "Phoenix": "Duelist", "Jett": "Duelist", "Waylay": "Duelist", "Reyna": "Duelist", "Raze": "Duelist", "Yoru": "Duelist", "Iso": "Duelist",
-    "Clove": "Hybrid", "Gekko": "Initiator", "Sova": "Initiator", "Fade": "Initiator", "Skye": "Initiator", "Tejo": "Initiator", "Breach": "Initiator", "KAY/O": "Initiator",
-    "Omen": "Controller", "Viper": "Controller", "Astra": "Controller", "Brimstone": "Controller", "Miks": "Controller", "Harbor": "Controller",
-    "Cypher": "Sentinel", "Killjoy": "Sentinel", "Vyse": "Sentinel", "Veto": "Sentinel", "Sage": "Sentinel", "Deadlock": "Sentinel", "Chamber": "Sentinel"
-}
 
 # --- 🛠️ VAULT ENGINE ---
 def get_vault_path(theater):
@@ -99,17 +105,13 @@ def safe_float(val, default=0.0):
     try: return float(str(val).replace('%', '').strip()) if val else default
     except: return default
 
-# --- 2. SOVEREIGN ENGINE (V28.0) ---
+# --- 2. SOVEREIGN ENGINE (V29.1: 10% THROTTLE) ---
 def apply_sovereign_math(data, locked_player, locked_line, locked_team, opp_team, targets, m_kprs, m_hs, heat, pacing, opp_dpr, r_total, swing_pct, metric="KILLS", theater="CS2"):
     k_glob = safe_float(data.get('base_kpr'), 0.70)
     hs_glob = safe_float(data.get('hs_pct'), 50.0)
     ok_win = safe_float(data.get('opening_win_pct'), 50.0)
     p_rank, o_rank = int(safe_float(data.get('team_rank', 60))), int(safe_float(data.get('opp_rank', 110)))
     rank_gap = o_rank - p_rank
-
-    conf = 20 if opp_dpr > 0 else 0
-    if m_kprs[0] > 0: conf += 40
-    if m_kprs[1] > 0: conf += 40
 
     swing_mult = 1.0 + (swing_pct / 100)
     match_mult = 0.95 if rank_gap > 70 else 1.05 if rank_gap < -70 else 1.0
@@ -123,6 +125,7 @@ def apply_sovereign_math(data, locked_player, locked_line, locked_team, opp_team
         t_name = targets[i]
         m_val = m_kprs[i] if m_kprs[i] > 0 else (safe_float(data.get(f'map{i+1}_kpr')) or k_glob)
         
+        specific_mult = 1.0
         if theater == "VALORANT":
             role = VAL_ROLES.get(t_name, "Initiator")
             specific_mult = VAL_GRAVITY.get(role, 1.0)
@@ -142,17 +145,28 @@ def apply_sovereign_math(data, locked_player, locked_line, locked_team, opp_team
     else:
         final_proj = total_kills
         
+    # --- SANITY PROTOCOL: 10% DAMPENING FIELD ---
+    is_nuclear = False
+    ceiling_limit = locked_line * 1.5
+    if final_proj > ceiling_limit:
+        is_nuclear = True
+        excess = final_proj - ceiling_limit
+        # Throttle the extreme portion by 10% (0.90 multiplier)
+        final_proj = ceiling_limit + (excess * 0.90)
+        
     delta = final_proj - locked_line
     return {
         "player": locked_player.upper(), "match": f"{locked_team.upper()} vs {opp_team.upper()}", 
         "grade": ("S" if delta > 6.0 else "A+" if delta > 3.0 else "B" if delta < -3.0 else "C"), 
-        "color": ("#FFD700" if delta > 6.0 else "#00FF7F" if delta > 1.5 else "#FF4500" if delta < -1.5 else "#A0A0A0"), 
-        "arrow": ("▲" if delta > 1.5 else "▼" if delta < -1.5 else "—"), 
+        "color": ("#FFD700" if delta > 6.0 else "#00FF7F" if delta > 3.0 else "#FF4500" if delta < -3.0 else "#A0A0A0"), 
+        "arrow": ("▲" if delta > 3.0 else "▼" if delta < -3.0 else "—"), 
         "d_text": ("OVER" if delta > 0 else "UNDER"), "prob": (np.random.normal(final_proj, 5.5, 10000) > locked_line).mean() * 100,
-        "kpr": f"{k_glob:.2f}", "proj": final_proj, "delta": delta, "trace": f"{targets[0].upper()} {m_kprs[0]:.2f} | {targets[1].upper()} {m_kprs[1]:.2f}", 
-        "metric": metric, "line": locked_line, "hr": f"{safe_float(data.get('l10_hit_rate'), 70.0):.0f}%", "gap": rank_gap, "swing": f"{swing_pct:+.2f}%", "conf": conf
+        "kpr": f"{k_glob:.2f}", "proj": final_proj, "delta": delta, "is_nuclear": is_nuclear,
+        "trace": f"{targets[0].upper()} {m_kprs[0]:.2f} | {targets[1].upper()} {m_kprs[1]:.2f}", 
+        "metric": metric, "line": locked_line, "hr": f"{safe_float(data.get('l10_hit_rate'), 70.0):.0f}%", "gap": rank_gap, "swing": f"{swing_pct:+.2f}%"
     }
 
+# --- [REST OF CODE REMAINS UNCHANGED: run_precision_research & UI] ---
 def run_precision_research(command, metric, targets, m_kprs, m_hs, heat, pacing, opp_dpr, r_total, swing_pct, opp_team, theater, force_live):
     match = re.search(r"Grade\s+([A-Za-z0-9_]+)\s*\((.*?)\)", command, re.IGNORECASE)
     if not match: st.error("Format: Grade Player (Team) Line"); st.stop()
@@ -168,45 +182,21 @@ def run_precision_research(command, metric, targets, m_kprs, m_hs, heat, pacing,
         res = tavily_client.search(query=query, max_results=3)
         web_data = "\n".join([r['content'] for r in res['results']])[:3000]
 
-    prompt = f"JSON for {t_p} ({t_t}) vs {opp_team}. Data: {web_data}. KEYS: team_rank (int), opp_rank (int), base_kpr (float), hs_pct (float), rating_num (float), opening_win_pct (float), l10_hit_rate (float). No fractions or notation."
+    prompt = f"JSON for {t_p} ({t_t}) vs {opp_team}. Data: {web_data}. KEYS: team_rank (int), opp_rank (int), base_kpr (float), hs_pct (float), rating_num (float), opening_win_pct (float), l10_hit_rate (float). No fractions."
     comp = groq_client.chat.completions.create(model="llama-3.1-8b-instant", messages=[{"role": "user", "content": prompt}], response_format={"type": "json_object"}, temperature=0)
     raw = json.loads(comp.choices[0].message.content)
     save_to_vault(t_p, opp_team, theater, raw)
     return apply_sovereign_math(raw, t_p, u_line, t_t, opp_team, targets, m_kprs, m_hs, heat, pacing, opp_dpr, r_total, swing_pct, metric, theater)
 
-# --- 3. UI LAYER ---
-with st.sidebar:
-    st.header("📡 COMMAND CENTER")
-    theater_sel = st.sidebar.radio("Theater", ["CS2", "VALORANT"])
-    force_live = st.sidebar.checkbox("Force Live Strike", value=True)
-    metric_sel = st.sidebar.segmented_control("Metric", options=["KILLS", "HEADSHOTS"], default="KILLS")
-    
-    with st.expander("👤 MAPS 1+2 TACTICAL", expanded=True):
-        label = "Map" if theater_sel == "CS2" else "Agent"
-        target_list = list(CS2_ARCHETYPES.keys()) if theater_sel == "CS2" else list(VAL_ROLES.keys())
-        
-        t1 = st.selectbox(f"{label} 1", target_list)
-        t1_k = safe_float(st.text_input(f"M1 KPR", ""), 0.0)
-        t1_h = safe_float(st.text_input(f"M1 HS%", ""), 0.0) if metric_sel == "HEADSHOTS" else 0.0
-        t2 = st.selectbox(f"{label} 2", target_list)
-        t2_k = safe_float(st.text_input(f"M2 KPR", ""), 0.0)
-        t2_h = safe_float(st.text_input(f"M2 HS%", ""), 0.0) if metric_sel == "HEADSHOTS" else 0.0
-        swing_v = safe_float(st.text_input("Round Swing %", "2.18"), 2.18)
-        r_total_v = safe_float(st.text_input("Total Maps 1+2 Rounds", "44.0"), 44.0)
-        heat_val = st.slider("Teammate Heat", 0, 100, 0)
-
-    with st.expander("🛡️ OPPONENT TACTICAL", expanded=True):
-        opp_name = st.text_input("Opponent Team Name", "GENONE" if theater_sel == "CS2" else "100T")
-        opp_dpr = safe_float(st.text_input("Opponent DPR (Manual)", placeholder="0.67"), 0.0)
-        pacing_val = st.selectbox("Pacing", ["Auto", "Fast", "Slow"])
-
 if prompt := st.chat_input("Grade Player (Team) Line"):
     with st.chat_message("assistant"):
         intel = run_precision_research(prompt, metric_sel, [t1, t2], [t1_k, t2_k], [t1_h, t2_h], heat_val, pacing_val, opp_dpr, r_total_v, swing_v, opp_name, theater_sel, force_live)
+        
         st.markdown(f"""
             <div class="sovereign-card" style="border-top: 35px solid {intel['color']};">
                 <div class="grade-display">{intel['grade']}</div>
                 <div class="card-content">
+                    {f'<div class="nuclear-alert">☢️ CEILING ALERT: LIGHT DAMPENING ACTIVE</div>' if intel['is_nuclear'] else ''}
                     <div class="player-name">{intel['player']}</div>
                     <div class="match-header">{intel['match']} (MAPS 1+2)</div>
                     <div style="display: flex; gap: 80px; justify-content: center;">
@@ -225,4 +215,4 @@ if prompt := st.chat_input("Grade Player (Team) Line"):
         c3.metric("L10 HIT RATE", intel['hr'])
         c4.metric("GLOBAL KPR", intel['kpr'])
         c5.metric("RANK GAP", f"{intel['gap']:+d} Pos")
-        c6.metric("MODEL CONF", f"{intel['conf']}%")
+        c6.metric("NUCLEAR FLAG", "ACTIVE" if intel['is_nuclear'] else "CLEAN")
