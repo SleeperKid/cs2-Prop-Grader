@@ -6,9 +6,10 @@ import numpy as np
 from groq import Groq
 from tavily import TavilyClient
 
-# --- 1. CORE SETUP & MONOLITH V37.5 STYLING ---
-st.set_page_config(page_title="Iron Guard V37.5", layout="wide", page_icon="📡")
+# --- 1. CORE SETUP & MONOLITH V38.0 STYLING ---
+st.set_page_config(page_title="Iron Guard V38.0", layout="wide", page_icon="📡")
 
+# Initialize Session State Persistence
 if 'last_intel' not in st.session_state: st.session_state['last_intel'] = None
 if 'auto_duel' not in st.session_state: st.session_state['auto_duel'] = 5.0
 if 'p_rank' not in st.session_state: st.session_state['p_rank'] = 60
@@ -39,6 +40,7 @@ st.markdown("""
     .card-content { position: relative; z-index: 1; text-align: left; }
     .player-name { font-family: 'Inter', sans-serif; font-weight: 900; font-size: 40px; text-transform: uppercase; color: white; margin-bottom: 5px; }
     .match-header { font-family: 'JetBrains Mono'; color: #FFD700; margin-bottom: 30px; font-weight: 800; font-size: 24px; text-transform: uppercase; }
+    .decision-line { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 42px; text-transform: uppercase; margin-top: 25px; }
     .stat-val { color: white; font-size: 42px; font-weight: 800; margin-bottom: 25px; }
     .stat-lbl { font-size: 12px; color: rgba(255,255,255,0.4); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 2px; }
 </style>
@@ -53,14 +55,16 @@ except: st.error("📡 API ERROR: Check Secrets."); st.stop()
 MANIFEST = {
     "VALORANT": {
         "EF": {"full": "Eternal Fire", "rank": 11}, "PCF": {"full": "PCIFIC Esports", "rank": 120},
-        "VIT": {"full": "Team Vitality", "rank": 16}, "FNC": {"full": "Fnatic", "rank": 1},
-        "TL": {"full": "Team Liquid", "rank": 2}, "SEN": {"full": "Sentinels", "rank": 3},
-        "GE": {"full": "Global Esports", "rank": 15}, "PRX": {"full": "Paper Rex", "rank": 4}
+        "FNC": {"full": "Fnatic", "rank": 1}, "TL": {"full": "Team Liquid", "rank": 2},
+        "SEN": {"full": "Sentinels", "rank": 3}, "PRX": {"full": "Paper Rex", "rank": 4},
+        "LOUD": {"full": "LOUD", "rank": 5}, "GENG": {"full": "Gen.G", "rank": 6},
+        "VIT": {"full": "Team Vitality", "rank": 16}, "GE": {"full": "Global Esports", "rank": 15},
+        "TH": {"full": "Team Heretics", "rank": 18}
     },
     "CS2": {
         "VIT": {"full": "Team Vitality", "rank": 1}, "NAVI": {"full": "Natus Vincere", "rank": 2},
         "SPIRIT": {"full": "Team Spirit", "rank": 5}, "EF": {"full": "Eternal Fire", "rank": 8},
-        "ASTR": {"full": "Astralis", "rank": 10}, "MOUZ": {"full": "MOUZ", "rank": 3}
+        "ASTR": {"full": "Astralis", "rank": 14}, "MOUZ": {"full": "MOUZ", "rank": 3}
     }
 }
 
@@ -71,9 +75,9 @@ def safe_float(v, d=0.0):
     try: return float(str(v).replace('%', '').strip()) if v else d
     except: return d
 
-# --- 2. SOVEREIGN ENGINE (V37.5: CLEAN GRID) ---
-def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, heat, pacing, opp_dpr, r_total, sync_duel, theater):
-    # ADR to Synthetic KPR logic for Valorant
+# --- 2. SOVEREIGN ENGINE (V38.0: HARDENED) ---
+def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, heat, pacing, opp_dpr, r_total, theater):
+    # ADR to KPR conversion logic
     raw_stat = safe_float(data.get('base_stat'), 150.0 if theater == "VALORANT" else 0.70)
     k_glob = (raw_stat / 150) if theater == "VALORANT" else raw_stat
     
@@ -88,12 +92,7 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
     
     per_map_proj = []
     for i in range(2):
-        # Handle manual ADR-to-KPR conversion
-        if theater == "VALORANT" and m_vals[i] > 0:
-            m_kpr = m_vals[i] / 150
-        else:
-            m_kpr = m_vals[i] if m_vals[i] > 0 else k_glob
-            
+        m_kpr = (m_vals[i] / 150) if (theater == "VALORANT" and m_vals[i] > 0) else (m_vals[i] if m_vals[i] > 0 else k_glob)
         spec_mult = VAL_GRAVITY.get(targets[i], 1.0) if theater == "VALORANT" else CS2_ARCHETYPES.get(targets[i], 1.0)
         pacing_mult = 1.05 if pacing == "Fast" else 0.95 if pacing == "Slow" else 1.0
         
@@ -112,7 +111,7 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
         "is_nuke": (delta >= 10.0 and win_prob >= 85), "hr": f"{hr_val:.0f}%", "gap": rank_gap, "trace": f"{targets[0].upper()} | {targets[1].upper()}"
     }
 
-def run_precision_research(cmd, metric, targets, m_vals, heat, pacing, opp_dpr, r_total, sync_duel, sync_ranks, opp_abbr, theater):
+def run_precision_research(cmd, targets, m_vals, heat, pacing, opp_dpr, r_total, sync_duel, sync_ranks, opp_abbr, theater):
     theater_key = "VALORANT" if theater == "VALORANT" else "CS2"
     domain = "vlr.gg" if theater == "VALORANT" else "hltv.org"
     
@@ -125,7 +124,7 @@ def run_precision_research(cmd, metric, targets, m_vals, heat, pacing, opp_dpr, 
 
     with st.status(f"🛰️ {theater} SCAN: {t_p.upper()} vs {o_team['full']}"):
         stat_target = "ADR (Average Damage Per Round)" if theater == "VALORANT" else "KPR (Kills Per Round)"
-        q = f"site:{domain} {t_p} {p_team['full']} 2026 {stat_target} season stats last 10 series combined totals"
+        q = f"site:{domain} {t_p} {p_team['full']} 2026 {stat_target} season stats combined totals"
         res = tavily_client.search(query=q, max_results=5)
         w_data = "\n".join([r['content'] for r in res['results']])[:4500]
         
@@ -142,22 +141,21 @@ def run_precision_research(cmd, metric, targets, m_vals, heat, pacing, opp_dpr, 
     if sync_ranks:
         st.session_state['p_rank'], st.session_state['o_rank'] = p_team['rank'], o_team['rank']
 
-    st.session_state['last_intel'] = apply_sovereign_math(raw, t_p, u_line, p_team['full'], o_team['full'], targets, m_vals, heat, pacing, opp_dpr, r_total, sync_duel, theater)
+    st.session_state['last_intel'] = apply_sovereign_math(raw, t_p, u_line, p_team['full'], o_team['full'], targets, m_vals, heat, pacing, opp_dpr, r_total, theater)
     st.rerun()
 
 # --- 3. UI LAYER ---
 with st.sidebar:
     st.header("📡 COMMAND CENTER")
     theater_sel = st.sidebar.radio("Theater", ["VALORANT", "CS2"])
-    metric_sel = st.sidebar.segmented_control("Metric", options=["KILLS", "HEADSHOTS"], default="KILLS")
     
     with st.expander("👤 PLAYER TACTICAL", expanded=True):
         stat_lbl = "ADR" if theater_sel == "VALORANT" else "KPR"
         target_list = list(VAL_GRAVITY.keys()) if theater_sel == "VALORANT" else list(CS2_ARCHETYPES.keys())
-        t1, t1_v = st.selectbox("Role 1", target_list), safe_float(st.text_input(f"M1 {stat_lbl}", "", help=f"Input {stat_lbl} baseline."))
+        t1, t1_v = st.selectbox("Role 1", target_list), safe_float(st.text_input(f"M1 {stat_lbl}", ""))
         t2, t2_v = st.selectbox("Role 2", target_list), safe_float(st.text_input(f"M2 {stat_lbl}", ""))
         st.write("---")
-        sync_ranks = st.checkbox("🛰️ Auto-Sync Ranks", value=True, help="Uses the April 2026 Manifest.")
+        sync_ranks = st.checkbox("🛰️ Auto-Sync Ranks", value=True)
         st.session_state['p_rank'] = st.number_input("Team Rank", 1, 300, value=st.session_state['p_rank'], disabled=sync_ranks)
         sync_duel = st.checkbox("🛰️ Auto-Sync Open Duel", value=True)
         st.session_state['auto_duel'] = st.slider("Open Duel (1-10)", 1.0, 10.0, value=st.session_state['auto_duel'], step=0.1, disabled=sync_duel)
@@ -188,7 +186,7 @@ if st.session_state['last_intel']:
 </div></div>"""
     st.markdown(card_html, unsafe_allow_html=True)
     
-    # 5-Column Grid: Metrics ONLY (No Badges)
+    # Grid: Metrics ONLY
     c1, c2, c3, c4, c5 = st.columns(5)
     stat_type = "ADR" if theater_sel == "VALORANT" else "KPR"
     with c1: st.metric("DELTA", f"{i['delta']:+.1f}")
@@ -198,4 +196,4 @@ if st.session_state['last_intel']:
     with c5: st.metric("NUCLEAR FLAG", "FLAGGED" if i['is_nuke'] else "CLEAN")
 
 if prompt := st.chat_input("Grade Player (Abbr) Line"):
-    run_precision_research(prompt, metric_sel, [t1, t2], [t1_v, t2_v], heat_val, pacing_val, opp_dpr, r_total_v, sync_duel, sync_ranks, opp_name, theater_sel)
+    run_precision_research(prompt, [t1, t2], [t1_v, t2_v], heat_val, pacing_val, opp_dpr, r_total_v, sync_duel, sync_ranks, opp_name, theater_sel)
