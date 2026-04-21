@@ -6,9 +6,10 @@ import numpy as np
 from groq import Groq
 from tavily import TavilyClient
 
-# --- 1. CORE SETUP & MONOLITH V34.1 STYLING ---
-st.set_page_config(page_title="Iron Guard V34.1", layout="wide", page_icon="📡")
+# --- 1. CORE SETUP & MONOLITH V34.2 STYLING ---
+st.set_page_config(page_title="Iron Guard V34.2", layout="wide", page_icon="📡")
 
+# Session State Persistence for Deep-Sync
 if 'last_intel' not in st.session_state: st.session_state['last_intel'] = None
 if 'auto_duel' not in st.session_state: st.session_state['auto_duel'] = 5.0
 if 'p_rank' not in st.session_state: st.session_state['p_rank'] = 60
@@ -96,19 +97,19 @@ def save_to_vault(player, opponent, theater, raw_data):
     if not updated: vault.append({"player": player.upper(), "opponent": opponent.upper(), "raw_data": raw_data})
     with open(path, "w") as f: json.dump(vault, f, indent=2)
 
-# --- 2. SOVEREIGN ENGINE (V34.1: EMPIRICAL FULL-NAME) ---
+# --- 2. SOVEREIGN ENGINE (V34.2: IRON-CLAD) ---
 def apply_sovereign_math(data, locked_player, locked_line, locked_team, opp_team, targets, m_kprs, m_hs, heat, pacing, opp_dpr, r_total, swing_pct, duel_override, p_rank, o_rank, metric="KILLS", theater="CS2"):
     k_glob = safe_float(data.get('base_kpr'), 0.70)
     ok_win = safe_float(data.get('opening_win_pct'), 50.0)
     rank_gap = o_rank - p_rank
-    
-    # Empirical L10 Filter: Ensure we have reasonable series totals
-    hist_kills = [safe_float(x) for x in data.get('last_10_kills', []) if safe_float(x) > 10]
+
+    # Empirical Hit Rate: Logic check for Series Totals vs Single Maps
+    hist_kills = [safe_float(k) for k in data.get('last_10_kills', []) if safe_float(k) > 10]
     if hist_kills:
         hits = [k for k in hist_kills if k > locked_line]
         hr_val = (len(hits) / len(hist_kills)) * 100
     else:
-        hr_val = 70.0 # Circuit Baseline
+        hr_val = 70.0 # Circuit Baseline for 2026 pro play
 
     conf = 20 if opp_dpr > 0 else 0
     if m_kprs[0] > 0: conf += 40
@@ -165,19 +166,20 @@ def run_precision_research(cmd, metric, targets, m_kprs, m_hs, heat, pacing, opp
     if not raw:
         with st.status(f"🛰️ {theater} SCAN: {t_p.upper()}"):
             domain = "vlr.gg" if theater == "VALORANT" else "hltv.org"
-            q = f"site:{domain} {t_p} {t_t} last 10 series total kills map 1 2 world rank full team names vs {opp}"
+            q = f"site:{domain} {t_p} {t_t} 2026 last 10 series combined map 1 and 2 kills world rank vs {opp}"
             res = tavily_client.search(query=q, max_results=5)
             w_data = "\n".join([r['content'] for r in res['results']])[:4500]
-            sys_msg = "Return JSON ONLY. Provide 'full_team_name' and 'full_opp_name' (e.g. 'Eternal Fire'). 'last_10_kills' MUST be a list of ints representing combined Map 1+2 totals (e.g. [35, 42, 38])."
-            user_p = f"Extract stats for {t_p} ({t_t}): {w_data}. Keys: full_team_name (str), full_opp_name (str), team_rank (int), opp_rank (int), base_kpr (float), hs_pct (float), opening_win_pct (float), last_10_kills (list of ints)."
+            sys_msg = "Return JSON ONLY. Extract 'full_team_name' and 'full_opp_name'. 'last_10_kills' MUST be a list of ints representing total kills in BOTH Maps 1 and 2 for each of the last 10 series."
+            user_p = f"Extract stats for {t_p} ({t_t}) vs {opp}: {w_data}. Keys: full_team_name (str), full_opp_name (str), team_rank (int), opp_rank (int), base_kpr (float), hs_pct (float), opening_win_pct (float), last_10_kills (list of ints)."
             c = groq_client.chat.completions.create(model="llama-3.1-8b-instant", messages=[{"role": "system", "content": sys_msg}, {"role": "user", "content": user_p}], response_format={"type": "json_object"}, temperature=0)
             raw = json.loads(c.choices[0].message.content)
             save_to_vault(t_p, opp, theater, raw)
     
     if sync_duel: st.session_state['auto_duel'] = safe_float(raw.get('opening_win_pct', 50.0)) / 10.0
     if sync_ranks:
-        st.session_state['p_rank'] = int(safe_float(raw.get('team_rank', 60)))
-        st.session_state['o_rank'] = int(safe_float(raw.get('opp_rank', 110)))
+        # CRITICAL FIX: Ensure ranks are at least 1 to prevent Streamlit crash
+        st.session_state['p_rank'] = max(1, int(safe_float(raw.get('team_rank', 60))))
+        st.session_state['o_rank'] = max(1, int(safe_float(raw.get('opp_rank', 110))))
 
     st.session_state['last_intel'] = apply_sovereign_math(raw, t_p, u_line, t_t, opp, targets, m_kprs, m_hs, heat, pacing, opp_dpr, r_total, swing, st.session_state['auto_duel'], st.session_state['p_rank'], st.session_state['o_rank'], metric, theater)
     st.rerun()
@@ -209,6 +211,7 @@ with st.sidebar:
         st.session_state['o_rank'] = st.number_input("Opponent Rank", 1, 300, value=st.session_state['o_rank'], disabled=sync_ranks)
         pacing_val = st.selectbox("Pacing", ["Auto", "Fast", "Slow"])
 
+# RENDERER
 if st.session_state['last_intel']:
     intel = st.session_state['last_intel']
     card_html = f"""
