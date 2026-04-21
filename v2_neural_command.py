@@ -6,10 +6,10 @@ import numpy as np
 from groq import Groq
 from tavily import TavilyClient
 
-# --- 1. CORE SETUP & MONOLITH V32.2 STYLING ---
-st.set_page_config(page_title="Iron Guard V32.2", layout="wide", page_icon="📡")
+# --- 1. CORE SETUP & MONOLITH V32.3 STYLING ---
+st.set_page_config(page_title="Iron Guard V32.3", layout="wide", page_icon="📡")
 
-# Initialize Session State for Sync Logic
+# Initialize Session State for Deep-Sync
 if 'auto_duel' not in st.session_state: st.session_state['auto_duel'] = 5.0
 if 'p_rank' not in st.session_state: st.session_state['p_rank'] = 60
 if 'o_rank' not in st.session_state: st.session_state['o_rank'] = 110
@@ -25,16 +25,16 @@ st.markdown("""
         box-shadow: 0 60px 150px rgba(0, 0, 0, 1);
         position: relative; overflow: hidden;
     }
-    .nuclear-alert {
-        background: rgba(255, 69, 0, 0.2); color: #FF4500; border: 1px solid #FF4500;
-        padding: 5px 15px; border-radius: 10px; font-family: 'JetBrains Mono';
-        font-size: 14px; font-weight: 800; display: inline-block; margin-bottom: 15px;
-    }
     .nuke-play-badge {
         background: linear-gradient(90deg, #FFD700, #FF8C00); color: black;
         padding: 8px 20px; border-radius: 12px; font-family: 'Inter';
         font-size: 16px; font-weight: 900; display: inline-block; margin-bottom: 15px;
         box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+    }
+    .nuclear-alert {
+        background: rgba(255, 69, 0, 0.2); color: #FF4500; border: 1px solid #FF4500;
+        padding: 5px 15px; border-radius: 10px; font-family: 'JetBrains Mono';
+        font-size: 14px; font-weight: 800; display: inline-block; margin-bottom: 15px;
     }
     .grade-display { 
         font-family: 'Inter', sans-serif; font-weight: 900; letter-spacing: -60px; 
@@ -61,6 +61,11 @@ CS2_ARCHETYPES = {"Anubis": 1.12, "Ancient": 1.12, "Dust 2": 1.15, "Inferno": 0.
 VAL_ROLES = {"Neon": "Duelist", "Phoenix": "Duelist", "Jett": "Duelist", "Waylay": "Duelist", "Reyna": "Duelist", "Raze": "Duelist", "Yoru": "Duelist", "Iso": "Duelist", "Clove": "Hybrid", "Gekko": "Initiator", "Sova": "Initiator", "Fade": "Initiator", "Skye": "Initiator", "Tejo": "Initiator", "Breach": "Initiator", "KAY/O": "Initiator", "Omen": "Controller", "Viper": "Controller", "Astra": "Controller", "Brimstone": "Controller", "Miks": "Controller", "Harbor": "Controller", "Cypher": "Sentinel", "Killjoy": "Sentinel", "Vyse": "Sentinel", "Veto": "Sentinel", "Sage": "Sentinel", "Deadlock": "Sentinel", "Chamber": "Sentinel"}
 VAL_GRAVITY = {"Duelist": 1.15, "Hybrid": 1.10, "Initiator": 1.00, "Controller": 0.88, "Sentinel": 0.80}
 
+def safe_float(v, d=0.0):
+    try: return float(str(v).replace('%', '').strip()) if v else d
+    except: return d
+
+# --- 🛠️ VAULT ENGINE ---
 def get_vault_path(theater): return "CS2_Tactical.json" if theater == "CS2" else "Val_Tactical.json"
 
 def load_from_vault(player, opponent, theater):
@@ -92,15 +97,11 @@ def save_to_vault(player, opponent, theater, raw_data):
     if not updated: vault.append({"player": player.upper(), "opponent": opponent.upper(), "raw_data": raw_data})
     with open(path, "w") as f: json.dump(vault, f, indent=2)
 
-def safe_float(v, d=0.0):
-    try: return float(str(v).replace('%', '').strip()) if v else d
-    except: return d
-
-# --- 2. SOVEREIGN ENGINE (V32.2: RANK-LOCKED) ---
-def apply_sovereign_math(data, locked_player, locked_line, locked_team, opp_team, targets, m_kprs, m_hs, heat, pacing, opp_dpr, r_total, swing_pct, duel_override, p_rank_locked, o_rank_locked, metric="KILLS", theater="CS2"):
+# --- 2. SOVEREIGN ENGINE (V32.3: DEEP-SYNC) ---
+def apply_sovereign_math(data, locked_player, locked_line, locked_team, opp_team, targets, m_kprs, m_hs, heat, pacing, opp_dpr, r_total, swing_pct, duel_override, p_rank, o_rank, metric="KILLS", theater="CS2"):
     k_glob = safe_float(data.get('base_kpr'), 0.70)
     ok_win = safe_float(data.get('opening_win_pct'), 50.0)
-    rank_gap = o_rank_locked - p_rank_locked
+    rank_gap = o_rank - p_rank
 
     conf = 20 if opp_dpr > 0 else 0
     if m_kprs[0] > 0: conf += 40
@@ -117,13 +118,13 @@ def apply_sovereign_math(data, locked_player, locked_line, locked_team, opp_team
     for i in range(2):
         t_name = targets[i]
         m_val = m_kprs[i] if m_kprs[i] > 0 else (safe_float(data.get(f'map{i+1}_kpr')) or k_glob)
-        specific_mult = VAL_GRAVITY.get(VAL_ROLES.get(t_name, "Initiator"), 1.0) if theater == "VALORANT" else CS2_ARCHETYPES.get(t_name, 1.0)
-        weighted_kpr = m_val * specific_mult * swing_mult * match_mult * ode_mult * pacing_mult * duel_mult * (1 - (heat / 100) * 0.12)
+        spec_mult = VAL_GRAVITY.get(VAL_ROLES.get(t_name, "Initiator"), 1.0) if theater == "VALORANT" else CS2_ARCHETYPES.get(t_name, 1.0)
+        weighted_kpr = m_val * spec_mult * swing_mult * match_mult * ode_mult * pacing_mult * duel_mult * (1 - (heat / 100) * 0.12)
         per_map_proj.append(weighted_kpr * (r_total / 2))
         per_map_hs.append(m_hs[i] if m_hs[i] > 0 else safe_float(data.get(f'map{i+1}_hs_pct'), 50.0))
 
-    total_volume = sum(per_map_proj) * (1.08 if ok_win > 55 else 1.0)
-    final_proj = total_volume * ( (np.mean(per_map_hs) / 100) * (1.8 if theater == "VALORANT" else 1.0) ) if metric == "HEADSHOTS" else total_volume
+    total_vol = sum(per_map_proj) * (1.08 if ok_win > 55 else 1.0)
+    final_proj = total_vol * ( (np.mean(per_map_hs) / 100) * (1.8 if theater == "VALORANT" else 1.0) ) if metric == "HEADSHOTS" else total_vol
         
     is_dampened = False
     ceiling = locked_line * 1.5
@@ -134,9 +135,8 @@ def apply_sovereign_math(data, locked_player, locked_line, locked_team, opp_team
     delta = final_proj - locked_line
     win_prob = (np.random.normal(final_proj, 5.5, 10000) > locked_line).mean() * 100
     
-    # NUKE PLAY LOGIC (+10 Delta Lock)
-    is_nuke_play = False
-    if delta >= 10.0 and conf >= 85 and win_prob >= 85: is_nuke_play = True
+    is_nuke = False
+    if delta >= 10.0 and conf >= 85 and win_prob >= 85: is_nuke = True
 
     return {
         "player": locked_player.upper(), "match": f"{locked_team.upper()} vs {opp_team.upper()}", 
@@ -144,7 +144,7 @@ def apply_sovereign_math(data, locked_player, locked_line, locked_team, opp_team
         "color": ("#FFD700" if delta > 6.0 else "#00FF7F" if delta > 3.0 else "#FF4500" if delta < -3.0 else "#A0A0A0"), 
         "arrow": ("▲" if delta > 3.0 else "▼" if delta < -3.0 else "—"), 
         "d_text": ("OVER" if delta > 0 else "UNDER"), "prob": win_prob,
-        "kpr": f"{k_glob:.2f}", "proj": final_proj, "delta": delta, "is_dampened": is_dampened, "is_nuke": is_nuke_play, "conf": conf,
+        "kpr": f"{k_glob:.2f}", "proj": final_proj, "delta": delta, "is_dampened": is_dampened, "is_nuke": is_nuke, "conf": conf,
         "trace": f"{targets[0].upper()} | {targets[1].upper()}", 
         "metric": metric, "line": locked_line, "hr": f"{safe_float(data.get('l10_hit_rate'), 70.0):.0f}%", "gap": rank_gap, "swing": f"{swing_pct:+.2f}%"
     }
@@ -157,12 +157,11 @@ def run_precision_research(cmd, metric, targets, m_kprs, m_hs, heat, pacing, opp
     raw = load_from_vault(t_p, opp, theater) if not live else None
     if not raw:
         with st.status(f"🛰️ {theater} SCAN: {t_p.upper()}"):
-            q = f"2026 stats {t_p} {t_t} hltv vlr world rank vs {opp}"
+            q = f"2026 stats {t_p} {t_t} world rank vs {opp}"
             res = tavily_client.search(query=q, max_results=3)
             w_data = "\n".join([r['content'] for r in res['results']])[:3000]
-            sys_msg = "Return JSON only. Do not include text."
-            user_p = f"Extract stats for {t_p} ({t_t}) vs {opp}: {w_data}. JSON Keys: team_rank (int), opp_rank (int), base_kpr (float), hs_pct (float), rating_num (float), opening_win_pct (float), l10_hit_rate (float)."
-            c = groq_client.chat.completions.create(model="llama-3.1-8b-instant", messages=[{"role": "system", "content": sys_msg}, {"role": "user", "content": user_p}], response_format={"type": "json_object"}, temperature=0)
+            sys_msg = "Return JSON only. Keys: team_rank (int), opp_rank (int), base_kpr (float), hs_pct (float), opening_win_pct (float), l10_hit_rate (float)."
+            c = groq_client.chat.completions.create(model="llama-3.1-8b-instant", messages=[{"role": "system", "content": sys_msg}, {"role": "user", "content": f"Extract for {t_p}: {w_data}"}], response_format={"type": "json_object"}, temperature=0)
             raw = json.loads(c.choices[0].message.content)
             save_to_vault(t_p, opp, theater, raw)
     
@@ -188,16 +187,16 @@ with st.sidebar:
         t2_h = safe_float(st.text_input(f"M2 HS%", ""), 0.0) if metric_sel == "HEADSHOTS" else 0.0
         st.write("---")
         sync_ranks = st.checkbox("🛰️ Auto-Sync Ranks", value=True)
-        p_rank_in = st.number_input("Your Team Rank", 1, 300, value=st.session_state['p_rank'], disabled=sync_ranks)
+        p_rank_in = st.number_input("Your Team Rank", 1, 300, value=st.session_state['p_rank'], disabled=sync_ranks, key="p_rank_widget")
         if not sync_ranks: st.session_state['p_rank'] = p_rank_in
         sync_duel = st.checkbox("🛰️ Auto-Sync Open Duel", value=True)
-        duel_val = st.slider("Open Duel (1-10)", 1.0, 10.0, value=st.session_state['auto_duel'], step=0.1, disabled=sync_duel)
+        duel_val = st.slider("Open Duel (1-10)", 1.0, 10.0, value=st.session_state['auto_duel'], step=0.1, disabled=sync_duel, key="duel_widget")
         if not sync_duel: st.session_state['auto_duel'] = duel_val
-        swing_v, r_total_v = safe_float(st.text_input("Round Swing %", "2.18"), 2.18), safe_float(st.text_input("Total Rounds", "44.0"), 44.0)
+        swing_v, r_total_v = safe_float(st.text_input("Round Swing %", "2.18")), safe_float(st.text_input("Total Rounds", "44.0"))
         heat_val = st.slider("Teammate Heat", 0, 100, 0)
     with st.expander("🛡️ OPPONENT TACTICAL", expanded=True):
-        opp_name, opp_dpr = st.text_input("Opponent Team", "PCIFIC"), safe_float(st.text_input("Opponent DPR", "0.65"), 0.0)
-        o_rank_in = st.number_input("Opponent Rank", 1, 300, value=st.session_state['o_rank'], disabled=sync_ranks)
+        opp_name, opp_dpr = st.text_input("Opponent Team", "PCIFIC"), safe_float(st.text_input("Opponent DPR", "0.65"))
+        o_rank_in = st.number_input("Opponent Rank", 1, 300, value=st.session_state['o_rank'], disabled=sync_ranks, key="o_rank_widget")
         if not sync_ranks: st.session_state['o_rank'] = o_rank_in
         pacing_val = st.selectbox("Pacing", ["Auto", "Fast", "Slow"])
 
@@ -230,3 +229,4 @@ if prompt := st.chat_input("Grade Player (Team) Line"):
         with c4: st.metric("GLOBAL KPR", intel['kpr']); st.badge("Historical", color="gray")
         with c5: st.metric("RANK GAP", f"{intel['gap']:+d} Pos"); st.badge("Mismatch", color="orange")
         with c6: st.metric("NUCLEAR FLAG", "FLAGGED" if intel['is_nuke'] else "CLEAN"); st.badge("Sanity Check", color=nuke_color)
+        st.rerun() # Forces Sidebar to update with newly pulled ranks immediately
