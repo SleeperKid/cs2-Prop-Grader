@@ -6,8 +6,8 @@ import numpy as np
 from groq import Groq
 from tavily import TavilyClient
 
-# --- 1. CORE SETUP & MONOLITH V32.0 STYLING ---
-st.set_page_config(page_title="Iron Guard V32.0", layout="wide", page_icon="📡")
+# --- 1. CORE SETUP & MONOLITH V32.1 STYLING ---
+st.set_page_config(page_title="Iron Guard V32.1", layout="wide", page_icon="📡")
 
 if 'auto_duel' not in st.session_state:
     st.session_state['auto_duel'] = 5.0
@@ -94,7 +94,7 @@ def safe_float(v, d=0.0):
     try: return float(str(v).replace('%', '').strip()) if v else d
     except: return d
 
-# --- 2. SOVEREIGN ENGINE (V32.0: STRIKE-POINT) ---
+# --- 2. SOVEREIGN ENGINE (V32.1: RESILIENT) ---
 def apply_sovereign_math(data, locked_player, locked_line, locked_team, opp_team, targets, m_kprs, m_hs, heat, pacing, opp_dpr, r_total, swing_pct, duel_override, metric="KILLS", theater="CS2"):
     k_glob = safe_float(data.get('base_kpr'), 0.70)
     ok_win = safe_float(data.get('opening_win_pct'), 50.0)
@@ -133,9 +133,9 @@ def apply_sovereign_math(data, locked_player, locked_line, locked_team, opp_team
     delta = final_proj - locked_line
     win_prob = (np.random.normal(final_proj, 5.5, 10000) > locked_line).mean() * 100
     
-    # NUKE PLAY LOGIC: Stars Aligning
+    # NUKE PLAY LOGIC: Stars Aligning (+10 Delta Threshold)
     is_nuke_play = False
-    if delta > 10.0 and conf >= 85 and win_prob >= 85:
+    if delta >= 10.0 and conf >= 85 and win_prob >= 85:
         is_nuke_play = True
 
     return {
@@ -160,19 +160,33 @@ def run_precision_research(cmd, metric, targets, m_kprs, m_hs, heat, pacing, opp
             q = f"vlr.gg 2026 stats {t_p} {t_t} vs {opp}" if theater == "VALORANT" else f"HLTV 2026 stats {t_p} {t_t} vs {opp}"
             res = tavily_client.search(query=q, max_results=3)
             w_data = "\n".join([r['content'] for r in res['results']])[:3000]
-            p = f"JSON for {t_p} ({t_t}) vs {opp}. Data: {w_data}. KEYS: team_rank (int), opp_rank (int), base_kpr (float), hs_pct (float), rating_num (float), opening_win_pct (float), l10_hit_rate (float)."
-            c = groq_client.chat.completions.create(model="llama-3.1-8b-instant", messages=[{"role": "user", "content": p}], response_format={"type": "json_object"}, temperature=0)
-            raw = json.loads(c.choices[0].message.content)
-            save_to_vault(t_p, opp, theater, raw)
+            
+            # API PROTECTION: Structured System Prompt for Groq JSON Mode
+            sys_msg = "You are a tactical data parser. Return a JSON object only. Do not include any text outside the JSON."
+            user_p = f"Extract stats for {t_p} ({t_t}) vs {opp} from this data: {w_data}. Required JSON keys: team_rank (int), opp_rank (int), base_kpr (float), hs_pct (float), rating_num (float), opening_win_pct (float), l10_hit_rate (float)."
+            
+            try:
+                c = groq_client.chat.completions.create(
+                    model="llama-3.1-8b-instant", 
+                    messages=[{"role": "system", "content": sys_msg}, {"role": "user", "content": user_p}], 
+                    response_format={"type": "json_object"}, 
+                    temperature=0
+                )
+                raw = json.loads(c.choices[0].message.content)
+                save_to_vault(t_p, opp, theater, raw)
+            except Exception as e:
+                st.error(f"🛰️ SENSOR FAILURE: Groq API rejected the search data. Check Search Content.")
+                st.stop()
+                
     if sync: st.session_state['auto_duel'] = safe_float(raw.get('opening_win_pct', 50.0)) / 10.0
     return apply_sovereign_math(raw, t_p, u_line, t_t, opp, targets, m_kprs, m_hs, heat, pacing, opp_dpr, r_total, swing, st.session_state['auto_duel'], metric, theater)
 
 # --- 3. UI LAYER ---
 with st.sidebar:
     st.header("📡 COMMAND CENTER")
-    theater_sel = st.sidebar.radio("Theater", ["CS2", "VALORANT"], help="HINT: Affects Agent Gravity/Map Archetypes.")
-    force_live = st.sidebar.checkbox("Force Live Strike", value=True, help="HINT: Fresh 2026 scan.")
-    metric_sel = st.sidebar.segmented_control("Metric", options=["KILLS", "HEADSHOTS"], default="KILLS", help="HINT: Target output.")
+    theater_sel = st.sidebar.radio("Theater", ["CS2", "VALORANT"])
+    force_live = st.sidebar.checkbox("Force Live Strike", value=True)
+    metric_sel = st.sidebar.segmented_control("Metric", options=["KILLS", "HEADSHOTS"], default="KILLS")
     with st.expander("👤 MAPS 1+2 TACTICAL", expanded=True):
         label = "Map" if theater_sel == "CS2" else "Agent"
         target_list = list(CS2_ARCHETYPES.keys()) if theater_sel == "CS2" else list(VAL_ROLES.keys())
@@ -181,7 +195,7 @@ with st.sidebar:
         t2, t2_k = st.selectbox(f"{label} 2", target_list), safe_float(st.text_input(f"M2 KPR", ""), 0.0)
         t2_h = safe_float(st.text_input(f"M2 HS%", ""), 0.0) if metric_sel == "HEADSHOTS" else 0.0
         st.write("---")
-        sync_on = st.checkbox("🛰️ Auto-Sync Open Duel", value=True, help="HINT: Pulls 2026 Opening stats.")
+        sync_on = st.checkbox("🛰️ Auto-Sync Open Duel", value=True)
         duel_val = st.slider("Open Duel (HLTV Equiv)", 1.0, 10.0, value=st.session_state['auto_duel'], step=0.1, disabled=sync_on)
         if not sync_on: st.session_state['auto_duel'] = duel_val
         swing_v, r_total_v = safe_float(st.text_input("Round Swing %", "2.18"), 2.18), safe_float(st.text_input("Total Maps 1+2 Rounds", "44.0"), 44.0)
@@ -197,7 +211,7 @@ if prompt := st.chat_input("Grade Player (Team) Line"):
 <div class="sovereign-card" style="border-top: 35px solid {intel['color']};">
 <div class="grade-display">{intel['grade']}</div>
 <div class="card-content">
-{f'<div class="nuke-play-badge">🚀 NUKE PLAY: ALL STARS ALIGNED</div>' if intel['is_nuke'] else ''}
+{f'<div class="nuke-play-badge">🚀 NUKE PLAY: +10 DELTA LOCK</div>' if intel['is_nuke'] else ''}
 {f'<div class="nuclear-alert">☢️ CEILING ALERT: LIGHT DAMPENING ACTIVE</div>' if intel['is_dampened'] else ''}
 <div class="player-name">{intel['player']}</div>
 <div class="match-header">{intel['match']} (MAPS 1+2)</div>
@@ -212,13 +226,10 @@ if prompt := st.chat_input("Grade Player (Team) Line"):
 </div>"""
         st.markdown(card_html, unsafe_allow_html=True)
         c1, c2, c3, c4, c5, c6 = st.columns(6)
-        
         nuke_color = "red" if intel['is_nuke'] else "green"
-        nuke_label = "FLAGGED" if intel['is_nuke'] else "CLEAN"
-        
         with c1: st.metric("MODEL CONF", f"{intel['conf']}%"); st.badge("Sovereign Conf", color="primary")
         with c2: st.metric("DELTA", f"{intel['delta']:+.1f}"); st.badge("Strike Delta", color="blue")
         with c3: st.metric("L10 HIT RATE", intel['hr']); st.badge("Momentum", color="violet")
         with c4: st.metric("GLOBAL KPR", intel['kpr']); st.badge("Historical", color="gray")
         with c5: st.metric("RANK GAP", f"{intel['gap']:+d} Pos"); st.badge("Mismatch", color="orange")
-        with c6: st.metric("NUCLEAR FLAG", nuke_label); st.badge("Sanity Check", color=nuke_color)
+        with c6: st.metric("NUCLEAR FLAG", "FLAGGED" if intel['is_nuke'] else "CLEAN"); st.badge("Sanity Check", color=nuke_color)
