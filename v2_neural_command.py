@@ -6,10 +6,9 @@ import numpy as np
 from groq import Groq
 from tavily import TavilyClient
 
-# --- 1. CORE SETUP & MONOLITH V34.0 STYLING ---
-st.set_page_config(page_title="Iron Guard V34.0", layout="wide", page_icon="📡")
+# --- 1. CORE SETUP & MONOLITH V34.1 STYLING ---
+st.set_page_config(page_title="Iron Guard V34.1", layout="wide", page_icon="📡")
 
-# Session State Persistence for Deep-Sync
 if 'last_intel' not in st.session_state: st.session_state['last_intel'] = None
 if 'auto_duel' not in st.session_state: st.session_state['auto_duel'] = 5.0
 if 'p_rank' not in st.session_state: st.session_state['p_rank'] = 60
@@ -97,16 +96,16 @@ def save_to_vault(player, opponent, theater, raw_data):
     if not updated: vault.append({"player": player.upper(), "opponent": opponent.upper(), "raw_data": raw_data})
     with open(path, "w") as f: json.dump(vault, f, indent=2)
 
-# --- 2. SOVEREIGN ENGINE (V34.0: EMPIRICAL L10) ---
+# --- 2. SOVEREIGN ENGINE (V34.1: EMPIRICAL FULL-NAME) ---
 def apply_sovereign_math(data, locked_player, locked_line, locked_team, opp_team, targets, m_kprs, m_hs, heat, pacing, opp_dpr, r_total, swing_pct, duel_override, p_rank, o_rank, metric="KILLS", theater="CS2"):
     k_glob = safe_float(data.get('base_kpr'), 0.70)
     ok_win = safe_float(data.get('opening_win_pct'), 50.0)
     rank_gap = o_rank - p_rank
-
-    # Hit Rate Calculation from Historical List
-    hist_kills = data.get('last_10_kills', [])
+    
+    # Empirical L10 Filter: Ensure we have reasonable series totals
+    hist_kills = [safe_float(x) for x in data.get('last_10_kills', []) if safe_float(x) > 10]
     if hist_kills:
-        hits = [k for k in hist_kills if safe_float(k) > locked_line]
+        hits = [k for k in hist_kills if k > locked_line]
         hr_val = (len(hits) / len(hist_kills)) * 100
     else:
         hr_val = 70.0 # Circuit Baseline
@@ -145,7 +144,8 @@ def apply_sovereign_math(data, locked_player, locked_line, locked_team, opp_team
     is_nuke = True if (delta >= 10.0 and conf >= 85 and win_prob >= 85) else False
 
     return {
-        "player": locked_player.upper(), "match": f"{locked_team.upper()} vs {opp_team.upper()}", 
+        "player": locked_player.upper(), "full_team": data.get('full_team_name', locked_team.upper()),
+        "full_opp": data.get('full_opp_name', opp_team.upper()),
         "grade": ("S" if delta > 6.0 else "A+" if delta > 3.0 else "B" if delta < -3.0 else "C"), 
         "color": ("#FFD700" if delta > 6.0 else "#00FF7F" if delta > 3.0 else "#FF4500" if delta < -3.0 else "#A0A0A0"), 
         "arrow": ("▲" if delta > 3.0 else "▼" if delta < -3.0 else "—"), 
@@ -165,11 +165,11 @@ def run_precision_research(cmd, metric, targets, m_kprs, m_hs, heat, pacing, opp
     if not raw:
         with st.status(f"🛰️ {theater} SCAN: {t_p.upper()}"):
             domain = "vlr.gg" if theater == "VALORANT" else "hltv.org"
-            q = f"site:{domain} {t_p} {t_t} last 10 series total kills map 1 2 world rank vs {opp}"
+            q = f"site:{domain} {t_p} {t_t} last 10 series total kills map 1 2 world rank full team names vs {opp}"
             res = tavily_client.search(query=q, max_results=5)
             w_data = "\n".join([r['content'] for r in res['results']])[:4500]
-            sys_msg = "Return JSON ONLY. Extract 'last_10_kills' as a list of integers representing total kills in Map 1 and 2 for his last 10 series."
-            user_p = f"Extract stats for {t_p} ({t_t}): {w_data}. Keys: team_rank (int), opp_rank (int), base_kpr (float), hs_pct (float), opening_win_pct (float), last_10_kills (list of ints)."
+            sys_msg = "Return JSON ONLY. Provide 'full_team_name' and 'full_opp_name' (e.g. 'Eternal Fire'). 'last_10_kills' MUST be a list of ints representing combined Map 1+2 totals (e.g. [35, 42, 38])."
+            user_p = f"Extract stats for {t_p} ({t_t}): {w_data}. Keys: full_team_name (str), full_opp_name (str), team_rank (int), opp_rank (int), base_kpr (float), hs_pct (float), opening_win_pct (float), last_10_kills (list of ints)."
             c = groq_client.chat.completions.create(model="llama-3.1-8b-instant", messages=[{"role": "system", "content": sys_msg}, {"role": "user", "content": user_p}], response_format={"type": "json_object"}, temperature=0)
             raw = json.loads(c.choices[0].message.content)
             save_to_vault(t_p, opp, theater, raw)
@@ -218,7 +218,7 @@ if st.session_state['last_intel']:
 {f'<div class="nuke-play-badge">🚀 NUKE PLAY: +10 DELTA LOCK</div>' if intel['is_nuke'] else ''}
 {f'<div class="nuclear-alert">☢️ CEILING ALERT: LIGHT DAMPENING ACTIVE</div>' if intel['is_dampened'] else ''}
 <div class="player-name">{intel['player']}</div>
-<div class="match-header">{intel['match']} (MAPS 1+2)</div>
+<div class="match-header">{intel['full_team']} vs {intel['full_opp']}</div>
 <div style="display: flex; gap: 80px; justify-content: center;">
 <div><div class="stat-lbl">Win Prob</div><div class="stat-val">{intel['prob']:.1f}%</div></div>
 <div><div class="stat-lbl">{intel['metric']} PROJ</div><div class="stat-val" style="color: {intel['color']};">{intel['proj']:.1f}</div></div>
