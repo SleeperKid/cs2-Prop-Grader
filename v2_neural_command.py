@@ -6,10 +6,10 @@ import numpy as np
 from groq import Groq
 from tavily import TavilyClient
 
-# --- 1. CORE SETUP & MONOLITH V35.1 STYLING ---
-st.set_page_config(page_title="Iron Guard V35.1", layout="wide", page_icon="📡")
+# --- 1. CORE SETUP & MONOLITH V37.0 STYLING ---
+st.set_page_config(page_title="Iron Guard V37.0", layout="wide", page_icon="📡")
 
-# Session State Persistence
+# Initialize Session State
 if 'last_intel' not in st.session_state: st.session_state['last_intel'] = None
 if 'auto_duel' not in st.session_state: st.session_state['auto_duel'] = 5.0
 if 'p_rank' not in st.session_state: st.session_state['p_rank'] = 60
@@ -40,7 +40,6 @@ st.markdown("""
     .card-content { position: relative; z-index: 1; text-align: left; }
     .player-name { font-family: 'Inter', sans-serif; font-weight: 900; font-size: 40px; text-transform: uppercase; color: white; margin-bottom: 5px; }
     .match-header { font-family: 'JetBrains Mono'; color: #FFD700; margin-bottom: 30px; font-weight: 800; font-size: 24px; text-transform: uppercase; }
-    .decision-line { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 42px; text-transform: uppercase; margin-top: 25px; }
     .stat-val { color: white; font-size: 42px; font-weight: 800; margin-bottom: 25px; }
     .stat-lbl { font-size: 12px; color: rgba(255,255,255,0.4); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 2px; }
 </style>
@@ -54,135 +53,116 @@ except: st.error("📡 API ERROR: Check Secrets."); st.stop()
 # --- 🛰️ GROUND-TRUTH MANIFEST (APRIL 2026) ---
 MANIFEST = {
     "VALORANT": {
-        "EF": {"full": "Eternal Fire", "rank": 35}, "PCIFIC": {"full": "PCIFIC Esports", "rank": 120},
-        "FNC": {"full": "Fnatic", "rank": 4}, "VIT": {"full": "Team Vitality", "rank": 16},
-        "SEN": {"full": "Sentinels", "rank": 1}, "LOUD": {"full": "LOUD", "rank": 5},
-        "MIBR": {"full": "MIBR", "rank": 18}, "GENG": {"full": "Gen.G", "rank": 2}
+        "FNC": {"full": "Fnatic", "rank": 1}, "TL": {"full": "Team Liquid", "rank": 2},
+        "FURIA": {"full": "Furia", "rank": 3}, "MIBR": {"full": "MIBR", "rank": 4},
+        "DRX": {"full": "DRX", "rank": 5}, "100T": {"full": "100 Thieves", "rank": 6},
+        "G2": {"full": "G2 Esports", "rank": 7}, "KRU": {"full": "KRÜ Esports", "rank": 8},
+        "PRX": {"full": "Paper Rex", "rank": 9}, "NS": {"full": "Nongshim RedForce", "rank": 10},
+        "EF": {"full": "Eternal Fire", "rank": 11}, "FUT": {"full": "FUT Esports", "rank": 12},
+        "NRG": {"full": "NRG", "rank": 13}, "LEV": {"full": "Leviatán", "rank": 14},
+        "GE": {"full": "Global Esports", "rank": 15}, "VIT": {"full": "Team Vitality", "rank": 16},
+        "PCIFIC": {"full": "PCIFIC Esports", "rank": 120}
     },
     "CS2": {
-        "SPIRIT": {"full": "Team Spirit", "rank": 5}, "ASTR": {"full": "Astralis", "rank": 14},
         "VIT": {"full": "Team Vitality", "rank": 1}, "NAVI": {"full": "Natus Vincere", "rank": 2},
-        "MOUZ": {"full": "MOUZ", "rank": 3}, "FAZE": {"full": "FaZe Clan", "rank": 4},
-        "EF": {"full": "Eternal Fire", "rank": 8}, "1WIN": {"full": "1win", "rank": 67}
+        "FURIA": {"full": "FURIA", "rank": 3}, "FAL": {"full": "Falcons", "rank": 4},
+        "PARI": {"full": "PARIVISION", "rank": 5}, "AUR": {"full": "Aurora", "rank": 6},
+        "MOUZ": {"full": "MOUZ", "rank": 7}, "MONGOL": {"full": "The MongolZ", "rank": 8},
+        "SPIRIT": {"full": "Team Spirit", "rank": 9}, "ASTR": {"full": "Astralis", "rank": 10},
+        "EF": {"full": "Eternal Fire", "rank": 11}
     }
 }
 
+# --- 🧠 THEATER DATA ---
 CS2_ARCHETYPES = {"Anubis": 1.12, "Ancient": 1.12, "Dust 2": 1.15, "Inferno": 0.90, "Mirage": 1.05, "Nuke": 0.90, "Overpass": 1.00}
-VAL_ROLES = {"Neon": "Duelist", "Phoenix": "Duelist", "Jett": "Duelist", "Waylay": "Duelist", "Reyna": "Duelist", "Raze": "Duelist", "Yoru": "Duelist", "Iso": "Duelist", "Clove": "Hybrid", "Gekko": "Initiator", "Sova": "Initiator", "Fade": "Initiator", "Skye": "Initiator", "Tejo": "Initiator", "Breach": "Initiator", "KAY/O": "Initiator", "Omen": "Controller", "Viper": "Controller", "Astra": "Controller", "Brimstone": "Controller", "Miks": "Controller", "Harbor": "Controller", "Cypher": "Sentinel", "Killjoy": "Sentinel", "Vyse": "Sentinel", "Veto": "Sentinel", "Sage": "Sentinel", "Deadlock": "Sentinel", "Chamber": "Sentinel"}
 VAL_GRAVITY = {"Duelist": 1.15, "Hybrid": 1.10, "Initiator": 1.00, "Controller": 0.88, "Sentinel": 0.80}
 
 def safe_float(v, d=0.0):
     try: return float(str(v).replace('%', '').strip()) if v else d
     except: return d
 
-# --- 2. SOVEREIGN ENGINE (V35.1: GROUND-TRUTH) ---
-def apply_sovereign_math(data, locked_player, locked_line, p_team_full, o_team_full, targets, m_kprs, heat, pacing, opp_dpr, r_total, swing_pct, duel_override, p_rank, o_rank, metric, theater):
-    k_glob = safe_float(data.get('base_kpr'), 0.70)
-    ok_win = safe_float(data.get('opening_win_pct'), 50.0)
-    rank_gap = o_rank - p_rank
-
-    hist_kills = [safe_float(k) for k in data.get('last_10_kills', []) if safe_float(k) > 10]
-    hr_val = (len([k for k in hist_kills if k > locked_line]) / len(hist_kills)) * 100 if hist_kills else 70.0
-
-    match_mult = 0.92 if rank_gap > 70 else 1.05 if rank_gap < -70 else 1.0
-    duel_mult = 1.0 + (duel_override - 5.0) * 0.02
-    
-    per_map_proj = []
-    for i in range(2):
-        m_val = m_kprs[i] if m_kprs[i] > 0 else k_glob
-        spec_mult = VAL_GRAVITY.get(VAL_ROLES.get(targets[i], "Initiator"), 1.0) if theater == "VALORANT" else CS2_ARCHETYPES.get(targets[i], 1.0)
-        weighted_kpr = m_val * spec_mult * match_mult * (opp_dpr / 0.65 if opp_dpr > 0 else 1.0) * duel_mult * (1 - (heat / 100) * 0.12)
-        per_map_proj.append(weighted_kpr * (r_total / 2))
-
-    final_proj = sum(per_map_proj) * (1.08 if ok_win > 55 else 1.0)
-    delta = final_proj - locked_line
-    win_prob = (np.random.normal(final_proj, 5.5, 10000) > locked_line).mean() * 100
-
-    return {
-        "player": locked_player.upper(), "full_team": p_team_full, "full_opp": o_team_full,
-        "grade": ("S" if delta > 6.0 else "A+" if delta > 3.0 else "B" if delta < -3.0 else "C"), 
-        "color": ("#FFD700" if delta > 6.0 else "#00FF7F" if delta > 3.0 else "#FF4500" if delta < -3.0 else "#A0A0A0"), 
-        "prob": win_prob, "kpr": f"{k_glob:.2f}", "proj": final_proj, "delta": delta, "is_nuke": (delta >= 10.0 and win_prob >= 85),
-        "trace": f"{targets[0].upper()} | {targets[1].upper()}", "metric": metric, "line": locked_line, "hr": f"{hr_val:.0f}%", "gap": rank_gap
-    }
-
-def run_precision_research(cmd, metric, targets, m_kprs, heat, pacing, opp_dpr, r_total, swing, sync_duel, sync_ranks, opp_abbr, theater, live):
-    # 1. Manifest Resolution
+# --- 2. THE RESEARCH ENGINE (ADR-SHIFTED) ---
+def run_precision_research(cmd, metric, targets, m_vals, heat, pacing, opp_dpr, r_total, sync_duel, sync_ranks, opp_abbr, theater):
     theater_key = "VALORANT" if theater == "VALORANT" else "CS2"
     domain = "vlr.gg" if theater == "VALORANT" else "hltv.org"
     
     match = re.search(r"Grade\s+([A-Za-z0-9_]+)\s*\((.*?)\)", cmd, re.IGNORECASE)
-    if not match: st.error("Format Error: Grade Player (Abbr) Line"); st.stop()
-    
     t_p, t_t_abbr = match.group(1).lower().strip(), match.group(2).upper().strip()
     u_line = float(re.findall(r"(\d+\.\d+|\d+)", cmd)[-1])
     
-    # HALLUCINATION SHIELD: Map Abbr to Full Name
-    p_team_data = MANIFEST[theater_key].get(t_t_abbr, {"full": t_t_abbr, "rank": 60})
-    o_team_data = MANIFEST[theater_key].get(opp_abbr.upper(), {"full": opp_abbr.upper(), "rank": 110})
+    # Manifest Resolution
+    p_team = MANIFEST[theater_key].get(t_t_abbr, {"full": t_t_abbr, "rank": 60})
+    o_team = MANIFEST[theater_key].get(opp_abbr.upper(), {"full": opp_abbr.upper(), "rank": 110})
 
-    # 2. Targeted Strike Scan
-    with st.status(f"🛰️ {theater} SCAN: {t_p.upper()} ({p_team_data['full']})"):
-        # Explicitly asking for "Combined Map 1+2" and "Season KPR" to stop hallucinations
-        q = f"site:{domain} {t_p} {p_team_data['full']} 2026 combined map 1 and 2 total kills season KPR stats vs {o_team_data['full']}"
+    with st.status(f"🛰️ {theater} SCAN: {t_p.upper()} vs {o_team['full']}"):
+        stat_target = "ADR (Average Damage Per Round)" if theater == "VALORANT" else "KPR (Kills Per Round)"
+        q = f"site:{domain} {t_p} {p_team['full']} 2026 {stat_target} season stats combined map 1 2 totals vs {o_team['full']}"
         res = tavily_client.search(query=q, max_results=5)
         w_data = "\n".join([r['content'] for r in res['results']])[:4500]
         
-        sys_msg = (
-            f"You are a parser. Focus strictly on {t_p} with {p_team_data['full']}. "
-            "Ignore RRQ or Vitality unless specified. Return ONLY JSON."
-        )
-        user_p = (
-            f"Extract for {t_p} vs {o_team_data['full']}: {w_data}. "
-            "Keys: base_kpr (float), opening_win_pct (float), last_10_kills (list of combined series total ints)."
-        )
+        sys_msg = f"Return JSON ONLY. Focus strictly on {t_p} ({p_team['full']})."
+        user_p = f"Extract stats for {t_p} vs {o_team['full']}: {w_data}. Keys: base_stat (float), opening_win_pct (float), last_10_kills (list of ints)."
         
         c = groq_client.chat.completions.create(
-            model="llama-3.1-8b-instant", 
-            messages=[{"role": "system", "content": sys_msg}, {"role": "user", "content": user_p}], 
-            response_format={"type": "json_object"}, 
-            temperature=0
+            model="llama-3.1-8b-instant", messages=[{"role": "system", "content": sys_msg}, {"role": "user", "content": user_p}],
+            response_format={"type": "json_object"}, temperature=0
         )
         raw = json.loads(c.choices[0].message.content)
 
-    # 3. Empirical Update
     if sync_duel: st.session_state['auto_duel'] = safe_float(raw.get('opening_win_pct', 50.0)) / 10.0
     if sync_ranks:
-        st.session_state['p_rank'] = p_team_data['rank']
-        st.session_state['o_rank'] = o_team_data['rank']
+        st.session_state['p_rank'], st.session_state['o_rank'] = p_team['rank'], o_team['rank']
 
-    # Final Strike Calculation
-    st.session_state['last_intel'] = apply_sovereign_math(
-        raw, t_p, u_line, p_team_data['full'], o_team_data['full'], 
-        targets, m_kprs, heat, pacing, opp_dpr, r_total, swing, 
-        st.session_state['auto_duel'], st.session_state['p_rank'], st.session_state['o_rank'], 
-        metric, theater
-    )
+    # Sovereign Calculation (V37.0 ADR Shift)
+    # Valorant: base_stat is ADR. We divide by 150 to get a Synthetic KPR for volume math.
+    k_glob = (safe_float(raw.get('base_stat')) / 150) if theater == "VALORANT" else safe_float(raw.get('base_stat'), 0.70)
+    rank_gap = st.session_state['o_rank'] - st.session_state['p_rank']
+    hist_kills = [safe_float(k) for k in raw.get('last_10_kills', []) if safe_float(k) > 10]
+    hr_val = (len([k for k in hist_kills if k > u_line]) / len(hist_kills)) * 100 if hist_kills else 70.0
+    
+    match_mult = 0.92 if rank_gap > 70 else 1.05 if rank_gap < -70 else 1.0
+    duel_mult = 1.0 + (st.session_state['auto_duel'] - 5.0) * 0.02
+    
+    per_map_proj = []
+    for i in range(2):
+        # Convert manual ADR to KPR if Valorant
+        m_val = (m_vals[i] / 150) if (theater == "VALORANT" and m_vals[i] > 0) else (m_vals[i] if m_vals[i] > 0 else k_glob)
+        spec_mult = VAL_GRAVITY.get(targets[i], 1.0) if theater == "VALORANT" else CS2_ARCHETYPES.get(targets[i], 1.0)
+        per_map_proj.append(m_val * spec_mult * match_mult * (opp_dpr / 0.65) * duel_mult * (1 - (heat / 100) * 0.12) * (r_total / 2))
+
+    final_proj = sum(per_map_proj) * (1.08 if safe_float(raw.get('opening_win_pct')) > 55 else 1.0)
+    delta = final_proj - u_line
+    win_prob = (np.random.normal(final_proj, 5.5, 10000) > u_line).mean() * 100
+
+    st.session_state['last_intel'] = {
+        "player": t_p.upper(), "full_team": p_team['full'], "full_opp": o_team['full'],
+        "grade": ("S" if delta > 6.0 else "A+" if delta > 3.0 else "B" if delta < -3.0 else "C"),
+        "color": ("#FFD700" if delta > 6.0 else "#00FF7F" if delta > 3.0 else "#FF4500" if delta < -3.0 else "#A0A0A0"),
+        "prob": win_prob, "stat_baseline": safe_float(raw.get('base_stat')), "proj": final_proj, "delta": delta,
+        "is_nuke": (delta >= 10.0 and win_prob >= 85), "hr": f"{hr_val:.0f}%", "gap": rank_gap, "trace": f"{targets[0].upper()} | {targets[1].upper()}"
+    }
     st.rerun()
 
 # --- 3. UI LAYER ---
 with st.sidebar:
     st.header("📡 COMMAND CENTER")
-    theater_sel = st.sidebar.radio("Theater", ["CS2", "VALORANT"])
+    theater_sel = st.sidebar.radio("Theater", ["VALORANT", "CS2"])
     metric_sel = st.sidebar.segmented_control("Metric", options=["KILLS", "HEADSHOTS"], default="KILLS")
-    
     with st.expander("👤 PLAYER TACTICAL", expanded=True):
-        label = "Map" if theater_sel == "CS2" else "Agent"
-        target_list = list(CS2_ARCHETYPES.keys()) if theater_sel == "CS2" else list(VAL_ROLES.keys())
-        t1, t1_k = st.selectbox(f"{label} 1", target_list, help="HINT: Gravity check."), safe_float(st.text_input(f"M1 KPR", "", help="HINT: Leave blank for baseline."))
-        t2, t2_k = st.selectbox(f"{label} 2", target_list), safe_float(st.text_input(f"M2 KPR", ""))
+        stat_lbl = "ADR" if theater_sel == "VALORANT" else "KPR"
+        target_list = list(VAL_GRAVITY.keys()) if theater_sel == "VALORANT" else list(CS2_ARCHETYPES.keys())
+        t1, t1_v = st.selectbox("Role 1", target_list), safe_float(st.text_input(f"M1 {stat_lbl}", "", help="Input ADR for Val, KPR for CS2."))
+        t2, t2_v = st.selectbox("Role 2", target_list), safe_float(st.text_input(f"M2 {stat_lbl}", ""))
         st.write("---")
-        sync_ranks = st.checkbox("🛰️ Auto-Sync Ranks", value=True, help="HINT: Uses the hard-coded Manifest.")
-        st.session_state['p_rank'] = st.number_input("Your Rank", 1, 300, value=st.session_state['p_rank'], disabled=sync_ranks)
+        sync_ranks = st.checkbox("🛰️ Auto-Sync Ranks", value=True)
+        st.session_state['p_rank'] = st.number_input("Team Rank", 1, 300, value=st.session_state['p_rank'], disabled=sync_ranks)
         sync_duel = st.checkbox("🛰️ Auto-Sync Open Duel", value=True)
         st.session_state['auto_duel'] = st.slider("Open Duel (1-10)", 1.0, 10.0, value=st.session_state['auto_duel'], step=0.1, disabled=sync_duel)
         r_total_v = safe_float(st.text_input("Total Rounds", "44.0"))
         heat_val = st.slider("Teammate Heat", 0, 100, 0)
-        
     with st.expander("🛡️ OPPONENT TACTICAL", expanded=True):
         opp_name, opp_dpr = st.text_input("Opponent (Abbr)", "PCIFIC"), safe_float(st.text_input("Opponent DPR", "0.65"))
         st.session_state['o_rank'] = st.number_input("Opponent Rank", 1, 300, value=st.session_state['o_rank'], disabled=sync_ranks)
-        pacing_val = st.selectbox("Pacing", ["Auto", "Fast", "Slow"])
 
 if st.session_state['last_intel']:
     i = st.session_state['last_intel']
@@ -195,20 +175,13 @@ if st.session_state['last_intel']:
 <div class="match-header">{i['full_team']} vs {i['full_opp']}</div>
 <div style="display: flex; gap: 80px; justify-content: center;">
 <div><div class="stat-lbl">Win Prob</div><div class="stat-val">{i['prob']:.1f}%</div></div>
-<div><div class="stat-lbl">{i['metric']} PROJ</div><div class="stat-val" style="color: {i['color']};">{i['proj']:.1f}</div></div>
+<div><div class="stat-lbl">KILLS PROJ</div><div class="stat-val" style="color: {i['color']};">{i['proj']:.1f}</div></div>
 <div><div class="stat-lbl">Open Duel</div><div class="stat-val">{st.session_state['auto_duel']:.1f}</div></div>
 </div>
-<div class="decision-line" style="color: {i['color']};">{"OVER" if i['delta'] > 0 else "UNDER"} {i['line']} {i['metric']} {"▲" if i['delta'] > 0 else "▼"}</div>
+<div class="decision-line" style="color: {i['color']};">{"OVER" if i['delta'] > 0 else "UNDER"} {33.5} KILLS {"▲" if i['delta'] > 0 else "▼"}</div>
 <div style="margin-top: 40px; font-family: 'JetBrains Mono'; color: rgba(255,255,255,0.4); font-size: 22px;">{i['trace']}</div>
 </div></div>"""
     st.markdown(card_html, unsafe_allow_html=True)
-    c1, c2, c3, c4, c5, c6 = st.columns(6)
-    with c1: st.metric("CONFIDENCE", "100%" if i['proj'] > 0 else "0%"); st.badge("Sovereign", color="primary")
-    with c2: st.metric("DELTA", f"{i['delta']:+.1f}"); st.badge("Strike Delta", color="blue")
-    with c3: st.metric("L10 HIT RATE", i['hr']); st.badge("Momentum", color="violet")
-    with c4: st.metric("GLOBAL KPR", i['kpr']); st.badge("Historical", color="gray")
-    with c5: st.metric("RANK GAP", f"{i['gap']:+d} Pos"); st.badge("Mismatch", color="orange")
-    with c6: st.metric("NUCLEAR FLAG", "FLAGGED" if i['is_nuke'] else "CLEAN"); st.badge("Sanity", color="red" if i['is_nuke'] else "green")
 
-if prompt := st.chat_input("Grade Player (Team) Line"):
-    run_precision_research(prompt, metric_sel, [t1, t2], [t1_k, t2_k], heat_val, pacing_val, opp_dpr, r_total_v, 2.18, sync_duel, sync_ranks, opp_name, theater_sel, True)
+if prompt := st.chat_input("Grade Player (Abbr) Line"):
+    run_precision_research(prompt, metric_sel, [t1, t2], [t1_v, t2_v], heat_val, opp_dpr, r_total_v, sync_duel, sync_ranks, opp_name, theater_sel)
