@@ -5,3 +5,4 @@ numpy
 scipy
 plotly
 st-gsheets-connection
+tavily-python

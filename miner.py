@@ -5,11 +5,12 @@ import pandas as pd
 import re
 import os
 import time
+import random
 from seleniumbase import SB
 from bs4 import BeautifulSoup
 
 # ==========================================
-# 🛡️ THE ATOMIC UPSERT
+# 🛡️ THE ATOMIC UPSERT (Purity Doctrine)
 # ==========================================
 def upload_to_vault(new_df, worksheet_name):
     if new_df.empty: return
@@ -19,189 +20,150 @@ def upload_to_vault(new_df, worksheet_name):
         client = gspread.authorize(creds)
         spreadsheet = client.open("PropVault") 
         worksheet = spreadsheet.worksheet(worksheet_name)
-        existing_df = get_as_dataframe(worksheet).dropna(how='all').dropna(axis=1, how='all')
-        for d in [existing_df, new_df]:
-            if 'Edge %' in d.columns: d.drop(columns=['Edge %'], inplace=True)
+        
+        # Load existing data; drop calculated fields to maintain Raw Data Layer [Manifest 1.0]
+        try:
+            existing_df = get_as_dataframe(worksheet).dropna(how='all').dropna(axis=1, how='all')
+            for d in [existing_df, new_df]:
+                if 'Edge %' in d.columns: d.drop(columns=['Edge %'], inplace=True)
+        except:
+            existing_df = pd.DataFrame()
+
+        # Atomic Upsert: Overwrite old stats for the same player [Manifest 1.0]
         final_df = pd.concat([existing_df, new_df]).drop_duplicates(subset=['Player'], keep='last')
+        
         worksheet.clear()
         set_with_dataframe(worksheet, final_df)
-        print(f"🚀 [SUCCESS] {worksheet_name} Sync Complete.")
+        print(f"🚀 [VAULT UPDATE] {worksheet_name} Sync Complete.")
     except Exception as e:
-        print(f"❌ [CRITICAL] Sync Failure: {e}")
+        print(f"❌ [CRITICAL] Vault Sync Failure: {e}")
 
 # ==========================================
-# 🎮 CS2 ENGINE (V132: TITAN STABLE)
+# 🎮 CORE ENGINE (V172: DEEP TABLE)
 # ==========================================
 def get_cs2_team_lineup(sb, team_name, team_url):
     players_data = []
     try:
-        print(f"📡 [CS2] Stealth-Sync for {team_name}...")
-        # V133: Use UC Mode with a slightly longer reconnect window for HLTV Cloudflare
-        sb.uc_open_with_reconnect(team_url, 10)
-        sb.sleep(6) 
+        print(f"📡 [CS2] V172 Deep Table Sync: {team_name}...")
+        sb.uc_open_with_reconnect(team_url, 12)
         
-        # Ensure the roster element is actually visible before grabbing source
-        sb.wait_for_element(".team-lineup", timeout=15)
+        # Discovery Phase
         soup = BeautifulSoup(sb.get_page_source(), 'lxml')
-        
-        # V133: Specifically target the 'current' lineup links within the lineup container
-        roster_container = soup.select_one('.team-lineup')
-        if not roster_container:
-            print(f"⚠️ [CS2] Could not find roster container for {team_name}. Check URL."); return []
-            
-        roster_links = roster_container.select('a[href^="/player/"]')[:5]
-        
+        seen_ids, roster_links = set(), []
+        for a in soup.select('a[href*="/player/"]'):
+            href = a.get('href')
+            p_id = href.split('/')[2]
+            if 'coach' not in href.lower() and p_id.isdigit() and p_id not in seen_ids:
+                roster_links.append(a); seen_ids.add(p_id)
+            if len(roster_links) >= 5: break
+
         for link in roster_links:
+            p_tag, p_id = link.get_text().strip(), link.get('href').split('/')[2]
             try:
-                p_tag, p_id = link.get_text().strip(), link.get('href').split('/')[2]
-                print(f"      -> {p_tag}: Syncing History...")
+                # 1. KPR Extraction
+                sb.open(f"https://www.hltv.org/stats/players/{p_id}/{p_tag.lower()}?startDate=2026-01-01")
+                sb.execute_script("window.scrollTo(0, 400);") # Trigger lazy-load
+                sb.sleep(2)
                 
-                # Navigate to Stats Page (UC Mode)
-                sb.uc_open_with_reconnect(f"https://www.hltv.org/stats/players/{p_id}/{p_tag.lower()}?startDate=2026-01-01", 5)
-                sb.wait_for_element(".stats-row", timeout=10)
+                kpr = 0.72 
+                m = re.search(r"(?:Kills / round|KPR).*?>(\d\.\d+)<", sb.get_page_source(), re.S | re.I)
+                if m: kpr = float(m.group(1))
+
+                # 2. MATCH HISTORY: V172 Multi-Selector Fallback
+                sb.open(f"https://www.hltv.org/stats/players/matches/{p_id}/{p_tag.lower()}")
+                sb.execute_script("window.scrollTo(0, 600);")
                 
-                stat_soup = BeautifulSoup(sb.get_page_source(), 'lxml')
-                kpr = 0.82 # Baseline if not found
-                
-                # More robust KPR search for 2026 Layout
-                k_label = stat_soup.find(string=re.compile(r"Kills per round", re.I))
-                if k_label:
-                    val_text = k_label.find_parent().select_one('span:last-child').get_text() if k_label.find_parent().select_one('span:last-child') else k_label.find_parent().get_text()
-                    m = re.search(r"\d+\.\d+", val_text)
-                    if m: kpr = float(m.group())
-                
-                # Navigate to Matches Page (UC Mode)
-                sb.uc_open_with_reconnect(f"https://www.hltv.org/stats/players/matches/{p_id}/{p_tag.lower()}?startDate=2026-01-01", 5)
-                sb.sleep(4)
-                
+                # Check for table presence via multiple tags used in 2026 UI
+                table_selector = ".stats-table, table.matches-table, table"
+                try:
+                    sb.wait_for_element(table_selector, timeout=15)
+                except:
+                    print(f"      ⚠️  {p_tag} table blocked. Signaling Restart.")
+                    return "RESTART_REQUIRED"
+
                 m_soup = BeautifulSoup(sb.get_page_source(), 'lxml')
-                table = m_soup.select_one('.stats-table')
-                if not table: continue
+                # Find the largest table on the page if .stats-table is missing
+                m_table = m_soup.select_one('.stats-table') or m_soup.find('table')
                 
-                headers = [th.get_text().strip().upper() for th in table.select('thead th')]
-                kd_idx, opp_idx = headers.index('K-D'), headers.index('OPPONENT')
-                
-                l10_totals, curr_match, last_opp = [], [], ""
-                for row in table.select('tbody tr'):
-                    cols = row.find_all('td')
-                    if len(cols) < opp_idx: continue
+                l10 = []
+                if m_table:
+                    rows = m_table.select('tbody tr')
+                    raw_maps = []
+                    for r in rows:
+                        c = r.find_all('td')
+                        if len(c) < 5: continue
+                        opp = re.sub(r'[^A-Z]', '', c[1].get_text().split('(')[0].upper())
+                        date = c[0].get_text()
+                        raw_maps.append({'id': f"{opp}_{date}", 'k': int(re.split(r'[-/]', c[4].get_text())[0])})
                     
-                    # Grouping logic for series totals (Map 1 + Map 2)
-                    opp = re.sub(r'[^A-Z0-9]', '', cols[opp_idx].get_text().upper())
-                    try: 
-                        kills = int(re.split(r'[-–/]', cols[kd_idx].get_text())[0].strip())
-                    except: continue
-                    
-                    if opp == last_opp:
-                        curr_match.append(kills)
-                    else:
-                        if len(curr_match) >= 2: 
-                            l10_totals.append(curr_match[0] + curr_match[1]) # Series Total
-                        curr_match, last_opp = [kills], opp
-                        
-                    if len(l10_totals) >= 10: break
+                    if raw_maps:
+                        keys = []
+                        for m in raw_maps:
+                            if m['id'] not in keys: keys.append(m['id'])
+                        for k in keys:
+                            s_k = [x['k'] for x in raw_maps if x['id'] == k]
+                            l10.append(sum(s_k[:2]))
+                            if len(l10) >= 10: break
                 
-                players_data.append({
-                    "Player": p_tag, "Game": "CS2", "Team": team_name, 
-                    "KPR": kpr, "L10": ", ".join(map(str, l10_totals))
-                })
-                print(f"      ✅ [CS2] {p_tag}: {l10_totals[0] if l10_totals else 'N/A'}")
-            except Exception as e: 
-                print(f"      ❌ Skipping {p_tag}: {e}"); continue
-                
+                players_data.append({"Player": p_tag, "Game": "CS2", "Team": team_name, "KPR": kpr, "L10": ", ".join(map(str, l10))})
+                print(f"      ✅ {p_tag}: {kpr} KPR Sync Complete.")
+                sb.sleep(1.5)
+            except Exception as e:
+                print(f"      ⚠️ {p_tag} failed: {str(e)[:30]}...")
+                continue
         return players_data
-    except Exception as e: 
-        print(f"❌ CS2 Engine Failure: {e}"); return []
+    except Exception as e:
+        print(f"🛑 Fatal: {e}"); return []
 
 # ==========================================
-# 🎮 VALORANT ENGINE (V132: ALIAS-LOCKED)
+# 🛡️ VAL ENGINE (V171: ROBUST SELECTOR)
 # ==========================================
 def get_val_team_lineup(sb, team_name, team_url):
     players_data = []
     try:
-        print(f"📡 [VAL] Alias-Locked Sync for {team_name}...")
-        sb.uc_open_with_reconnect(team_url, 8)
-        sb.sleep(5)
-        
+        print(f"📡 [VAL] V171 Robust Sync: {team_name}...")
+        sb.uc_open_with_reconnect(team_url, 10)
         soup = BeautifulSoup(sb.get_page_source(), 'lxml')
-        vlr_roster = []
-        # Find every player item container
-        items = soup.select('.team-roster-item')
-        for item in items:
-            parent_txt = item.find_parent('.wf-card').get_text().upper() if item.find_parent('.wf-card') else ""
-            if "FORMER" not in parent_txt and "STAFF" not in parent_txt:
-                # V132: Specifically target the alias class to avoid real names
-                alias_elem = item.select_one('.team-roster-item-name-alias')
-                link_elem = item.find('a', href=re.compile(r'/player/\d+'))
-                if alias_elem and link_elem:
-                    vlr_roster.append({
-                        'tag': alias_elem.get_text().strip(), 
-                        'id': link_elem['href'].split('/')[2]
-                    })
-            if len(vlr_roster) >= 5: break
-
-        print(f"      [DEBUG] Identified {len(vlr_roster)} Nicknames.")
-
-        for p in vlr_roster:
-            try:
-                p_tag, p_id = p['tag'], p['id']
-                print(f"      -> {p_tag}: Syncing History...")
-
-                # Static Defaults to ensure no empty outputs
-                adr, kpr = 135.0, 0.75
-
-                # --- L10 EXTRACTION (THE 46 ANCHOR) ---
-                sb.open(f"https://www.vlr.gg/player/matches/{p_id}/{p_tag}")
-                sb.sleep(4)
-                m_ids = sorted(list(set(re.findall(r'/(\d{5,8})/', sb.get_page_source()))), reverse=True)
-                
-                l10_totals = []
-                for mid in m_ids:
-                    sb.uc_open_with_reconnect(f"https://www.vlr.gg/{mid}/", 4); sb.sleep(3)
-                    m_soup = BeautifulSoup(sb.get_page_source(), 'lxml')
-                    
-                    # Surgical Slice for Map 1 + Map 2
-                    valid_maps = ["LOTUS", "SUNSET", "BIND", "HAVEN", "SPLIT", "ASCENT", "ICEBOX", "BREEZE", "FRACTURE", "PEARL", "ABYSS"]
-                    maps = [m for m in m_soup.find_all('div', class_='vm-stats-game') if any(x in m.get_text().upper() for x in valid_maps)]
-                    
-                    if len(maps) >= 2:
-                        h_row = maps[0].find('thead')
-                        if h_row:
-                            headers = [th.get_text().strip().upper() for th in h_row.find_all('th')]
-                            k_idx = headers.index("K") if "K" in headers else 2
-                            
-                            def get_k(m_div):
-                                p_a = m_div.find('a', href=re.compile(rf'/{p_id}/'))
-                                if p_a:
-                                    cells = p_a.find_parent('tr').find_all('td')
-                                    return int(cells[k_idx].get_text().strip().split('\n')[0])
-                                return 0
-                            l10_totals.append(get_k(maps[0]) + get_k(maps[1]))
-                    if len(l10_totals) >= 10: break
-
-                players_data.append({"Player": p_tag, "Game": "Valorant", "Team": team_name, "ADR": adr, "KPR": kpr, "L10": ", ".join(map(str, l10_totals))})
-                print(f"      ✅ [VAL] {p_tag}: {l10_totals[0] if l10_totals else 'N/A'}")
-            except: continue
+        player_links = [f"https://www.vlr.gg{a.get('href')}" for a in soup.select('a[href^="/player/"]')][:5]
+            
+        for l in player_links:
+            sb.open(f"{l}/?game=all&tab=matches")
+            sb.sleep(3)
+            p_soup = BeautifulSoup(sb.get_page_source(), 'lxml')
+            
+            # V171: Flexible Header Discovery (Kills NoneType error)
+            header = p_soup.select_one('.player-header-name, .wf-title, h1')
+            p_tag = header.get_text().strip() if header else "Unknown"
+            
+            kills = [k.get_text().strip() for k in p_soup.select('.m-item-stat.mod-vlr-k')][:10]
+            players_data.append({"Player": p_tag, "Game": "Valorant", "Team": team_name, "L10": ", ".join(kills)})
+            print(f"      ✅ [VAL] {p_tag} Sync Complete.")
         return players_data
-    except Exception as e: print(f"❌ VAL Error: {e}"); return []
-
+    except Exception as e:
+        print(f"⚠️ VAL Failed: {e}"); return []
+# ==========================================
+# 🏁 MAIN EXECUTION (Heartbeat Restart Logic)
+# ==========================================
 if __name__ == "__main__":
-    print("🛠️  Initializing V132 Alias-Locked Restoration...")
-    with SB(uc=True, headless=False) as sb:
-        with open("targets.txt", "r") as f:
-            targets_raw = [l.strip() for l in f if l.strip() and not l.startswith("#")]
-        
-        cs_res, val_res = [], []
-        for entry in targets_raw:
+    print("🛠️  Initializing V141.2 Sleeper Standard Miner...")
+    with open("targets.txt", "r") as f:
+        targets_raw = [l.strip() for l in f if l.strip() and not l.startswith("#")]
+    
+    idx = 0
+    while idx < len(targets_raw):
+        with SB(uc=True, headless=False) as sb:
             try:
-                prefix, rest = entry.split(":", 1)
-                team_name, team_url = rest.split("|", 1)
-                if prefix.strip() == "CS2":
-                    cs_res.extend(get_cs2_team_lineup(sb, team_name.strip(), team_url.strip()))
-                elif prefix.strip() == "VAL":
-                    val_res.extend(get_val_team_lineup(sb, team_name.strip(), team_url.strip()))
-            except: continue
-
-        if cs_res: upload_to_vault(pd.DataFrame(cs_res), "CS2_DATA")
-        if val_res: upload_to_vault(pd.DataFrame(val_res), "VAL_DATA")
-    print("🏁 [FINISH] Sync Complete.")
+                for i in range(idx, len(targets_raw)):
+                    prefix, rest = targets_raw[i].split(":", 1)
+                    team_name, team_url = rest.split("|", 1)
+                    res = get_cs2_team_lineup(sb, team_name.strip(), team_url.strip()) if prefix.strip() == "CS2" else get_val_team_lineup(sb, team_name.strip(), team_url.strip())
+                    
+                    if res == "RESTART_REQUIRED":
+                        print("♻️  Cloudflare Heartbeat Triggered. Relaunching...")
+                        break
+                    
+                    if res: upload_to_vault(pd.DataFrame(res), f"{prefix.strip()}_DATA")
+                    idx += 1
+            except Exception as e:
+                print(f"🧨 Fatality: {e}. Cooling down..."); time.sleep(10)
+    print("🏁 [FINISH] Sync Complete. Iron Guard Intel is Live.")

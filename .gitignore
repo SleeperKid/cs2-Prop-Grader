@@ -12,3 +12,9 @@ __pycache__/
 .venv/
 service_account.json
 .streamlit
+# .gitignore
+*.json
+core_rules.json
+requirements.txt
+miner.py
+intel_vault.json

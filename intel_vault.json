@@ -38,29 +38,41 @@
         "ESC Gaming": {"olimp": "Star", "Reiko": "Star", "Bajmi": "Support"},
         "Nuclear TigeRES": {"m1QUSE": "Star","senka": "Star","z1k4": "Rifler","flouzer": "Support","ayuki": "Support"},
         "EC BANGA": {
-        "mikeyss": "Star",
-        "sniegs": "Star",
-        "zenqjuu": "Rifler",
-        "ayriks": "Support",
-        "imyungandy": "Support"
+      "danss": "Stand-in/Rifler", 
+      "mikeyss": "Star",
+      "blazekiNho": "Rifler",
+      "Labreenc": "Support"
         },
         "RUSTEC": {
-        "supra": "Star",
-        "Brilliance": "Star",
+        "supra": "Star/Carry",
+        "Brilliance": "Star/Entry",
         "anttzz": "Rifler",
-        "youka": "Support",
         "jakekeS": "Support"
+        },
+        "FURIA": {"KSCERATO": "Star/Anchor", "yuurih": "Star", "FalleN": "Support/IGL"},
+        "Akimbo": {"Marro": "Star", "N2o": "Rifler", "obi": "Support"}
+        },
+        "h2h_scripts": {
+          "vitality_vs_furia": "High-Pressure Script. Home crowd favors FURIA aggression; Vitality plays controlled defaults.",
+          "lev_vs_g2": "Anti-Carry Script. G2 utility dumps focused on aspas entry-denial.",
+          "banga_vs_rustec": "Stand-in Variance Script. danss (BNG) entry-aggression vs supra (RST) defensive gravity. High 'Over' potential for RUSTEC carries."
+        },
+        "match_pacing": {
+          "IEM_Rio_Semis": "High Attrition. Crowd noise and high stakes increase trade-fragging frequency.",
+          "VCT_Americas_Stage_1": "Meta-Forge. Low attrition as teams prioritize utility combos over hero plays.",
+          "CCT_Europe_Challengers": "Chaos Meta. 1.12 AF. High trade frequency due to roster instability."
         }
       },
       "h2h_scripts": {
         "regain_vs_akimbo": "High Win-Script for regain; fuzenko farms Akimbo's mid-round aggression.",
         "phantom_vs_favbet": "Survival Script. Phantom (#75) rank advantage suggests controlled map pacing.",
-        "cybershoke_vs_1win": "Volatility Script. Historical 5-3 lead for CYBERSHOKE creates back-and-forth brawl."
+        "cybershoke_vs_1win": "Volatility Script. Historical 5-3 lead for CYBERSHOKE creates back-and-forth brawl.",
+        "favbet_vs_phantom": "Survival Script. Swiss 0-2 Elimination. bondik showing map-1 resurgence (1.31 Rating). Expect high aggression as both teams fight for survival."
       },
       "match_pacing": {
         "Nodwin_Clutch_Series": "Chaos Meta. High attrition elimination matches with inconsistent utility usage."
       }
-    }
+    
   },
   "VAL": {
     "tier_1_foundation": {
