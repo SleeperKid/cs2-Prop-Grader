@@ -1,0 +1,142 @@
+{
+    "ENG": {
+        "full": "ENG",
+        "rank": 1
+    },
+    "EARN": {
+        "full": "earnings",
+        "rank": 2
+    },
+    "WORL": {
+        "full": "WORLDWIDE",
+        "rank": 3
+    },
+    "EURO": {
+        "full": "EUROPE",
+        "rank": 4
+    },
+    "AMER": {
+        "full": "AMERICAS",
+        "rank": 5
+    },
+    "ASIA": {
+        "full": "ASIA",
+        "rank": 6
+    },
+    "VF": {
+        "full": "Vitality\nFrance",
+        "rank": 7
+    },
+    "NVU": {
+        "full": "Natus Vincere\nUkraine",
+        "rank": 8
+    },
+    "FSA": {
+        "full": "Falcons\nSaudi Arabia",
+        "rank": 9
+    },
+    "FF": {
+        "full": "FUT\nFrance",
+        "rank": 10
+    },
+    "SRF": {
+        "full": "Spirit\nRussian Federation",
+        "rank": 11
+    },
+    "FB": {
+        "full": "FURIA\nBrazil",
+        "rank": 12
+    },
+    "TMM": {
+        "full": "The MongolZ\nMongolia",
+        "rank": 13
+    },
+    "AD": {
+        "full": "Astralis\nDenmark",
+        "rank": 14
+    },
+    "MG": {
+        "full": "MOUZ\nGermany",
+        "rank": 15
+    },
+    "PRF": {
+        "full": "PARIVISION\nRussian Federation",
+        "rank": 16
+    },
+    "ARF": {
+        "full": "Aurora\nRussian Federation",
+        "rank": 17
+    },
+    "GG": {
+        "full": "G2\nGermany",
+        "rank": 18
+    },
+    "BU": {
+        "full": "B8\nUkraine",
+        "rank": 19
+    },
+    "3F": {
+        "full": "3DMAX\nFrance",
+        "rank": 20
+    },
+    "PB": {
+        "full": "paiN\nBrazil",
+        "rank": 21
+    },
+    "BRF": {
+        "full": "BetBoom\nRussian Federation",
+        "rank": 22
+    },
+    "BG": {
+        "full": "BIG\nGermany",
+        "rank": 23
+    },
+    "MU": {
+        "full": "Monte\nUkraine",
+        "rank": 24
+    },
+    "9A": {
+        "full": "9z\nArgentina",
+        "rank": 25
+    },
+    "LB": {
+        "full": "Legacy\nBrazil",
+        "rank": 26
+    },
+    "HD": {
+        "full": "HEROIC\nDenmark",
+        "rank": 27
+    },
+    "SCR": {
+        "full": "SINNERS\nCzech Republic",
+        "rank": 28
+    },
+    "ES": {
+        "full": "EYEBALLERS\nSweden",
+        "rank": 29
+    },
+    "AS": {
+        "full": "Alliance\nSweden",
+        "rank": 30
+    },
+    "FS": {
+        "full": "FOKUS\nSweden",
+        "rank": 31
+    },
+    "MUS": {
+        "full": "M80\nUnited States",
+        "rank": 32
+    },
+    "KRF": {
+        "full": "K27\nRussian Federation",
+        "rank": 33
+    },
+    "MB": {
+        "full": "MIBR\nBrazil",
+        "rank": 34
+    },
+    "NUS": {
+        "full": "NRG\nUnited States",
+        "rank": 35
+    }
+}
