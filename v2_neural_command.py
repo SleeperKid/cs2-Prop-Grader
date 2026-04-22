@@ -168,12 +168,12 @@ with st.sidebar:
     if theater_sel == "CS2":
         prop_type = st.sidebar.radio("Prop Type", ["Kills", "Headshots"])
     
-with st.expander("👤 PLAYER TACTICAL", expanded=True):
+    with st.expander("👤 PLAYER TACTICAL", expanded=True):
         label = "Agent" if theater_sel == "VALORANT" else "Map"
         stat_lbl = "ADR" if theater_sel == "VALORANT" else "KPR"
         target_list = VAL_AGENTS if theater_sel == "VALORANT" else list(CS2_ARCHETYPES.keys())
         
-        # Added explicit 'key' parameters to prevent DuplicateElementId crashes
+        # Explicit keys to prevent Duplicate Element IDs
         t1 = st.selectbox(f"{label} 1", target_list, key="t1_select")
         t1_v = safe_float(st.text_input(f"{t1} {stat_lbl}", "", key="t1_stat_input"))
         t1_hs = safe_float(st.text_input(f"{t1} HS%", "50.0", key="t1_hs_input")) if (theater_sel == "CS2" and prop_type == "Headshots") else 0.0
@@ -190,7 +190,7 @@ with st.expander("👤 PLAYER TACTICAL", expanded=True):
         r_total_v = safe_float(st.text_input("Total Rounds", "44.0"))
         heat_val = st.slider("Teammate Heat", 0, 100, 0)
         
-with st.expander("🛡️ OPPONENT TACTICAL", expanded=True):
+    with st.expander("🛡️ OPPONENT TACTICAL", expanded=True):
         opp_name, opp_dpr = st.text_input("Opponent (Abbr)", "PCF"), safe_float(st.text_input("Opponent DPR", "0.65"))
         st.session_state['o_rank'] = st.number_input("Opponent Rank", 1, 300, value=st.session_state['o_rank'], disabled=sync_ranks)
         pacing_val = st.selectbox("Pacing", ["Auto", "Fast", "Slow"])
