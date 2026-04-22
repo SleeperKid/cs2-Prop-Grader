@@ -34,7 +34,8 @@ def generate_standard_tag(full_name):
         "Enterprise": "ENT", "UNiTY": "UNI", "Dynamo Eclot": "ECL", "Oddik": "ODK",
         "Fluxo": "FLX", "Team Solid": "SOL", "Sharks": "SHA", "Case": "CASE",
         "Dust2 Brasil": "D2B", "Bestia": "BST", "Wildcard": "WLD", "Nouns": "NOUN",
-        "Party Astronauts": "PA", "Boss": "BOSS", "Limitless": "LMT", "LFO": "LFO"
+        "Party Astronauts": "PA", "Boss": "BOSS", "Limitless": "LMT", "LFO": "LFO", 
+        "Team Liquid": "TL"
     }
 
     # Clean the input name of common noise before checking or slicing
