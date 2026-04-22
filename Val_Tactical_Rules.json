@@ -1,0 +1,45 @@
+{
+  "AGENT_ARCHETYPES": {
+    "Duelist": {
+      "Stat_Priority": ["ACS", "First_Kills_Per_Round", "Damage_Per_Round"],
+      "Weight": "+15% to Over on high-chaos maps (Lotus, Sunset).",
+      "Vulnerability": "-10% Floor if paired with a 'Passive' Initiator (fewer trades)."
+    },
+    "Initiator": {
+      "Stat_Priority": ["Assists", "KAST%", "KO_Rating"],
+      "Weight": "+10% Kill Volume in OT (util becomes more predictable).",
+      "Support_Penalty": "-0.05 KPR if primary Duelist is redlining (Kill stealing)."
+    },
+    "Sentinel": {
+      "Stat_Priority": ["Clutch_Success", "Kills_Per_Round", "Multikill%"],
+      "Weight": "+12% to Over on 'Defense-Sided' maps (Ascent, Haven).",
+      "Note": "Target 'Under' on attack-side kill props unless player is a known 'Lurker'."
+    },
+    "Controller": {
+      "Stat_Priority": ["Survival_Rate", "ADR"],
+      "Weight": "Baseline volume. High dependency on match duration."
+    }
+  },
+
+  "PACING_AND_ECONOMY": {
+    "The_Jerrwin_Pace": {
+      "Detection": "Aggressive Canadian Duelist Playstyle (e.g., Neon/Jett entries).",
+      "Adjustment": "Increase round-contact volume for ALL players by 8%. High multi-kill probability."
+    },
+    "High_Round_Volume_Trigger": {
+      "Maps": ["Split", "Haven", "Lotus"],
+      "Logic": "These maps trend toward OT in 2026. Increase 'Over' confidence for all defensive anchors by 15%."
+    }
+  },
+
+  "FIREPOWER_INDEX_VAL": {
+    "Formula": "VAL_Firepower = (ACS / 200) + (KPR * 1.2) + (KAST / 100)",
+    "Condition": "If Team_Firepower_Index > 4.0, flag 'Kill Competition'. Penalize non-duelist 'Overs' by 10%."
+  },
+
+  "MAP_GRAVITY_VAL": {
+    "Haven": "3-Site layout. Increases Sentinel 'Over' value due to split-defense requirements.",
+    "Split": "High choke-point contact. Buffs 'Headshot %' props for Riflers.",
+    "Abyss": "High verticality. Penalizes standard 'Ground-Level' crosshair placement stats."
+  }
+}

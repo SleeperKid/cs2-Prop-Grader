@@ -1,0 +1,37 @@
+{
+  "TACTICAL_ARCHETYPES": {
+    "Main_AWP": {
+      "Stat_Priority": ["KPR", "Opening_Kill_Rating", "Survival_Rate"],
+      "Weight": "+12% to Over if Map == 'Long Sightlines' (Mirage, Dust2, Nuke A-Site)",
+      "Vulnerability": "-15% Volume if Enemy_Entry_Firepower > 1.20 (Space Compression)"
+    },
+    "Star_Rifler": {
+      "Stat_Priority": ["Impact_Rating", "ADR", "Multi_Kill_Rating"],
+      "Weight": "+10% Floor on T-Side focused maps (Ancient, Anubis)",
+      "Headshot_Bonus": "If Map == 'Aim_Heavy' (Mirage), add +5% to Headshot projection."
+    },
+    "Support_IGL": {
+      "Stat_Priority": ["Utility_Damage", "Flash_Assists", "KAST%"],
+      "Weight": "-15% Kill Volume projection in Blowout wins (Focus on calling over fragging)."
+    }
+  },
+
+  "FIREPOWER_DENSITY_MATH": {
+    "Formula": "Team_Firepower = Sum(Player_Impact_Last_3M) / 5",
+    "Logic": {
+      "Kill_Stealing_Penalty": "If Team_Firepower > 1.15, reduce secondary rifler projections by 0.04 KPR (Not enough kills to go around).",
+      "Solo_Carry_Buff": "If only one player has Impact > 1.20, increase that player's volume floor by +18%."
+    }
+  },
+
+  "MAP_SPECIFIC_KPR_DRIVERS": {
+    "Nuke": "Buff AWP and Outside Riflers (+10%); Penalize Support/Ramp players (-5%) unless in OT.",
+    "Ancient": "Heavy Mid-Round trade volume. Increase 'Over' probability for 2nd-man-in entry riflers.",
+    "Inferno": "High utility impact. Reduce 'Over' confidence for entry players if enemy team has elite Utility Damage stats."
+  },
+
+  "THE_DONK_FACTOR_V2": {
+    "Detection": "Search Opponent Roster for 'Impact Rating > 1.30' or 'Entry Success > 60%'.",
+    "Adjustment": "Apply 'Passive Defense' weight: Reduce aggressive rifler 'Over' confidence by 25%. Increase 'Under' probability for all players on the B-site if the star attacker focuses A-site."
+  }
+}
