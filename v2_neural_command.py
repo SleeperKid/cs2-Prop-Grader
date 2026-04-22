@@ -168,20 +168,19 @@ with st.sidebar:
     if theater_sel == "CS2":
         prop_type = st.sidebar.radio("Prop Type", ["Kills", "Headshots"])
     
-    with st.expander("👤 PLAYER TACTICAL", expanded=True):
+with st.expander("👤 PLAYER TACTICAL", expanded=True):
         label = "Agent" if theater_sel == "VALORANT" else "Map"
         stat_lbl = "ADR" if theater_sel == "VALORANT" else "KPR"
         target_list = VAL_AGENTS if theater_sel == "VALORANT" else list(CS2_ARCHETYPES.keys())
         
-        t1 = st.selectbox(f"{label} 1", target_list)
-        t1_v = safe_float(st.text_input(f"{t1} {stat_lbl}", ""))
-        # HS% only shows if CS2 AND Headshots are selected
-        t1_hs = safe_float(st.text_input(f"{t1} HS%", "50.0")) if (theater_sel == "CS2" and prop_type == "Headshots") else 0.0
+        # Added explicit 'key' parameters to prevent DuplicateElementId crashes
+        t1 = st.selectbox(f"{label} 1", target_list, key="t1_select")
+        t1_v = safe_float(st.text_input(f"{t1} {stat_lbl}", "", key="t1_stat_input"))
+        t1_hs = safe_float(st.text_input(f"{t1} HS%", "50.0", key="t1_hs_input")) if (theater_sel == "CS2" and prop_type == "Headshots") else 0.0
         
-        t2 = st.selectbox(f"{label} 2", target_list)
-        t2_v = safe_float(st.text_input(f"{t2} {stat_lbl}", ""))
-        # HS% only shows if CS2 AND Headshots are selected
-        t2_hs = safe_float(st.text_input(f"{t2} HS%", "50.0")) if (theater_sel == "CS2" and prop_type == "Headshots") else 0.0
+        t2 = st.selectbox(f"{label} 2", target_list, key="t2_select")
+        t2_v = safe_float(st.text_input(f"{t2} {stat_lbl}", "", key="t2_stat_input"))
+        t2_hs = safe_float(st.text_input(f"{t2} HS%", "50.0", key="t2_hs_input")) if (theater_sel == "CS2" and prop_type == "Headshots") else 0.0
         
         st.write("---")
         sync_ranks = st.checkbox("🛰️ Auto-Sync Ranks", value=True)
