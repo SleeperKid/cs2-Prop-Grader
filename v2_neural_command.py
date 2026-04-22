@@ -51,24 +51,21 @@ try:
     tavily_client = TavilyClient(api_key=st.secrets["TAVILY_API_KEY"])
 except: st.error("📡 API ERROR: Check Secrets."); st.stop()
 
-# --- 1. LOAD THE DATA FROM YOUR NEW MANIFEST ---
 def load_live_ranks():
     manifest_path = "cs2_manifest.json"
     if os.path.exists(manifest_path):
         with open(manifest_path, "r") as f:
             return json.load(f)
-    return {} # Return empty dict if file is missing
+    return {}
 
 CS2_LIVE = load_live_ranks()
 
-# --- 2. UPDATE YOUR MANIFEST DICTIONARY ---
 MANIFEST = {
     "VALORANT": {
         "NAVI": {"full": "Natus Vincere", "rank": 18},
         "TL": {"full": "Team Liquid", "rank": 2},
-        # ... your other Valorant teams
     },
-    "CS2": CS2_LIVE  # 🚀 REMOVED THE EXTRA CURLY BRACES HERE
+    "CS2": CS2_LIVE 
 }
 
 CS2_ARCHETYPES = {"Anubis": 1.12, "Ancient": 1.12, "Dust 2": 1.15, "Inferno": 0.90, "Mirage": 1.05, "Nuke": 0.90, "Overpass": 1.00}
@@ -79,9 +76,14 @@ def safe_float(v, d=0.0):
     try: return float(str(v).replace('%', '').strip()) if v else d
     except: return d
 
-# --- 2. SOVEREIGN ENGINE (V39.0: AGENT-LOCKED) ---
-def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, heat, pacing, opp_dpr, r_total, theater):
+# --- 2. SOVEREIGN ENGINE ---
+def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, heat, pacing, opp_dpr, r_total, theater, prop_type, hs_pcts):
     raw_stat = safe_float(data.get('base_stat'), 150.0 if theater == "VALORANT" else 0.70)
+    
+    # KPR Normalization to prevent 3000+ projections
+    if theater == "CS2" and raw_stat > 3.0:
+        raw_stat = (raw_stat / 100) if raw_stat < 150 else 0.72
+
     k_glob = (raw_stat / 150) if theater == "VALORANT" else raw_stat
     rank_gap = st.session_state['o_rank'] - st.session_state['p_rank']
     
@@ -93,12 +95,23 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
     
     per_map_proj = []
     for i in range(2):
-        m_kpr = (m_vals[i] / 150) if (theater == "VALORANT" and m_vals[i] > 0) else (m_vals[i] if m_vals[i] > 0 else k_glob)
+        # Clean manual map input
+        raw_m = m_vals[i]
+        if theater == "CS2" and raw_m > 3.0:
+            raw_m = raw_m / 100
+            
+        m_kpr = (raw_m / 150) if (theater == "VALORANT" and raw_m > 0) else (raw_m if raw_m > 0 else k_glob)
         spec_mult = VAL_GRAVITY.get(targets[i], 1.0) if theater == "VALORANT" else CS2_ARCHETYPES.get(targets[i], 1.0)
         pacing_mult = 1.05 if pacing == "Fast" else 0.95 if pacing == "Slow" else 1.0
         
         weighted_kpr = m_kpr * spec_mult * match_mult * (opp_dpr / 0.65) * duel_mult * pacing_mult * (1 - (heat / 100) * 0.12)
-        per_map_proj.append(weighted_kpr * (r_total / 2))
+        map_kills = weighted_kpr * (r_total / 2)
+        
+        # Apply Headshot logic if requested (Converts Kills into Headshots)
+        if prop_type == "Headshots" and hs_pcts[i] > 0:
+            map_kills = map_kills * (hs_pcts[i] / 100)
+            
+        per_map_proj.append(map_kills)
 
     final_proj = sum(per_map_proj) * (1.08 if safe_float(data.get('opening_win_pct')) > 55 else 1.0)
     delta = final_proj - u_line
@@ -112,11 +125,13 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
         "is_nuke": (delta >= 10.0 and win_prob >= 85), "hr": f"{hr_val:.0f}%", "gap": rank_gap, "trace": f"{targets[0].upper()} | {targets[1].upper()}"
     }
 
-def run_precision_research(cmd, targets, m_vals, heat, pacing, opp_dpr, r_total, sync_duel, sync_ranks, opp_abbr, theater):
+def run_precision_research(cmd, targets, m_vals, heat, pacing, opp_dpr, r_total, sync_duel, sync_ranks, opp_abbr, theater, prop_type, hs_pcts):
     theater_key = "VALORANT" if theater == "VALORANT" else "CS2"
     domain = "vlr.gg" if theater == "VALORANT" else "hltv.org"
     
     match = re.search(r"Grade\s+([A-Za-z0-9_]+)\s*\((.*?)\)", cmd, re.IGNORECASE)
+    if not match: st.error("Invalid Command Format. Use: Grade Player (Team) Line"); st.stop()
+    
     t_p, t_t_abbr = match.group(1).lower().strip(), match.group(2).upper().strip()
     u_line = float(re.findall(r"(\d+\.\d+|\d+)", cmd)[-1])
     
@@ -139,10 +154,9 @@ def run_precision_research(cmd, targets, m_vals, heat, pacing, opp_dpr, r_total,
         raw = json.loads(c.choices[0].message.content)
 
     if sync_duel: st.session_state['auto_duel'] = safe_float(raw.get('opening_win_pct', 50.0)) / 10.0
-    if sync_ranks:
-        st.session_state['p_rank'], st.session_state['o_rank'] = p_team['rank'], o_team['rank']
+    if sync_ranks: st.session_state['p_rank'], st.session_state['o_rank'] = p_team['rank'], o_team['rank']
 
-    st.session_state['last_intel'] = apply_sovereign_math(raw, t_p, u_line, p_team['full'], o_team['full'], targets, m_vals, heat, pacing, opp_dpr, r_total, theater)
+    st.session_state['last_intel'] = apply_sovereign_math(raw, t_p, u_line, p_team['full'], o_team['full'], targets, m_vals, heat, pacing, opp_dpr, r_total, theater, prop_type, hs_pcts)
     st.rerun()
 
 # --- 3. UI LAYER ---
@@ -150,13 +164,25 @@ with st.sidebar:
     st.header("📡 COMMAND CENTER")
     theater_sel = st.sidebar.radio("Theater", ["VALORANT", "CS2"])
     
+    prop_type = "Kills"
+    if theater_sel == "CS2":
+        prop_type = st.sidebar.radio("Prop Type", ["Kills", "Headshots"])
+    
     with st.expander("👤 PLAYER TACTICAL", expanded=True):
         label = "Agent" if theater_sel == "VALORANT" else "Map"
         stat_lbl = "ADR" if theater_sel == "VALORANT" else "KPR"
         target_list = VAL_AGENTS if theater_sel == "VALORANT" else list(CS2_ARCHETYPES.keys())
         
-        t1, t1_v = st.selectbox(f"{label} 1", target_list), safe_float(st.text_input(f"M1 {stat_lbl}", ""))
-        t2, t2_v = st.selectbox(f"{label} 2", target_list), safe_float(st.text_input(f"M2 {stat_lbl}", ""))
+        t1 = st.selectbox(f"{label} 1", target_list)
+        t1_v = safe_float(st.text_input(f"{t1} {stat_lbl}", ""))
+        # HS% only shows if CS2 AND Headshots are selected
+        t1_hs = safe_float(st.text_input(f"{t1} HS%", "50.0")) if (theater_sel == "CS2" and prop_type == "Headshots") else 0.0
+        
+        t2 = st.selectbox(f"{label} 2", target_list)
+        t2_v = safe_float(st.text_input(f"{t2} {stat_lbl}", ""))
+        # HS% only shows if CS2 AND Headshots are selected
+        t2_hs = safe_float(st.text_input(f"{t2} HS%", "50.0")) if (theater_sel == "CS2" and prop_type == "Headshots") else 0.0
+        
         st.write("---")
         sync_ranks = st.checkbox("🛰️ Auto-Sync Ranks", value=True)
         st.session_state['p_rank'] = st.number_input("Team Rank", 1, 300, value=st.session_state['p_rank'], disabled=sync_ranks)
@@ -181,22 +207,23 @@ if st.session_state['last_intel']:
 <div class="match-header">{i['full_team']} vs {i['full_opp']}</div>
 <div style="display: flex; gap: 80px; justify-content: center;">
 <div><div class="stat-lbl">Win Prob</div><div class="stat-val">{i['prob']:.1f}%</div></div>
-<div><div class="stat-lbl">KILLS PROJ</div><div class="stat-val" style="color: {i['color']};">{i['proj']:.1f}</div></div>
+<div><div class="stat-lbl">{prop_type.upper()} PROJ</div><div class="stat-val" style="color: {i['color']};">{i['proj']:.1f}</div></div>
 <div><div class="stat-lbl">Open Duel</div><div class="stat-val">{st.session_state['auto_duel']:.1f}</div></div>
 </div>
-<div class="decision-line" style="color: {i['color']};">{"OVER" if i['delta'] > 0 else "UNDER"} {33.5} KILLS {"▲" if i['delta'] > 0 else "▼"}</div>
+<div class="decision-line" style="color: {i['color']};">{"OVER" if i['delta'] > 0 else "UNDER"} {i['proj'] - i['delta']:.1f} {prop_type.upper()} {"▲" if i['delta'] > 0 else "▼"}</div>
 <div style="margin-top: 40px; font-family: 'JetBrains Mono'; color: rgba(255,255,255,0.4); font-size: 22px;">{i['trace']}</div>
 </div></div>"""
     st.markdown(card_html, unsafe_allow_html=True)
     
-    # 5-Column Grid: Metrics ONLY (No Badges)
     c1, c2, c3, c4, c5 = st.columns(5)
     stat_type = "ADR" if theater_sel == "VALORANT" else "KPR"
     with c1: st.metric("DELTA", f"{i['delta']:+.1f}")
     with c2: st.metric("L10 HIT RATE", i['hr'])
-    with c3: st.metric(f"GLOBAL {stat_type}", f"{i['stat_baseline']:.1f}")
+    with c3: st.metric(f"GLOBAL {stat_type}", f"{i['stat_baseline']:.2f}")
     with c4: st.metric("RANK GAP", f"{i['gap']:+d} Pos")
     with c5: st.metric("NUCLEAR FLAG", "FLAGGED" if i['is_nuke'] else "CLEAN")
 
 if prompt := st.chat_input("Grade Player (Abbr) Line"):
-    run_precision_research(prompt, [t1, t2], [t1_v, t2_v], heat_val, pacing_val, opp_dpr, r_total_v, sync_duel, sync_ranks, opp_name, theater_sel)
+    # Send the HS array through if Headshots is selected
+    hs_pct_array = [t1_hs, t2_hs] if (theater_sel == "CS2" and prop_type == "Headshots") else [0.0, 0.0]
+    run_precision_research(prompt, [t1, t2], [t1_v, t2_v], heat_val, pacing_val, opp_dpr, r_total_v, sync_duel, sync_ranks, opp_name, theater_sel, prop_type, hs_pct_array)
