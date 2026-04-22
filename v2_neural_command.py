@@ -190,7 +190,7 @@ with st.expander("👤 PLAYER TACTICAL", expanded=True):
         r_total_v = safe_float(st.text_input("Total Rounds", "44.0"))
         heat_val = st.slider("Teammate Heat", 0, 100, 0)
         
-    with st.expander("🛡️ OPPONENT TACTICAL", expanded=True):
+with st.expander("🛡️ OPPONENT TACTICAL", expanded=True):
         opp_name, opp_dpr = st.text_input("Opponent (Abbr)", "PCF"), safe_float(st.text_input("Opponent DPR", "0.65"))
         st.session_state['o_rank'] = st.number_input("Opponent Rank", 1, 300, value=st.session_state['o_rank'], disabled=sync_ranks)
         pacing_val = st.selectbox("Pacing", ["Auto", "Fast", "Slow"])
