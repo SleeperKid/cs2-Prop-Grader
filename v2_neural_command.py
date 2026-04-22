@@ -51,23 +51,24 @@ try:
     tavily_client = TavilyClient(api_key=st.secrets["TAVILY_API_KEY"])
 except: st.error("📡 API ERROR: Check Secrets."); st.stop()
 
-# --- 🛰️ GROUND-TRUTH MANIFEST (APRIL 2026) ---
-try:
-    with open("cs2_manifest.json", "r") as f:
-        CS2_LIVE = json.load(f)
-except:
-    CS2_LIVE = { "VIT": {"full": "Team Vitality", "rank": 1} } # Fallback
+# --- 1. LOAD THE DATA FROM YOUR NEW MANIFEST ---
+def load_live_ranks():
+    manifest_path = "cs2_manifest.json"
+    if os.path.exists(manifest_path):
+        with open(manifest_path, "r") as f:
+            return json.load(f)
+    return {} # Return empty dict if file is missing
 
+CS2_LIVE = load_live_ranks()
+
+# --- 2. UPDATE YOUR MANIFEST DICTIONARY ---
 MANIFEST = {
     "VALORANT": {
-        "EF": {"full": "Eternal Fire", "rank": 11}, "PCF": {"full": "PCIFIC Esports", "rank": 120},
-        "FNC": {"full": "Fnatic", "rank": 1}, "TL": {"full": "Team Liquid", "rank": 2},
-        "SEN": {"full": "Sentinels", "rank": 3}, "PRX": {"full": "Paper Rex", "rank": 4},
-        "QOR": {"full": "QoR", "rank": 35}, "ADG": {"full": "Azure Dragon Gaming", "rank": 120}
+        "NAVI": {"full": "Natus Vincere", "rank": 18},
+        "TL": {"full": "Team Liquid", "rank": 2},
+        # ... your other Valorant teams
     },
-    "CS2": { CS2_LIVE
-    
-    }
+    "CS2": CS2_LIVE  # 🚀 REMOVED THE EXTRA CURLY BRACES HERE
 }
 
 CS2_ARCHETYPES = {"Anubis": 1.12, "Ancient": 1.12, "Dust 2": 1.15, "Inferno": 0.90, "Mirage": 1.05, "Nuke": 0.90, "Overpass": 1.00}
