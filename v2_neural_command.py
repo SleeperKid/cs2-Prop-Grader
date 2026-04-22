@@ -163,6 +163,57 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
         "confidence": confidence
     }
 
+def generate_writeup(intel, u_line, prop_type):
+    """Feeds the calculated math into the LLM to generate a professional betting write-up."""
+    decision = "OVER" if intel['delta'] > 0 else "UNDER"
+    stat_type = "ADR" if "ADR" in prop_type else "KPR"
+    
+    context = f"""
+    Player: {intel['player']} ({intel['full_team']})
+    Opponent: {intel['full_opp']}
+    Line: {u_line} {prop_type}
+    Decision: {decision}
+    Projection: {intel['proj']:.1f}
+    Delta: {intel['delta']:+.1f}
+    Grade: {intel['grade']}
+    Global Base Stat: {intel['stat_baseline']:.2f} {stat_type}
+    Rank Gap: {intel['gap']:+d} (Positive means opponent is weaker)
+    Maps/Agents: {intel['trace']}
+    Nuke Play: {'Yes' if intel.get('is_nuke') else 'No'}
+    Confidence: {intel['confidence']:.1f}%
+    """
+
+    sys_msg = "You are an elite esports betting analyst. Write a concise, sharp justification for this prop bet using EXACTLY the provided math data. Match the tone of a professional sharp bettor. Use Markdown."
+    
+    user_msg = f"""Generate a write-up based on the following model outputs:
+{context}
+
+Strictly follow this exact output structure:
+### **{intel['player']} ({intel['full_team']}) — {decision} {u_line} {prop_type} ({intel['grade']}-GRADE)**
+**Data Base:** {intel['stat_baseline']:.2f} {stat_type} | {intel['trace']}
+
+**Write-Up:** [1 sharp paragraph explaining why this play hits based on the baseline stats and rank gap/matchup]
+
+**Key Edge:**
+* **The Catalyst:** [Explain how the Rank Gap ({intel['gap']:+d}) or opponent creates an edge]
+* **The Scenario:** [Explain how the specific Maps/Agents favor or hurt volume]
+* **The Edge:** [State the massive {intel['delta']:+.1f} delta and the projection of {intel['proj']:.1f}]
+
+**Projection:** ~{intel['proj']:.1f} {prop_type}
+**Grade:** {intel['grade']}
+**Nuclear Flag:** {'FLAGGED' if intel.get('is_nuke') else 'CLEAN'}
+"""
+    
+    try:
+        c = groq_client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[{"role": "system", "content": sys_msg}, {"role": "user", "content": user_msg}],
+            temperature=0.3
+        )
+        return c.choices[0].message.content
+    except Exception as e:
+        return f"⚠️ Could not generate write-up due to API error: {e}"
+
 def run_precision_research(cmd, targets, m_vals, heat, pacing, opp_dpr, r_total, round_swing, sync_duel, sync_ranks, opp_abbr, theater, prop_type, hs_pcts):
     theater_key = "VALORANT" if theater == "VALORANT" else "CS2"
     domain = "vlr.gg" if theater == "VALORANT" else "hltv.org"
