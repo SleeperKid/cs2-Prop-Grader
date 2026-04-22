@@ -77,6 +77,30 @@ def safe_float(v, d=0.0):
     except: return d
 
 # --- 2. SOVEREIGN ENGINE ---
+@st.cache_data(ttl=3600, show_spinner=False)
+def fetch_player_stats(t_p, p_team_full, domain, stat_target):
+    """Armor-plated, cached function to handle API calls."""
+    try:
+        q = f"site:{domain} {t_p} {p_team_full} 2026 {stat_target} season stats combined totals"
+        res = tavily_client.search(query=q, max_results=5)
+        w_data = "\n".join([r['content'] for r in res['results']])[:4500]
+        
+        # Bulletproof system prompt with strict fallback directives
+        sys_msg = (f"Return JSON ONLY. Focus on {t_p} ({p_team_full}). "
+                   f"If opening_win_pct is missing from the text, return 50.0. "
+                   f"If last_10_kills is missing or cannot be found, return []. "
+                   f"If base_stat is missing, return 0.0.")
+        
+        user_p = f"Extract stats for {t_p}: {w_data}. Keys: base_stat (float), opening_win_pct (float), last_10_kills (list of ints)."
+        
+        c = groq_client.chat.completions.create(
+            model="llama-3.1-8b-instant", messages=[{"role": "system", "content": sys_msg}, {"role": "user", "content": user_p}],
+            response_format={"type": "json_object"}, temperature=0
+        )
+        return json.loads(c.choices[0].message.content)
+    except Exception as e:
+        return {"error": str(e)}
+
 def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, heat, pacing, opp_dpr, r_total, round_swing, theater, prop_type, hs_pcts):
     raw_stat = safe_float(data.get('base_stat'), 150.0 if theater == "VALORANT" else 0.70)
     
@@ -154,19 +178,14 @@ def run_precision_research(cmd, targets, m_vals, heat, pacing, opp_dpr, r_total,
 
     with st.status(f"🛰️ {theater} SCAN: {t_p.upper()} vs {o_team['full']}"):
         stat_target = "ADR (Average Damage Per Round)" if theater == "VALORANT" else "KPR (Kills Per Round)"
-        q = f"site:{domain} {t_p} {p_team['full']} 2026 {stat_target} season stats combined totals"
-        res = tavily_client.search(query=q, max_results=5)
-        w_data = "\n".join([r['content'] for r in res['results']])[:4500]
         
-        sys_msg = f"Return JSON ONLY. Focus on {t_p} ({p_team['full']})."
-        user_p = f"Extract stats for {t_p}: {w_data}. Keys: base_stat (float), opening_win_pct (float), last_10_kills (list of ints)."
+        # Trigger the cached API request
+        raw = fetch_player_stats(t_p, p_team['full'], domain, stat_target)
         
-        c = groq_client.chat.completions.create(
-            model="llama-3.1-8b-instant", messages=[{"role": "system", "content": sys_msg}, {"role": "user", "content": user_p}],
-            response_format={"type": "json_object"}, temperature=0
-        )
-        raw = json.loads(c.choices[0].message.content)
-
+        if "error" in raw:
+            st.error(f"⚠️ API Error: {raw['error']}. Check connection or try manual override.")
+            st.stop()
+            
     if sync_duel: st.session_state['auto_duel'] = safe_float(raw.get('opening_win_pct', 50.0)) / 10.0
     if sync_ranks: st.session_state['p_rank'], st.session_state['o_rank'] = p_team['rank'], o_team['rank']
 
@@ -215,7 +234,7 @@ if st.session_state['last_intel']:
 <div class="sovereign-card" style="border-top: 35px solid {i['color']};">
 <div class="grade-display">{i['grade']}</div>
 <div class="card-content">
-{f'<div class="nuke-play-badge">🚀 NUKE PLAY: +10 DELTA LOCK</div>' if i['is_nuke'] else ''}
+{f'<div class="nuke-play-badge">🚀 NUKE PLAY: +10 DELTA LOCK</div>' if i.get('is_nuke', False) else ''}
 <div class="player-name">{i['player']}</div>
 <div class="match-header">{i['full_team']} vs {i['full_opp']}</div>
 <div style="display: flex; gap: 80px; justify-content: center;">
@@ -231,11 +250,11 @@ if st.session_state['last_intel']:
     c1, c2, c3, c4, c5, c6 = st.columns(6)
     stat_type = "ADR" if theater_sel == "VALORANT" else "KPR"
     with c1: st.metric("DELTA", f"{i['delta']:+.1f}")
-    with c2: st.metric("CONFIDENCE", f"{i['confidence']:.1f}%")
-    with c3: st.metric("L10 HIT RATE", i['hr'])
-    with c4: st.metric(f"GLOBAL {stat_type}", f"{i['stat_baseline']:.2f}")
-    with c5: st.metric("RANK GAP", f"{i['gap']:+d} Pos")
-    with c6: st.metric("NUCLEAR FLAG", "FLAGGED" if i['is_nuke'] else "CLEAN")
+    with c2: st.metric("CONFIDENCE", f"{i.get('confidence', 0.0):.1f}%")
+    with c3: st.metric("L10 HIT RATE", i.get('hr', "0%"))
+    with c4: st.metric(f"GLOBAL {stat_type}", f"{i.get('stat_baseline', 0.0):.2f}")
+    with c5: st.metric("RANK GAP", f"{i.get('gap', 0):+d} Pos")
+    with c6: st.metric("NUCLEAR FLAG", "FLAGGED" if i.get('is_nuke', False) else "CLEAN")
 
 if prompt := st.chat_input("Grade Player (Abbr) Line"):
     hs_pct_array = [t1_hs, t2_hs] if (theater_sel == "CS2" and prop_type == "Headshots") else [0.0, 0.0]
