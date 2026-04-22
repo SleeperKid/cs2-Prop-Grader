@@ -77,10 +77,9 @@ def safe_float(v, d=0.0):
     except: return d
 
 # --- 2. SOVEREIGN ENGINE ---
-def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, heat, pacing, opp_dpr, r_total, theater, prop_type, hs_pcts):
+def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, heat, pacing, opp_dpr, r_total, round_swing, theater, prop_type, hs_pcts):
     raw_stat = safe_float(data.get('base_stat'), 150.0 if theater == "VALORANT" else 0.70)
     
-    # KPR Normalization to prevent 3000+ projections
     if theater == "CS2" and raw_stat > 3.0:
         raw_stat = (raw_stat / 100) if raw_stat < 150 else 0.72
 
@@ -93,9 +92,10 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
     match_mult = 0.92 if rank_gap > 70 else 1.05 if rank_gap < -70 else 1.0
     duel_mult = 1.0 + (st.session_state['auto_duel'] - 5.0) * 0.02
     
+    adj_total_rounds = r_total + round_swing
+    
     per_map_proj = []
     for i in range(2):
-        # Clean manual map input
         raw_m = m_vals[i]
         if theater == "CS2" and raw_m > 3.0:
             raw_m = raw_m / 100
@@ -104,10 +104,18 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
         spec_mult = VAL_GRAVITY.get(targets[i], 1.0) if theater == "VALORANT" else CS2_ARCHETYPES.get(targets[i], 1.0)
         pacing_mult = 1.05 if pacing == "Fast" else 0.95 if pacing == "Slow" else 1.0
         
-        weighted_kpr = m_kpr * spec_mult * match_mult * (opp_dpr / 0.65) * duel_mult * pacing_mult * (1 - (heat / 100) * 0.12)
-        map_kills = weighted_kpr * (r_total / 2)
+        # Calculate raw stacked multiplier
+        raw_mult = spec_mult * match_mult * (opp_dpr / 0.65) * duel_mult * pacing_mult
         
-        # Apply Headshot logic if requested (Converts Kills into Headshots)
+        # --- DIMINISHING RETURNS ---
+        if raw_mult > 1.15:
+            raw_mult = 1.15 + (raw_mult - 1.15) * 0.4
+        elif raw_mult < 0.85:
+            raw_mult = 0.85 - (0.85 - raw_mult) * 0.4
+            
+        weighted_kpr = m_kpr * raw_mult * (1 - (heat / 100) * 0.12)
+        map_kills = weighted_kpr * (adj_total_rounds / 2)
+        
         if prop_type == "Headshots" and hs_pcts[i] > 0:
             map_kills = map_kills * (hs_pcts[i] / 100)
             
@@ -117,15 +125,21 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
     delta = final_proj - u_line
     win_prob = (np.random.normal(final_proj, 5.5, 10000) > u_line).mean() * 100
 
+    # Model Confidence Calculation
+    prob_strength = min(100.0, abs(win_prob - 50.0) * 2.0)
+    confidence = (prob_strength * 0.7) + (hr_val * 0.3)
+    confidence = min(99.9, max(1.0, confidence))
+
     return {
         "player": p_name.upper(), "full_team": full_p, "full_opp": full_o,
         "grade": ("S" if delta > 6.0 else "A+" if delta > 3.0 else "B" if delta < -3.0 else "C"),
         "color": ("#FFD700" if delta > 6.0 else "#00FF7F" if delta > 3.0 else "#FF4500" if delta < -3.0 else "#A0A0A0"),
         "prob": win_prob, "stat_baseline": raw_stat, "proj": final_proj, "delta": delta,
-        "is_nuke": (delta >= 10.0 and win_prob >= 85), "hr": f"{hr_val:.0f}%", "gap": rank_gap, "trace": f"{targets[0].upper()} | {targets[1].upper()}"
+        "is_nuke": (delta >= 10.0 and win_prob >= 85), "hr": f"{hr_val:.0f}%", "gap": rank_gap, "trace": f"{targets[0].upper()} | {targets[1].upper()}",
+        "confidence": confidence
     }
 
-def run_precision_research(cmd, targets, m_vals, heat, pacing, opp_dpr, r_total, sync_duel, sync_ranks, opp_abbr, theater, prop_type, hs_pcts):
+def run_precision_research(cmd, targets, m_vals, heat, pacing, opp_dpr, r_total, round_swing, sync_duel, sync_ranks, opp_abbr, theater, prop_type, hs_pcts):
     theater_key = "VALORANT" if theater == "VALORANT" else "CS2"
     domain = "vlr.gg" if theater == "VALORANT" else "hltv.org"
     
@@ -156,7 +170,7 @@ def run_precision_research(cmd, targets, m_vals, heat, pacing, opp_dpr, r_total,
     if sync_duel: st.session_state['auto_duel'] = safe_float(raw.get('opening_win_pct', 50.0)) / 10.0
     if sync_ranks: st.session_state['p_rank'], st.session_state['o_rank'] = p_team['rank'], o_team['rank']
 
-    st.session_state['last_intel'] = apply_sovereign_math(raw, t_p, u_line, p_team['full'], o_team['full'], targets, m_vals, heat, pacing, opp_dpr, r_total, theater, prop_type, hs_pcts)
+    st.session_state['last_intel'] = apply_sovereign_math(raw, t_p, u_line, p_team['full'], o_team['full'], targets, m_vals, heat, pacing, opp_dpr, r_total, round_swing, theater, prop_type, hs_pcts)
     st.rerun()
 
 # --- 3. UI LAYER ---
@@ -173,7 +187,6 @@ with st.sidebar:
         stat_lbl = "ADR" if theater_sel == "VALORANT" else "KPR"
         target_list = VAL_AGENTS if theater_sel == "VALORANT" else list(CS2_ARCHETYPES.keys())
         
-        # Explicit keys to prevent Duplicate Element IDs
         t1 = st.selectbox(f"{label} 1", target_list, key="t1_select")
         t1_v = safe_float(st.text_input(f"{t1} {stat_lbl}", "", key="t1_stat_input"))
         t1_hs = safe_float(st.text_input(f"{t1} HS%", "50.0", key="t1_hs_input")) if (theater_sel == "CS2" and prop_type == "Headshots") else 0.0
@@ -188,6 +201,7 @@ with st.sidebar:
         sync_duel = st.checkbox("🛰️ Auto-Sync Open Duel", value=True)
         st.session_state['auto_duel'] = st.slider("Open Duel (1-10)", 1.0, 10.0, value=st.session_state['auto_duel'], step=0.1, disabled=sync_duel)
         r_total_v = safe_float(st.text_input("Total Rounds", "44.0"))
+        round_swing = st.number_input("Round Swing (+/-)", min_value=-20.0, max_value=20.0, value=0.0, step=1.0)
         heat_val = st.slider("Teammate Heat", 0, 100, 0)
         
     with st.expander("🛡️ OPPONENT TACTICAL", expanded=True):
@@ -214,15 +228,15 @@ if st.session_state['last_intel']:
 </div></div>"""
     st.markdown(card_html, unsafe_allow_html=True)
     
-    c1, c2, c3, c4, c5 = st.columns(5)
+    c1, c2, c3, c4, c5, c6 = st.columns(6)
     stat_type = "ADR" if theater_sel == "VALORANT" else "KPR"
     with c1: st.metric("DELTA", f"{i['delta']:+.1f}")
-    with c2: st.metric("L10 HIT RATE", i['hr'])
-    with c3: st.metric(f"GLOBAL {stat_type}", f"{i['stat_baseline']:.2f}")
-    with c4: st.metric("RANK GAP", f"{i['gap']:+d} Pos")
-    with c5: st.metric("NUCLEAR FLAG", "FLAGGED" if i['is_nuke'] else "CLEAN")
+    with c2: st.metric("CONFIDENCE", f"{i['confidence']:.1f}%")
+    with c3: st.metric("L10 HIT RATE", i['hr'])
+    with c4: st.metric(f"GLOBAL {stat_type}", f"{i['stat_baseline']:.2f}")
+    with c5: st.metric("RANK GAP", f"{i['gap']:+d} Pos")
+    with c6: st.metric("NUCLEAR FLAG", "FLAGGED" if i['is_nuke'] else "CLEAN")
 
 if prompt := st.chat_input("Grade Player (Abbr) Line"):
-    # Send the HS array through if Headshots is selected
     hs_pct_array = [t1_hs, t2_hs] if (theater_sel == "CS2" and prop_type == "Headshots") else [0.0, 0.0]
-    run_precision_research(prompt, [t1, t2], [t1_v, t2_v], heat_val, pacing_val, opp_dpr, r_total_v, sync_duel, sync_ranks, opp_name, theater_sel, prop_type, hs_pct_array)
+    run_precision_research(prompt, [t1, t2], [t1_v, t2_v], heat_val, pacing_val, opp_dpr, r_total_v, round_swing, sync_duel, sync_ranks, opp_name, theater_sel, prop_type, hs_pct_array)
