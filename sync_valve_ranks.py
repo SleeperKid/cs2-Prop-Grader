@@ -3,7 +3,6 @@ from bs4 import BeautifulSoup
 import json
 import datetime
 import os
-import sub
 import subprocess
 import asyncio
 from playwright.async_api import async_playwright
