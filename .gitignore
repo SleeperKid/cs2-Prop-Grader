@@ -13,8 +13,15 @@ __pycache__/
 service_account.json
 .streamlit
 # .gitignore
-*.json
+CS2_Tactical_Rules.json
 core_rules.json
 requirements.txt
 miner.py
 intel_vault.json
+proxy_dir.lock
+downloaded_files
+debug_cloudflare
+daily_sync.yml
+CS2_Tactical_Rules
+Val_tactical.json
+VAL_Tactical_Rules.json

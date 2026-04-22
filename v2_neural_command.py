@@ -52,6 +52,12 @@ try:
 except: st.error("📡 API ERROR: Check Secrets."); st.stop()
 
 # --- 🛰️ GROUND-TRUTH MANIFEST (APRIL 2026) ---
+try:
+    with open("cs2_manifest.json", "r") as f:
+        CS2_LIVE = json.load(f)
+except:
+    CS2_LIVE = { "VIT": {"full": "Team Vitality", "rank": 1} } # Fallback
+
 MANIFEST = {
     "VALORANT": {
         "EF": {"full": "Eternal Fire", "rank": 11}, "PCF": {"full": "PCIFIC Esports", "rank": 120},
@@ -59,10 +65,8 @@ MANIFEST = {
         "SEN": {"full": "Sentinels", "rank": 3}, "PRX": {"full": "Paper Rex", "rank": 4},
         "QOR": {"full": "QoR", "rank": 35}, "ADG": {"full": "Azure Dragon Gaming", "rank": 120}
     },
-    "CS2": {
-        "VIT": {"full": "Team Vitality", "rank": 1}, "NAVI": {"full": "Natus Vincere", "rank": 2},
-        "SPIRIT": {"full": "Team Spirit", "rank": 5}, "ASTR": {"full": "Astralis", "rank": 14},
-        "EF": {"full": "Eternal Fire", "rank": 8}
+    "CS2": { CS2_LIVE
+    
     }
 }
 
