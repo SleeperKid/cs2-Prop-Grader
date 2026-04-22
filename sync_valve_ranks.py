@@ -3,6 +3,9 @@ from bs4 import BeautifulSoup
 import json
 import datetime
 import os
+import asyncio
+from playwright.async_api import async_playwright
+
 
 def generate_standard_tag(full_name):
     """
@@ -38,87 +41,113 @@ def generate_standard_tag(full_name):
         "Team Liquid": "TL"
     }
 
-    # --- HARD OVERRIDES (The Collision Shield) ---
-    OVERRIDE = {
-        "Natus Vincere": "NAVI", "NAVI Junior": "NAVJ",
-        "MOUZ": "MOUZ", "MOUZ NXT": "MOUN",
-        "Astralis": "ASTR", "Astralis Talent": "ASTT",
-        "Into The Breach": "ITB", "Passion UA": "PANI",
-        "The MongolZ": "TH", "Ninjas in Pyjamas": "NIP",
-        "Young Ninjas": "YONI", "00NATION": "00N"
-    }
-
-    # Clean the input name of common noise before checking or slicing
     name_clean = full_name.strip()
-    
-    # Check the Hard Map first
-    if name_clean in HARD_MAP:
-        return HARD_MAP[name_clean]
+    if name_clean in HARD_MAP: return HARD_MAP[name_clean]
+    upper_name = name_clean.upper().replace("TEAM", "").replace("ESPORTS", "").replace("GAMING", "").strip()
+    if len(upper_name) < 2: upper_name = name_clean.upper()[:4]
+    words = upper_name.split()
+    if len(words) >= 2: return "".join([w[0] for w in words])[:4]
+    return upper_name[:4]
 
-    # Check the Override
-    if name_clean in OVERRIDE:
-        return OVERRIDE[name_clean]
-    
-    # --- 2. HEURISTIC SLICER (For Ranks #101 - #250) ---
-    # Remove "Team", "Esports", "Gaming", and "Academy" for processing
-    process_name = name_clean.upper()
-    noise = ["TEAM", "ESPORTS", "GAMING", "CLUB", "PRO", "ORGANIZATION"]
-    for word in noise:
-        process_name = process_name.replace(word, "")
-    
-    process_name = process_name.strip()
-    words = process_name.split()
-
-    # Case A: Academy Teams (e.g., "MOUZ NXT" or "NAVI Junior")
-    if "ACADEMY" in process_name or "JUNIOR" in process_name or "NXT" in process_name or "YOUTH" in process_name:
-        # Take the parent team initials + the first letter of the academy tag
-        if len(words) >= 2:
-            return f"{words[0][:3]}{words[-1][0]}"
-
-    # Case B: Multi-word names (e.g., "Into The Breach")
-    if len(words) >= 3:
-        return "".join([w[0] for w in words])[:4]
-    
-    # Case C: Two-word names (e.g., "Lynn Vision")
-    if len(words) == 2:
-        return f"{words[0][0]}{words[1][:3]}"
-
-    # Case D: Single word (e.g., "Metizport")
-    return process_name[:4]
-
-def get_rankings():
-    # 1. Target today's date for the BO3 Oracle
+async def run_sync():
     today = datetime.date.today().strftime('%Y-%m-%d')
     url = f"https://bo3.gg/teams/valve-rankings/world?ranking_date={today}"
-    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
     
-    try:
-        response = requests.get(url, headers=headers)
-        soup = BeautifulSoup(response.content, 'html.parser')
+    print(f"📡 [SYNC] Launching Incremental Scroll Engine...")
+    
+    async with async_playwright() as p:
+        # Change headless=False if you want to see the browser window pop up
+        browser = await p.chromium.launch(headless=True) 
+        context = await browser.new_context(
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+            viewport={"width": 1280, "height": 1000}
+        )
+        page = await context.new_page()
         
-        # 2. Scrape Team Name and Rank (Assumes standard BO3 table structure)
-        # Note: In 2026, we use specific class selectors for the 'Valve Standing' view.
-        teams = {}
-        rows = soup.select('div.ranking-team-row')[:50] # Top 50 focus
-        
-        for row in rows:
-            rank = int(row.select_one('.rank-number').text.strip())
-            full_name = row.select_one('.team-name').text.strip()
-            
-            # Generate a consistent key (Abbr)
-            # Use a map for common teams, otherwise use first 4 letters uppercase
-            abbr_map = {"Natus Vincere": "NAVI", "Team Vitality": "VIT", "FaZe Clan": "FAZE", "Team Spirit": "SPIRIT"}
-            abbr = abbr_map.get(full_name, full_name[:4].upper().replace(" ", ""))
-            
-            teams[abbr] = {"full": full_name, "rank": rank}
+        try:
+            print(f"🚀 Opening {url}...")
+            await page.goto(url, wait_until="load", timeout=60000)
+            await page.wait_for_selector('a[href*="/teams/"]', timeout=30000)
 
-        # 3. Save to Manifest Format
-        with open("cs2_manifest.json", "w") as f:
-            json.dump(teams, f, indent=4)
-        print(f"✅ Sync Complete: {len(teams)} teams mapped for {today}.")
+            # 🖱️ INCREMENTAL SCROLL LOGIC
+            last_count = 0
+            target_rank = 250
+            # Each team has 2 links (Logo + Name), so we need ~500 elements
+            target_elements = target_rank * 2 
+            
+            print("🖱️ Commencing Incremental Scroll (Mimicking Human)...")
+
+            for i in range(1, 40): # Up to 40 increments
+                # Scroll down in chunks of 1000px
+                await page.evaluate(f"window.scrollBy(0, 1200)")
+                
+                # Small delay to let the JS event fire
+                await asyncio.sleep(0.8) 
+                
+                # Check current element count
+                current_count = await page.evaluate('document.querySelectorAll(\'a[href*="/teams/"]\').length')
+                
+                if i % 5 == 0: # Print status every 5 increments
+                    print(f"   > Progress: {current_count} potential elements found...")
+
+                if current_count >= target_elements:
+                    print(f"✅ Target reached: Found {current_count} elements.")
+                    break
+                    
+                # If we've scrolled a lot and count isn't changing, try a larger jump
+                if i > 10 and current_count == last_count and i % 5 == 0:
+                    print("   ⚠️ Stale content detected. Attempting deep jump...")
+                    await page.evaluate("window.scrollBy(0, 3000)")
+                    await asyncio.sleep(2)
+                
+                last_count = current_count
+
+            # FINAL EXTRACTION
+            raw_teams = await page.evaluate("""
+                () => {
+                    const noise = ['TEAMS', 'PLAYERS', 'MATCHES', 'COMPARE', 'WORLDWIDE', 'EUROPE', 'AMERICAS', 'ASIA', 'OCEANIA', 'EARNINGS', 'ENG'];
+                    // Target the specific container if it exists, otherwise fallback to body
+                    const container = document.querySelector('.ranking-list') || document.body;
+                    const links = Array.from(container.querySelectorAll('a[href*="/teams/"]'));
+                    
+                    return links.map(link => {
+                        const text = link.innerText || "";
+                        const textLines = text.split('\\n');
+                        return textLines[0] ? textLines[0].trim() : "";
+                    }).filter(name => 
+                        name.length > 2 && 
+                        !noise.includes(name.toUpperCase())
+                    );
+                }
+            """)
+            
+            manifest_data = {}
+            seen_teams = set()
+            rank_counter = 1
+            for name in raw_teams:
+                if name not in seen_teams:
+                    tag = generate_standard_tag(name)
+                    manifest_data[tag] = {"full": name, "rank": rank_counter}
+                    seen_teams.add(name)
+                    rank_counter += 1
+                if rank_counter > target_rank: break 
+            
+            target_file = os.path.join(os.getcwd(), "cs2_manifest.json")
+            with open(target_file, "w", encoding="utf-8") as f:
+                json.dump(manifest_data, f, indent=4)
+            
+            print(f"--- SYNC COMPLETE ---")
+            print(f"✅ FINAL COUNT: {len(manifest_data)} teams written.")
+            if manifest_data:
+                keys = list(manifest_data.keys())
+                print(f"🥇 Rank 1: {manifest_data[keys[0]]['full']}")
+                print(f"🥉 Rank {len(manifest_data)}: {manifest_data[keys[-1]]['full']}")
+
+        except Exception as e:
+            print(f"❌ CRITICAL FAILURE: {e}")
         
-    except Exception as e:
-        print(f"❌ Sync Failed: {e}")
+        finally:
+            await browser.close()
 
 if __name__ == "__main__":
-    get_rankings()
+    asyncio.run(run_sync())
