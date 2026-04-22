@@ -38,6 +38,16 @@ def generate_standard_tag(full_name):
         "Team Liquid": "TL"
     }
 
+    # --- HARD OVERRIDES (The Collision Shield) ---
+    OVERRIDE = {
+        "Natus Vincere": "NAVI", "NAVI Junior": "NAVJ",
+        "MOUZ": "MOUZ", "MOUZ NXT": "MOUN",
+        "Astralis": "ASTR", "Astralis Talent": "ASTT",
+        "Into The Breach": "ITB", "Passion UA": "PANI",
+        "The MongolZ": "TH", "Ninjas in Pyjamas": "NIP",
+        "Young Ninjas": "YONI", "00NATION": "00N"
+    }
+
     # Clean the input name of common noise before checking or slicing
     name_clean = full_name.strip()
     
@@ -45,6 +55,10 @@ def generate_standard_tag(full_name):
     if name_clean in HARD_MAP:
         return HARD_MAP[name_clean]
 
+    # Check the Override
+    if name_clean in OVERRIDE:
+        return OVERRIDE[name_clean]
+    
     # --- 2. HEURISTIC SLICER (For Ranks #101 - #250) ---
     # Remove "Team", "Esports", "Gaming", and "Academy" for processing
     process_name = name_clean.upper()
