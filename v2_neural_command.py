@@ -223,10 +223,11 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
         penalty = (rank_gap / 100) * rank_respect_val * 0.15
         k_glob, raw_stat = k_glob * (1 - penalty), raw_stat * (1 - penalty)
 
+    hist_kills = [safe_float(k) for k in data.get('last_10_kills', []) if safe_float(k) > 0]
+
     if hr_override is not None and hr_override > 0: hr_val = hr_override
     elif prop_type == "Headshots": hr_val = 50.0
     else:
-        hist_kills = [safe_float(k) for k in data.get('last_10_kills', []) if safe_float(k) > 0]
         if hist_kills:
             w = [1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1]
             w_h, t_w = 0.0, 0.0
@@ -237,8 +238,13 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
             hr_val = (w_h / t_w) * 100
         else: hr_val = 50.0
 
+    # 🧠 1. INDIVIDUAL EFFICIENCY MULTIPLIER
     match_mult = 1.08 if rank_gap >= 50 else 1.04 if rank_gap >= 15 else 0.92 if rank_gap <= -50 else 0.96 if rank_gap <= -15 else 1.0
     
+    # 🧠 2. THE VOLUME/PACE MODIFIER (Blowout vs Banger)
+    abs_gap = abs(rank_gap)
+    pace_mod = 1.12 if abs_gap <= 15 else 0.85 if abs_gap >= 45 else 1.0
+
     if theater == "CS2":
         role = data.get('role', 'Rifler')
         volume_mod = 1.10 if role == "Primary AWP" else 1.0
@@ -277,27 +283,52 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
             
         per_map_proj.append(map_kills)
 
-    final_proj = sum(per_map_proj) * impact_mult
+    # Apply Pace Mod to the total sum
+    final_proj = sum(per_map_proj) * impact_mult * pace_mod
+    
+    # 🧠 3. THE LOGARITHMIC GOVERNOR (Hard Cap at +/- 25% of Baseline)
+    baseline_kills = sum(hist_kills) / len(hist_kills) if hist_kills else u_line
+    if baseline_kills > 0:
+        raw_delta_pct = (final_proj - baseline_kills) / baseline_kills
+        if raw_delta_pct > 0.25:
+            final_proj = baseline_kills * 1.25  # Hard Cap +25%
+        elif raw_delta_pct < -0.25:
+            final_proj = baseline_kills * 0.75  # Hard Cap -25%
+
     delta = final_proj - u_line
     win_prob = (np.random.normal(final_proj, 5.5, 10000) > u_line).mean() * 100
     if delta < 0: win_prob = 100 - win_prob
     abs_d = abs(delta)
     
-    if abs_d >= 8.0: grade, color = "S+", "#FFD700"
-    elif abs_d >= 6.0: grade, color = "S", "#FFC125"
-    elif abs_d >= 4.0: grade, color = "A+", "#00FF7F"
-    elif abs_d >= 2.0: grade, color = "A", "#00ccff"
-    else: grade, color = "C", "#A0A0A0"
+    # 🧠 4. V42 S-TIER CONSISTENCY LOGIC
+    is_consistent = abs(impact_stat) <= 8.0 if theater == "CS2" else impact_stat >= 74.0
+
+    if abs_d >= 10.0: 
+        grade, color = "C", "#FFFFFF" # Flagged as Anomaly/Error
+    elif 3.5 <= abs_d <= 7.5:
+        if is_consistent:
+            grade, color = ("S+", "#FFD700") if abs_d >= 5.0 else ("S", "#FFC125")
+        else:
+            grade, color = ("A+", "#00FF7F") if abs_d >= 5.0 else ("A", "#00ccff")
+    elif 2.0 <= abs_d < 3.5:
+        grade, color = "A", "#00ccff"
+    else: 
+        grade, color = "C", "#A0A0A0"
 
     conf = ((min(100.0, abs(win_prob - 50.0) * 2.0)) * 0.7) + (hr_val * 0.3)
+    
+    # Tank the confidence if it's an anomaly so it doesn't show up in the top 10
+    if abs_d >= 10.0: conf = min(conf, 55.0)
+
     return {
         "player": p_name.upper(), "full_team": full_p, "full_opp": full_o,
         "grade": grade, "color": color, "prob": win_prob, "stat_baseline": m_vals[0] if m_vals[0] > 0 else raw_stat, 
-        "proj": final_proj, "delta": delta, "is_nuke": (abs_d >= 10.0 and win_prob >= 85), "hr": f"{hr_val:.0f}%", 
-        "hr_raw": hr_val, "gap": rank_gap, "trace": f"M1: {targets[0]} | M2: {targets[1]}",
+        "proj": final_proj, "delta": delta, "is_nuke": (6.0 <= abs_d <= 8.5 and win_prob >= 85 and is_consistent), 
+        "hr": f"{hr_val:.0f}%", "hr_raw": hr_val, "gap": rank_gap, "trace": f"M1: {targets[0]} | M2: {targets[1]}",
         "confidence": round(min(99.9, max(1.0, conf)), 1), "source": data.get("source", "UNKNOWN"), "line": u_line, 
         "prop_type": prop_type, "open_duel": safe_float(data.get('opening_win_pct', 50.0)), "impact_stat": impact_stat,
-        "t_rank": data.get('p_rank', 'UNK'), "o_rank": data.get('o_rank', 'UNK'), "dampened": data.get("dampened", False),
+        "t_rank": data.get('p_rank', 'UNK'), "o_rank": data.get('o_rank', 'UNK'), 
+        "dampened": data.get("dampened", False) or (abs_d >= 10.0),
         "pick": "OVER" if delta > 0 else "UNDER", "rounds": r_total
     }
 
@@ -740,8 +771,8 @@ elif cmd_mode == "Syndicate Sweep (API)" and execute_sweep:
 
                 m1_val = str(r.get('M1 Map', 'TBD')).strip().title()
                 m2_val = str(r.get('M2 Map', 'TBD')).strip().title()
-                if not m1_val or m1_val.lower() == 'nan': m1_val = 'TBD'
-                if not m2_val or m2_val.lower() == 'nan': m2_val = 'TBD'
+                if m1_val.lower() in ['nan', '0', '0.0', '']: m1_val = 'TBD'
+                if m2_val.lower() in ['nan', '0', '0.0', '']: m2_val = 'TBD'
                 
                 # --- KILL PROP PROCESSING ---
                 k_line_raw = str(r.get('Kill Line', '')).strip().upper()
