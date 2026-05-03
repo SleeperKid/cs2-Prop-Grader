@@ -4,5 +4,5 @@ groq
 numpy
 scipy
 plotly
-st-gsheets-connection
+gspread
 tavily-python
