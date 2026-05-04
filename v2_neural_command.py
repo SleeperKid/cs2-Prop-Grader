@@ -302,9 +302,19 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
     # 🧠 4. S-TIER CONSISTENCY & RECOMMENDATION ENGINE
     is_consistent = abs(impact_stat) <= 8.0 if theater == "CS2" else impact_stat >= 74.0
 
+    # Base raw confidence calculation (Win Prob + Momentum HR)
+    raw_conf = ((min(100.0, abs(win_prob - 50.0) * 2.0)) * 0.7) + (hr_val * 0.3)
+
     if abs_d >= 10.0: 
         grade, color = "C", "#FFFFFF" 
         rec, rec_color = "🛑 TRAP LINE (DO NOT BET)", "#FF4444"
+        conf = min(raw_conf, 45.0) # Crush confidence, this is an anomaly
+        
+    elif 7.5 < abs_d < 10.0:
+        grade, color = "C", "#A0A0A0"
+        rec, rec_color = "🛑 NO BET (EDGE TOO HIGH)", "#FF8C00"
+        conf = min(raw_conf, 55.0) # Cap confidence, historical data says this is a trap
+        
     elif 3.5 <= abs_d <= 7.5:
         if is_consistent:
             grade, color = ("S+", "#FFD700") if abs_d >= 5.0 else ("S", "#FFC125")
@@ -312,15 +322,17 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
         else:
             grade, color = ("A+", "#00FF7F") if abs_d >= 5.0 else ("A", "#00ccff")
             rec, rec_color = "🟡 NEUTRAL (SPRINKLE)", "#00ccff"
+        conf = raw_conf # Let the high confidence shine
+        
     elif 2.0 <= abs_d < 3.5:
         grade, color = "A", "#00ccff"
         rec, rec_color = "🟡 NEUTRAL (SPRINKLE)", "#00ccff"
-    else: 
+        conf = raw_conf 
+        
+    else: # abs_d < 2.0
         grade, color = "C", "#A0A0A0"
         rec, rec_color = "🛑 NO BET (COIN FLIP)", "#A0A0A0"
-
-    conf = ((min(100.0, abs(win_prob - 50.0) * 2.0)) * 0.7) + (hr_val * 0.3)
-    if abs_d >= 10.0: conf = min(conf, 55.0)
+        conf = min(raw_conf, 52.0) # True coin flip, cap confidence near 50
 
     return {
         "player": p_name.upper(), "full_team": full_p, "full_opp": full_o,
