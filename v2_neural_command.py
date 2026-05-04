@@ -241,9 +241,9 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
     # 🧠 1. INDIVIDUAL EFFICIENCY MULTIPLIER
     match_mult = 1.08 if rank_gap >= 50 else 1.04 if rank_gap >= 15 else 0.92 if rank_gap <= -50 else 0.96 if rank_gap <= -15 else 1.0
     
-    # 🧠 2. THE VOLUME/PACE MODIFIER (Blowout vs Banger)
+    # 🧠 2. THE HOLY GRAIL VOLUME/PACE MODIFIER (From Simulator)
     abs_gap = abs(rank_gap)
-    pace_mod = 1.12 if abs_gap <= 15 else 0.85 if abs_gap >= 45 else 1.0
+    pace_mod = 1.15 if abs_gap <= 15 else 0.75 if abs_gap >= 45 else 1.0
 
     if theater == "CS2":
         role = data.get('role', 'Rifler')
@@ -283,46 +283,48 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
             
         per_map_proj.append(map_kills)
 
-    # Apply Pace Mod to the total sum
     final_proj = sum(per_map_proj) * impact_mult * pace_mod
     
-    # 🧠 3. THE LOGARITHMIC GOVERNOR (Hard Cap at +/- 25% of Baseline)
+    # 🧠 3. THE 20% LOGARITHMIC GOVERNOR (From Simulator)
     baseline_kills = sum(hist_kills) / len(hist_kills) if hist_kills else u_line
     if baseline_kills > 0:
         raw_delta_pct = (final_proj - baseline_kills) / baseline_kills
-        if raw_delta_pct > 0.25:
-            final_proj = baseline_kills * 1.25  # Hard Cap +25%
-        elif raw_delta_pct < -0.25:
-            final_proj = baseline_kills * 0.75  # Hard Cap -25%
+        if raw_delta_pct > 0.20:
+            final_proj = baseline_kills * 1.20  
+        elif raw_delta_pct < -0.20:
+            final_proj = baseline_kills * 0.80  
 
     delta = final_proj - u_line
     win_prob = (np.random.normal(final_proj, 5.5, 10000) > u_line).mean() * 100
     if delta < 0: win_prob = 100 - win_prob
     abs_d = abs(delta)
     
-    # 🧠 4. V42 S-TIER CONSISTENCY LOGIC
+    # 🧠 4. S-TIER CONSISTENCY & RECOMMENDATION ENGINE
     is_consistent = abs(impact_stat) <= 8.0 if theater == "CS2" else impact_stat >= 74.0
 
     if abs_d >= 10.0: 
-        grade, color = "C", "#FFFFFF" # Flagged as Anomaly/Error
+        grade, color = "C", "#FFFFFF" 
+        rec, rec_color = "🛑 TRAP LINE (DO NOT BET)", "#FF4444"
     elif 3.5 <= abs_d <= 7.5:
         if is_consistent:
             grade, color = ("S+", "#FFD700") if abs_d >= 5.0 else ("S", "#FFC125")
+            rec, rec_color = "🟢 GREEN LIGHT (LOCK)", "#00FF7F"
         else:
             grade, color = ("A+", "#00FF7F") if abs_d >= 5.0 else ("A", "#00ccff")
+            rec, rec_color = "🟡 NEUTRAL (SPRINKLE)", "#00ccff"
     elif 2.0 <= abs_d < 3.5:
         grade, color = "A", "#00ccff"
+        rec, rec_color = "🟡 NEUTRAL (SPRINKLE)", "#00ccff"
     else: 
         grade, color = "C", "#A0A0A0"
+        rec, rec_color = "🛑 NO BET (COIN FLIP)", "#A0A0A0"
 
     conf = ((min(100.0, abs(win_prob - 50.0) * 2.0)) * 0.7) + (hr_val * 0.3)
-    
-    # Tank the confidence if it's an anomaly so it doesn't show up in the top 10
     if abs_d >= 10.0: conf = min(conf, 55.0)
 
     return {
         "player": p_name.upper(), "full_team": full_p, "full_opp": full_o,
-        "grade": grade, "color": color, "prob": win_prob, "stat_baseline": m_vals[0] if m_vals[0] > 0 else raw_stat, 
+        "grade": grade, "color": color, "rec": rec, "rec_color": rec_color, "prob": win_prob, "stat_baseline": m_vals[0] if m_vals[0] > 0 else raw_stat, 
         "proj": final_proj, "delta": delta, "is_nuke": (6.0 <= abs_d <= 8.5 and win_prob >= 85 and is_consistent), 
         "hr": f"{hr_val:.0f}%", "hr_raw": hr_val, "gap": rank_gap, "trace": f"M1: {targets[0]} | M2: {targets[1]}",
         "confidence": round(min(99.9, max(1.0, conf)), 1), "source": data.get("source", "UNKNOWN"), "line": u_line, 
@@ -424,6 +426,11 @@ def render_grade_card(i, theater_sel, is_dual=False, key_prefix="main"):
         <div><div class="stat-lbl">{third_stat_lbl}</div><div class="stat-val" style="font-size: {val_size};">{third_stat_val}</div></div>
     </div>
     <div class="decision-line" style="color: {i.get('color', '#FFF')}; font-size: {dec_size};">{i.get('pick', 'N/A')} {abs(i.get('proj', 0) - d_val):.1f} {i.get('prop_type', 'Prop').upper()} {"▲" if d_val > 0 else "▼"}</div>
+    
+    <div style="margin-top: 15px; border: 1px dashed {i.get('rec_color', '#A0A0A0')}; background-color: {i.get('rec_color', '#A0A0A0')}10; color: {i.get('rec_color', '#A0A0A0')}; padding: 8px; text-align: center; font-family: 'JetBrains Mono'; font-weight: 900; letter-spacing: 1px; border-radius: 4px; font-size: 14px;">
+        {i.get('rec', '🛑 NO BET (COIN FLIP)')}
+    </div>
+    
     <div style="margin-top: 15px; font-family: 'JetBrains Mono'; color: rgba(255,255,255,0.4); font-size: 12px;">{i.get('trace', '🔒 PROP ALREADY LOCKED IN VAULT')}</div>
     </div></div>
     <div class="metric-grid">
@@ -535,7 +542,7 @@ with st.sidebar:
                 sync_duel = st.checkbox("🛰️ Auto-Sync Open Duel", value=True)
                 st.session_state['auto_duel'] = st.slider("Open Duel (1-10)", 1.0, 10.0, value=st.session_state['auto_duel'], step=0.1, disabled=sync_duel, help="Player's opening duel win percentage scaled to a 1-10 rating.")
             
-            r_total_manual = safe_float(st.text_input("Total Rounds Expected", "44.0"))
+            r_total_manual = safe_float(st.text_input("Total Rounds Expected", "40.0" if theater_sel == "VALORANT" else "44.0"))
             
             if theater_sel == "CS2": impact_stat_val = st.number_input("HLTV Round Swing (+/- %)", min_value=-20.0, max_value=20.0, value=0.0, step=1.0)
             else: impact_stat_val = st.number_input("VLR KAST %", min_value=0.0, max_value=100.0, value=72.0, step=1.0)
@@ -551,7 +558,7 @@ with st.sidebar:
         st.subheader("📊 PropVault API Sync")
         st.caption("Hardcoded direct connection via gspread.")
         
-        r_total_v = safe_float(st.text_input("Total Rounds Est. (Global Default)", "44.0", help="Use this to model stomps/blowouts if the 'Total Rounds' column in your sheet is blank."))
+        r_total_v = safe_float(st.text_input("Total Rounds Est. (Global Default)", "40.0", help="Defaults to 40.0 for Valorant baseline. Used to model stomps/blowouts if the 'Total Rounds' column in your sheet is blank."))
         raw_dpr_api = safe_float(st.text_input("Global Opp DPR (Fallback)", "0.65", help="Used only if the Google Sheet row is blank."))
         
         heat_val = st.slider("Global Pacing Dampener / Heat (%)", 0, 100, 0, help="Use this to globally model slow matches or steal rates. Can be overridden in your Sheet.")
