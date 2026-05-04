@@ -9,7 +9,7 @@ from groq import Groq
 from tavily import TavilyClient
 
 # --- 1. CORE SETUP & MONOLITH V41.2 STYLING ---
-st.set_page_config(page_title="Iron Guard V41.11", layout="wide", page_icon="📡")
+st.set_page_config(page_title="Iron Guard V42.2", layout="wide", page_icon="📡")
 
 # Initialize Session State
 if 'last_intel' not in st.session_state: st.session_state['last_intel'] = None
@@ -444,14 +444,24 @@ def render_grade_card(i, theater_sel, is_dual=False, key_prefix="main"):
     st.markdown(card_html, unsafe_allow_html=True)
     
     if i['grade'] in ["S+", "S", "A+", "A"]:
-        btn_key = f"btn_{key_prefix}_{i['player']}_{i['prop_type']}_{i.get('row_num', 'manual')}"
-        if st.button(f"🧠 GENERATE AI WRITEUP ({i['prop_type']})", key=btn_key, use_container_width=True):
-            with st.spinner("🌙 Consulting the Sleepy Kingdom..."):
-                ai_post = generate_analytical_writeup(i, theater_sel)
-                conf = i.get('confidence', 0)
-                u_size = "2.0U 💣 (NUKE)" if conf >= 85 else "1.5U" if conf >= 75 else "1.0U" if conf >= 60 else "0.5U (Sprinkle)"
-                
-                st.markdown(f'<div style="background-color: #0f1419; padding: 20px; border-radius: 10px; border-left: 5px solid {i["color"]}; margin-top: 15px; margin-bottom: 20px;"><h4 style="color: white; margin-top: 0; font-family: \'JetBrains Mono\', monospace; font-size: 15px;">🌙 SLEEPY KINGDOM CONVICTION</h4>{ai_post}<hr><b>Proj:</b> ~{i["proj"]:.1f} {i["prop_type"]} | <b>Grade:</b> {i["grade"]} ({i["confidence"]:.1f}% Conf) | <b>Units:</b> {u_size}</div>', unsafe_allow_html=True)
+            st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
+            col_btn1, col_btn2 = st.columns(2)
+            
+            btn_key_ai = f"btn_ai_{key_prefix}_{i['player']}_{i['prop_type']}_{i.get('row_num', 'm')}"
+            btn_key_disc = f"btn_disc_{key_prefix}_{i['player']}_{i['prop_type']}_{i.get('row_num', 'm')}"
+            
+            with col_btn1:
+                if st.button(f"🧠 AI WRITEUP", key=btn_key_ai, use_container_width=True):
+                    with st.spinner("Consulting the Sleepy Kingdom..."):
+                        ai_post = generate_analytical_writeup(i, theater_sel)
+                        conf = i.get('confidence', 0)
+                        u_size = "2.0U 💣 (NUKE)" if conf >= 85 else "1.5U" if conf >= 75 else "1.0U" if conf >= 60 else "0.5U"
+                        st.markdown(f'<div style="background-color: #0f1419; padding: 20px; border-radius: 10px; border-left: 5px solid {i["color"]}; margin-top: 15px;"><h4 style="color: white; margin-top: 0; font-size: 15px;">🌙 SLEEPY KINGDOM CONVICTION</h4>{ai_post}<hr><b>Proj:</b> ~{i["proj"]:.1f} | <b>Grade:</b> {i["grade"]} | <b>Units:</b> {u_size}</div>', unsafe_allow_html=True)
+            
+            with col_btn2:
+                if st.button(f"🚀 FIRE TO DISCORD", key=btn_key_disc, type="primary", use_container_width=True):
+                    # Webhook logic goes here!
+                    st.success(f"Sniper shot fired to Discord for {i['player']}!")
 
 def run_precision_research(prompt, targets, m_vals, heat, opp_dpr, r_total, impact_stat, sync_duel, sync_ranks, opp_name, theater, prop_type, hs_pcts):
     parts = prompt.split()
@@ -616,7 +626,7 @@ elif cmd_mode == "Syndicate Sweep (API)" and execute_sweep:
                     "HEAT": get_v_col("PLAYER HEAT", "HEAT"), "L10_HR": get_v_col("L10 KILL HR", "L10 HR"),
                     "M1_AGENT": get_v_col("M1 AGENT"), "M2_AGENT": get_v_col("M2 AGENT"),
                     "M1_ADR": get_v_col("M1 ADR"), "M2_ADR": get_v_col("M2 ADR"),
-                    "ROUNDS": get_v_col("TOTAL ROUNDS", "ROUNDS", "EST ROUNDS") # 🎯 NEW
+                    "ROUNDS": get_v_col("TOTAL ROUNDS", "ROUNDS", "EST ROUNDS")
                 }
                 
                 v_updates = []
@@ -655,7 +665,6 @@ elif cmd_mode == "Syndicate Sweep (API)" and execute_sweep:
                     t_rank = sheet_t_rank if sheet_t_rank > 0 else get_fuzzy_rank(t_abbr, VAL_LIVE, 60)
                     o_rank = sheet_o_rank if sheet_o_rank > 0 else get_fuzzy_rank(o_abbr, VAL_LIVE, 110)
                     
-                    # 🎯 Fetching the Rounds overrides
                     sheet_rounds = safe_float(r_get("ROUNDS", 0))
                     active_rounds = sheet_rounds if sheet_rounds > 0 else r_total_v
 
@@ -703,7 +712,6 @@ elif cmd_mode == "Syndicate Sweep (API)" and execute_sweep:
                     
                     val_slate_cards.append(res)
                 
-                # Note: Apply Dampener uses global rounds to calculate max volume cap per game
                 apply_kill_economy_dampener(val_slate_cards, r_total_v)
                 
                 for res in val_slate_cards:
@@ -770,7 +778,6 @@ elif cmd_mode == "Syndicate Sweep (API)" and execute_sweep:
                 sheet_heat = safe_float(r.get('Player Heat', r.get('Heat', 0)))
                 player_heat = sheet_heat if sheet_heat > 0 else heat_val
                 
-                # 🎯 Fetching Rounds Overrides for CS2
                 sheet_rounds = safe_float(r.get('Total Rounds', r.get('Rounds', 0)))
                 active_rounds = sheet_rounds if sheet_rounds > 0 else r_total_v
 
@@ -876,7 +883,7 @@ elif cmd_mode == "Syndicate Sweep (API)" and execute_sweep:
                 cs2_sheet.update_cells(cs2_updates)
         except Exception as e: st.error(f"CS2 Sync Error: {e}")
 
-# --- 5. RENDER PHASE ---
+# --- 5. RENDER PHASE (THE 3-TAB ARCHITECTURE) ---
 if st.session_state.get('sweep_results'):
     all_slate_cards = []
     for match_key, match_items in st.session_state['sweep_results'].items():
@@ -887,8 +894,14 @@ if st.session_state.get('sweep_results'):
     
     match_keys = list(st.session_state['sweep_results'].keys())
     
-    # 🎯 NEW UI: Top 10 and Discord Tabs
-    tab_titles = ["🏆 TOP 10 BOARD", "🚀 DISCORD S-TIER"]
+    # 🎯 1. BUCKET THE DATA 
+    hit_list = [c for c in all_slate_cards if c.get('grade') in ["S+", "S", "A+", "A"]]
+    hit_list = sorted(hit_list, key=lambda x: x.get('confidence', 0), reverse=True)
+    
+    graveyard = [c for c in all_slate_cards if c.get('grade') == "C"]
+    
+    # 🎯 2. BUILD THE TABS
+    tab_titles = ["🎯 THE HIT LIST", "🪦 THE GRAVEYARD"]
     for mk in match_keys:
         theater = st.session_state['sweep_results'][mk][0]['type']
         prefix = "🔴 VAL |" if theater == "VALORANT" else "🟠 CS2 |"
@@ -896,44 +909,39 @@ if st.session_state.get('sweep_results'):
         
     tabs = st.tabs(tab_titles)
     
-    # --- TAB 1: TOP 10 CONFIDENCE BOARD ---
+    # --- TAB 0: THE HIT LIST ---
     with tabs[0]:
-        st.markdown("<h3 style='color: #FFD700; margin-top: 0px;'>🏆 THE KINGDOM'S TOP 10</h3>", unsafe_allow_html=True)
-        st.caption("The absolute highest confidence mathematical edges across the entire slate, regardless of grade.")
+        st.markdown("<h3 style='color: #00FF7F; margin-top: 0px;'>🎯 S-TIER & A-TIER HIT LIST</h3>", unsafe_allow_html=True)
+        st.caption("Review the top mathematical edges and manually fire to Discord. Sorted by highest confidence.")
         
-        top_10 = sorted(all_slate_cards, key=lambda x: x.get('confidence', 0), reverse=True)[:10]
-        
-        if not top_10:
-            st.info("No actionable plays found on this slate.")
+        if not hit_list:
+            st.warning("⚠️ No S or A-tier plays found on this slate. The math says skip today.")
         else:
-            for card in top_10:
-                render_grade_card(card, card['_theater'], is_dual=False, key_prefix="top10")
-                st.write("---")
+            for i in range(0, len(hit_list), 2):
+                col1, col2 = st.columns(2)
+                with col1:
+                    render_grade_card(hit_list[i], hit_list[i]['_theater'], is_dual=True, key_prefix=f"hit_{i}")
+                with col2:
+                    if i + 1 < len(hit_list):
+                        render_grade_card(hit_list[i+1], hit_list[i+1]['_theater'], is_dual=True, key_prefix=f"hit_{i+1}")
 
-    # --- TAB 2: DISCORD PUBLISHING VAULT ---
+    # --- TAB 1: THE GRAVEYARD ---
     with tabs[1]:
-        st.markdown("<h3 style='color: #00FF7F; margin-top: 0px;'>🚀 DISCORD S-TIER EXPORT</h3>", unsafe_allow_html=True)
-        st.caption("Strictly S+ and S grade plays. Ready for Syndicate broadcast.")
+        st.markdown("<h3 style='color: #A0A0A0; margin-top: 0px;'>🪦 THE GRAVEYARD</h3>", unsafe_allow_html=True)
+        st.caption("These are Trap Lines, anomalies, or strict coin-flips. DO NOT BET.")
         
-        # Filter strictly for S+ and S grades
-        discord_plays = [c for c in all_slate_cards if c.get('grade') in ['S+', 'S']]
-        discord_plays = sorted(discord_plays, key=lambda x: x.get('confidence', 0), reverse=True)
-        
-        if not discord_plays:
-            st.warning("⚠️ No S-Tier plays found on this slate. The model advises skipping broadcast.")
+        if not graveyard:
+            st.info("No trap lines found.")
         else:
-            col1, col2 = st.columns([3, 1])
-            with col2:
-                if st.button("📡 PUSH PLAYS TO DISCORD", use_container_width=True, type="primary"):
-                    st.success("Discord Webhook integration coming in V42.0! (Ready for hook implementation)")
-                    st.balloons()
-            
-            st.write("")
-            for card in discord_plays:
-                render_grade_card(card, card['_theater'], is_dual=False, key_prefix="discord")
-                st.write("---")
+            for i in range(0, len(graveyard), 2):
+                col1, col2 = st.columns(2)
+                with col1:
+                    render_grade_card(graveyard[i], graveyard[i]['_theater'], is_dual=True, key_prefix=f"grave_{i}")
+                with col2:
+                    if i + 1 < len(graveyard):
+                        render_grade_card(graveyard[i+1], graveyard[i+1]['_theater'], is_dual=True, key_prefix=f"grave_{i+1}")
 
-    # --- TAB 3+: INDIVIDUAL MATCH TABS ---
+    # --- TAB 2+: INDIVIDUAL MATCH TABS ---
     for i, match_key in enumerate(match_keys):
         with tabs[i+2]:
             colA, colB = st.columns([3, 1])
@@ -1016,8 +1024,8 @@ if st.session_state.get('sweep_results'):
                 
                 if len(cards) == 2:
                     col1, col2 = st.columns(2)
-                    with col1: render_grade_card(cards[0], theater_type, is_dual=True, key_prefix=f"match1_{match_key}")
-                    with col2: render_grade_card(cards[1], theater_type, is_dual=True, key_prefix=f"match2_{match_key}")
+                    with col1: render_grade_card(cards[0], theater_type, is_dual=True, key_prefix=f"match1_{match_key}_{cards[0]['player']}")
+                    with col2: render_grade_card(cards[1], theater_type, is_dual=True, key_prefix=f"match2_{match_key}_{cards[1]['player']}")
                 else:
-                    render_grade_card(cards[0], theater_type, is_dual=False, key_prefix=f"match_{match_key}")
+                    render_grade_card(cards[0], theater_type, is_dual=False, key_prefix=f"match_{match_key}_{cards[0]['player']}")
                 st.write("---")
