@@ -207,19 +207,38 @@ def apply_kill_economy_dampener(sweep_cards, r_total, theater="CS2"):
 
     for p in sweep_cards:
         abs_d = abs(p['delta'])
+        is_consistent = abs(p.get('impact_stat', 0)) <= 8.0 if theater == "CS2" else p.get('impact_stat', 0) >= 74.0
         
-        if abs_d >= 8.0: p['grade'], p['color'] = "S+", "#FFD700"
-        elif abs_d >= 6.0: p['grade'], p['color'] = "S", "#FFC125"
-        elif abs_d >= 4.0: p['grade'], p['color'] = "A+", "#00FF7F"
-        elif abs_d >= 2.0: p['grade'], p['color'] = "A", "#00ccff"
-        else: p['grade'], p['color'] = "C", "#A0A0A0"
+        # 🛡️ THE FIX: Enforce the exact same Trap Line logic so the Dampener doesn't resurrect them
+        if abs_d >= 10.0: 
+            p['grade'], p['color'] = "C", "#FFFFFF" 
+            p['rec'], p['rec_color'] = "🛑 TRAP LINE (DO NOT BET)", "#FF4444"
+            p['confidence'] = min(p.get('confidence', 50), 45.0)
+        elif 7.5 < abs_d < 10.0:
+            p['grade'], p['color'] = "C", "#A0A0A0"
+            p['rec'], p['rec_color'] = "🛑 NO BET (EDGE TOO HIGH)", "#FF8C00"
+            p['confidence'] = min(p.get('confidence', 50), 55.0)
+        elif 3.5 <= abs_d <= 7.5:
+            if is_consistent:
+                p['grade'], p['color'] = ("S+", "#FFD700") if abs_d >= 5.0 else ("S", "#FFC125")
+                p['rec'], p['rec_color'] = "🟢 GREEN LIGHT (LOCK)", "#00FF7F"
+            else:
+                p['grade'], p['color'] = ("A+", "#00FF7F") if abs_d >= 5.0 else ("A", "#00ccff")
+                p['rec'], p['rec_color'] = "🟡 NEUTRAL (SPRINKLE)", "#00ccff"
+        elif 2.0 <= abs_d < 3.5:
+            p['grade'], p['color'] = "A", "#00ccff"
+            p['rec'], p['rec_color'] = "🟡 NEUTRAL (SPRINKLE)", "#00ccff"
+        else: 
+            p['grade'], p['color'] = "C", "#A0A0A0"
+            p['rec'], p['rec_color'] = "🛑 NO BET (COIN FLIP)", "#A0A0A0"
+            p['confidence'] = min(p.get('confidence', 50), 52.0)
 
         if p.get('dampened'):
             if p['grade'] in ['A+', 'A']: p['color'] = "#00CCFF"
-            elif p['grade'] == 'C': p['color'] = "#FFFFFF"
+            elif p['grade'] == 'C' and p['rec_color'] != "#FF4444": p['color'] = "#FFFFFF"
             
         p['pick'] = "OVER" if p['delta'] > 0 else "UNDER"
-        p['is_nuke'] = (abs_d >= 10.0 and p.get('prob', 50) >= 85)
+        p['is_nuke'] = (6.0 <= abs_d <= 8.5 and p.get('prob', 50) >= 85 and is_consistent)
 
     return sweep_cards
 
@@ -648,7 +667,8 @@ elif cmd_mode == "Syndicate Sweep (API)" and execute_sweep:
                     "HEAT": get_v_col("PLAYER HEAT", "HEAT"), "L10_HR": get_v_col("L10 KILL HR", "L10 HR"),
                     "M1_AGENT": get_v_col("M1 AGENT"), "M2_AGENT": get_v_col("M2 AGENT"),
                     "M1_ADR": get_v_col("M1 ADR"), "M2_ADR": get_v_col("M2 ADR"),
-                    "ROUNDS": get_v_col("TOTAL ROUNDS", "ROUNDS", "EST ROUNDS")
+                    "ROUNDS": get_v_col("TOTAL ROUNDS", "ROUNDS", "EST ROUNDS"),
+                    "READY": get_v_col("READY")
                 }
                 
                 v_updates = []
@@ -665,6 +685,12 @@ elif cmd_mode == "Syndicate Sweep (API)" and execute_sweep:
                     
                     p_name = r_get("PLAYER")
                     if not p_name: continue
+
+                    # 🛡️ THE WORKFLOW ENFORCER
+                    is_ready = str(r_get("READY", "TRUE")).upper() == "TRUE"
+                    if not is_ready: continue
+
+                    actual_k_str = str(r_get("ACTUAL_K", "")).strip().upper()
 
                     actual_k_str = str(r_get("ACTUAL_K", "")).strip().upper()
                     if actual_k_str == "DNP" or safe_float(actual_k_str) > 0: continue
@@ -881,6 +907,15 @@ elif cmd_mode == "Syndicate Sweep (API)" and execute_sweep:
             for res in cs2_slate_cards:
                 match_id = get_match_id(res['full_team'], res['full_opp'])
                 
+                t_abbr, o_abbr = str(r.get('Team', '')).upper(), str(r.get('Opponent', '')).upper()
+                match_id = get_match_id(t_abbr, o_abbr)
+                
+                # 🛡️ THE WORKFLOW ENFORCER
+                is_ready = str(r.get('Ready', 'TRUE')).upper() == 'TRUE'
+                if not is_ready: continue
+                
+                base_kpr = safe_float(cs2_codex.get(p_lower, {}).get('kpr', 0.0))
+
                 if match_id not in cs2_match_map: cs2_match_map[match_id] = {}
                 p_name = res['player']
                 if p_name not in cs2_match_map[match_id]: cs2_match_map[match_id][p_name] = []
@@ -923,7 +958,7 @@ if st.session_state.get('sweep_results'):
     graveyard = [c for c in all_slate_cards if c.get('grade') == "C"]
     
     # 🎯 2. BUILD THE TABS
-    tab_titles = ["🎯 THE HIT LIST", "🪦 THE GRAVEYARD"]
+    tab_titles = ["🎯 THE HIT LIST (High Confidence)", "🪦 THE GRAVEYARD"]
     for mk in match_keys:
         theater = st.session_state['sweep_results'][mk][0]['type']
         prefix = "🔴 VAL |" if theater == "VALORANT" else "🟠 CS2 |"
