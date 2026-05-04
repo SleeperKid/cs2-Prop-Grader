@@ -153,7 +153,7 @@ def lock_match_in_sheet(match_key):
             st.error(f"Failed to lock: {e}")
 
 # --- 2. THE SOVEREIGN ENGINE ---
-def apply_kill_economy_dampener(sweep_cards, r_total):
+def apply_kill_economy_dampener(sweep_cards, r_total, theater="CS2"):
     team_groups = {}
     for card in sweep_cards:
         if card.get('prop_type', '').upper() == 'KILLS':
@@ -161,8 +161,18 @@ def apply_kill_economy_dampener(sweep_cards, r_total):
             if team not in team_groups: team_groups[team] = []
             team_groups[team].append(card)
 
-    # Note: Economy limits dynamic per map size
-    ceiling = 999.0 if r_total >= 50.0 else (140.0 * (r_total / 44.0))
+    # 🛡️ THE FIX: Differentiate ceilings based on the game meta
+    if theater == "VALORANT":
+        base_ceiling = 125.0
+        base_rounds = 40.0
+        ot_threshold = 48.0
+    else:
+        base_ceiling = 140.0
+        base_rounds = 44.0
+        ot_threshold = 50.0
+
+    ceiling = 999.0 if r_total >= ot_threshold else (base_ceiling * (r_total / base_rounds))
+    
     for team, players in team_groups.items():
         team_total = sum(p.get('proj', 0) for p in players)
         if team_total > ceiling:
@@ -724,7 +734,7 @@ elif cmd_mode == "Syndicate Sweep (API)" and execute_sweep:
                     
                     val_slate_cards.append(res)
                 
-                apply_kill_economy_dampener(val_slate_cards, r_total_v)
+                apply_kill_economy_dampener(val_slate_cards, r_total_v, "VALORANT")
                 
                 for res in val_slate_cards:
                     match_id = get_match_id(res['full_team'], res['full_opp'])
@@ -866,7 +876,7 @@ elif cmd_mode == "Syndicate Sweep (API)" and execute_sweep:
 
                     cs2_slate_cards.append(h_res)
 
-            apply_kill_economy_dampener(cs2_slate_cards, r_total_v)
+            apply_kill_economy_dampener(cs2_slate_cards, r_total_v, "CS2")
             
             for res in cs2_slate_cards:
                 match_id = get_match_id(res['full_team'], res['full_opp'])
