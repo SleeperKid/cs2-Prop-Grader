@@ -691,8 +691,6 @@ elif cmd_mode == "Syndicate Sweep (API)" and execute_sweep:
                     if not is_ready: continue
 
                     actual_k_str = str(r_get("ACTUAL_K", "")).strip().upper()
-
-                    actual_k_str = str(r_get("ACTUAL_K", "")).strip().upper()
                     if actual_k_str == "DNP" or safe_float(actual_k_str) > 0: continue
                     
                     k_line_str = str(r_get("K_LINE", "")).strip().upper()
