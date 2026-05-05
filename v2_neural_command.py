@@ -774,18 +774,26 @@ elif cmd_mode == "Syndicate Sweep (API)" and execute_sweep:
                 if v_updates: val_sheet.update_cells(v_updates)
         except Exception as e: st.error(f"Valorant Sync Error: {e}")
 
-    # --- CS2 MASTER W/ BATCH WRITE ---
+   # --- CS2 MASTER W/ BATCH WRITE ---
     with st.spinner("Processing & Writing CS2 Master..."):
         try:
             cs2_sheet = sh.worksheet("CS2 Master")
             df_cs2 = pd.DataFrame(cs2_sheet.get_all_records()).fillna(0)
             
-            c_kill_proj = df_cs2.columns.get_loc("Proj Kills") + 1 if "Proj Kills" in df_cs2.columns else None
-            c_hs_proj = df_cs2.columns.get_loc("Proj HS") + 1 if "Proj HS" in df_cs2.columns else None
-            c_kill_pick = df_cs2.columns.get_loc("Kill Pick") + 1 if "Kill Pick" in df_cs2.columns else None
-            c_kill_grade = df_cs2.columns.get_loc("Kill Grade") + 1 if "Kill Grade" in df_cs2.columns else None
-            c_hs_pick = df_cs2.columns.get_loc("HS Pick") + 1 if "HS Pick" in df_cs2.columns else None
-            c_hs_grade = df_cs2.columns.get_loc("HS Grade") + 1 if "HS Grade" in df_cs2.columns else None
+            # 🛡️ BULLETPROOF COLUMN INDEXING (Case-Insensitive)
+            df_cols_upper = [str(c).strip().upper() for c in df_cs2.columns]
+            
+            def get_col_idx(*names):
+                for n in names:
+                    if n.upper() in df_cols_upper: return df_cols_upper.index(n.upper()) + 1
+                return None
+
+            c_kill_proj = get_col_idx("PROJ KILLS", "KILL PROJ")
+            c_hs_proj = get_col_idx("PROJ HS", "HS PROJ")
+            c_kill_pick = get_col_idx("KILL PICK")
+            c_kill_grade = get_col_idx("KILL GRADE")
+            c_hs_pick = get_col_idx("HS PICK")
+            c_hs_grade = get_col_idx("HS GRADE")
 
             cs2_updates = []
             cs2_slate_cards = []
@@ -793,55 +801,71 @@ elif cmd_mode == "Syndicate Sweep (API)" and execute_sweep:
 
             for idx, r in df_cs2.iterrows():
                 row_num = idx + 2
-                if not r.get('Player'): continue
                 
-                p_lower = str(r['Player']).lower()
-                t_abbr, o_abbr = str(r.get('Team', '')).upper(), str(r.get('Opponent', '')).upper()
+                # Convert the entire row to uppercase keys to ignore typos/casing in Sheets
+                r_upper = {str(k).strip().upper(): v for k, v in r.items()}
+                
+                def r_get(*keys, default=None):
+                    for k in keys:
+                        val = r_upper.get(k.upper())
+                        if val is not None and str(val).strip() != "": return val
+                    return default
+
+                p_raw = r_get('PLAYER')
+                if not p_raw: continue
+                
+                # 🛡️ THE WORKFLOW ENFORCER (Fixed Pandas Empty/Blank bug + Case Sensitivity)
+                raw_ready = str(r_get('READY', default='TRUE')).strip().upper()
+                if raw_ready == 'FALSE': continue
+                
+                p_lower = str(p_raw).lower()
+                t_abbr = str(r_get('TEAM', default='')).upper()
+                o_abbr = str(r_get('OPPONENT', 'OPP', default='')).upper()
                 match_id = get_match_id(t_abbr, o_abbr)
                 
                 base_kpr = safe_float(cs2_codex.get(p_lower, {}).get('kpr', 0.0))
                 open_duel = safe_float(cs2_codex.get(p_lower, {}).get('opening', 50.0))
                 if 0 < open_duel <= 10.0: open_duel *= 10
                     
-                r_swing = safe_float(r.get('Avg Swing', 0)) 
+                r_swing = safe_float(r_get('AVG SWING', 'SWING', default=0)) 
                 
-                sheet_t_rank = safe_float(r.get('Team Rank', r.get('T Rank', 0)))
-                sheet_o_rank = safe_float(r.get('Opp Rank', r.get('Opponent Rank', 0)))
+                sheet_t_rank = safe_float(r_get('TEAM RANK', 'T RANK', default=0))
+                sheet_o_rank = safe_float(r_get('OPP RANK', 'OPPONENT RANK', 'O RANK', default=0))
                 
                 t_rank = sheet_t_rank if sheet_t_rank > 0 else get_fuzzy_rank(t_abbr, CS2_LIVE, 60)
                 o_rank = sheet_o_rank if sheet_o_rank > 0 else get_fuzzy_rank(o_abbr, CS2_LIVE, 110)
                 
-                role = str(r.get('Role', cs2_codex.get(p_lower, {}).get('role', 'Rifler')))
+                role = str(r_get('ROLE', default=cs2_codex.get(p_lower, {}).get('role', 'Rifler')))
                 
                 p_data = {
                     "base_stat": base_kpr, "opening_win_pct": open_duel,
-                    "source": "SHEET" if safe_float(r.get('Global KPR', 0)) > 0 else "CODEX AUTO", 
+                    "source": "SHEET" if safe_float(r_get('GLOBAL KPR', 'KPR', default=0)) > 0 else "CODEX AUTO", 
                     "p_rank": t_rank, "o_rank": o_rank, "last_10_kills": cs2_codex.get(p_lower, {}).get('l10_maps_1_and_2_kills', []),
                     "role": role 
                 }
 
                 active_opp_dpr = (raw_dpr_api / 100) if raw_dpr_api > 2.0 else raw_dpr_api
-                sheet_heat = safe_float(r.get('Player Heat', r.get('Heat', 0)))
+                sheet_heat = safe_float(r_get('PLAYER HEAT', 'HEAT', default=0))
                 player_heat = sheet_heat if sheet_heat > 0 else heat_val
                 
-                sheet_rounds = safe_float(r.get('Total Rounds', r.get('Rounds', 0)))
+                sheet_rounds = safe_float(r_get('TOTAL ROUNDS', 'ROUNDS', default=0))
                 active_rounds = sheet_rounds if sheet_rounds > 0 else r_total_v
 
-                is_locked = str(r.get('Locked', 'FALSE')).upper() == 'TRUE'
+                is_locked = str(r_get('LOCKED', default='FALSE')).upper() == 'TRUE'
 
-                m1_val = str(r.get('M1 Map', 'TBD')).strip().title()
-                m2_val = str(r.get('M2 Map', 'TBD')).strip().title()
+                m1_val = str(r_get('M1 MAP', default='TBD')).strip().title()
+                m2_val = str(r_get('M2 MAP', default='TBD')).strip().title()
                 if m1_val.lower() in ['nan', '0', '0.0', '']: m1_val = 'TBD'
                 if m2_val.lower() in ['nan', '0', '0.0', '']: m2_val = 'TBD'
                 
                 # --- KILL PROP PROCESSING ---
-                k_line_raw = str(r.get('Kill Line', '')).strip().upper()
+                k_line_raw = str(r_get('KILL LINE', default='')).strip().upper()
                 if k_line_raw != "DNP" and safe_float(k_line_raw) > 0:
                     if is_locked:
                         k_res = {
-                            "player": str(r['Player']).upper(), "full_team": t_abbr, "full_opp": o_abbr,
-                            "line": safe_float(k_line_raw), "Locked": True, "pick": str(r.get('Kill Pick', 'N/A')),
-                            "grade": str(r.get('Kill Grade', 'C')), "proj": safe_float(r.get('Proj Kills', 0)),
+                            "player": str(p_raw).upper(), "full_team": t_abbr, "full_opp": o_abbr,
+                            "line": safe_float(k_line_raw), "Locked": True, "pick": str(r_get('KILL PICK', default='N/A')),
+                            "grade": str(r_get('KILL GRADE', default='C')), "proj": safe_float(r_get('PROJ KILLS', 'KILL PROJ', default=0)),
                             "prop_type": "Kills", "row_num": row_num,
                             "stat_baseline": base_kpr,
                             "gap": o_rank - t_rank,
@@ -856,7 +880,7 @@ elif cmd_mode == "Syndicate Sweep (API)" and execute_sweep:
                         k_res["confidence"] = min(99.9, max(1.0, (min(100.0, abs(k_res["win_prob"] - 50.0) * 2.0) * 0.7) + 15.0))
                     else:
                         k_res = apply_sovereign_math(
-                            p_data, str(r['Player']), safe_float(k_line_raw), t_abbr, o_abbr,
+                            p_data, str(p_raw), safe_float(k_line_raw), t_abbr, o_abbr,
                             [m1_val, m2_val], [0.0, 0.0], player_heat, active_opp_dpr, active_rounds, r_swing, 
                             "CS2", "Kills", [0.0, 0.0], rank_respect_val=rank_respect
                         )
@@ -866,13 +890,13 @@ elif cmd_mode == "Syndicate Sweep (API)" and execute_sweep:
                     cs2_slate_cards.append(k_res)
 
                 # --- HS PROP PROCESSING ---
-                hs_line_raw = str(r.get('HS Line', '')).strip().upper()
+                hs_line_raw = str(r_get('HS LINE', default='')).strip().upper()
                 if hs_line_raw != "DNP" and safe_float(hs_line_raw) > 0:
                     if is_locked:
                         h_res = {
-                            "player": str(r['Player']).upper(), "full_team": t_abbr, "full_opp": o_abbr,
-                            "line": safe_float(hs_line_raw), "Locked": True, "pick": str(r.get('HS Pick', 'N/A')),
-                            "grade": str(r.get('HS Grade', 'C')), "proj": safe_float(r.get('Proj HS', 0)),
+                            "player": str(p_raw).upper(), "full_team": t_abbr, "full_opp": o_abbr,
+                            "line": safe_float(hs_line_raw), "Locked": True, "pick": str(r_get('HS PICK', default='N/A')),
+                            "grade": str(r_get('HS GRADE', default='C')), "proj": safe_float(r_get('PROJ HS', 'HS PROJ', default=0)),
                             "prop_type": "Headshots", "row_num": row_num,
                             "stat_baseline": base_kpr,
                             "gap": o_rank - t_rank,
@@ -891,7 +915,7 @@ elif cmd_mode == "Syndicate Sweep (API)" and execute_sweep:
                         p_data_hs['last_10_kills'] = cs2_codex.get(p_lower, {}).get('l10_maps_1_and_2_headshots', [])
 
                         h_res = apply_sovereign_math(
-                            p_data_hs, str(r['Player']), safe_float(hs_line_raw), t_abbr, o_abbr,
+                            p_data_hs, str(p_raw), safe_float(hs_line_raw), t_abbr, o_abbr,
                             [m1_val, m2_val], [0.0, 0.0], player_heat, active_opp_dpr, active_rounds, r_swing, 
                             "CS2", "Headshots", [hs_pct_val, hs_pct_val], rank_respect_val=rank_respect
                         )
@@ -905,15 +929,6 @@ elif cmd_mode == "Syndicate Sweep (API)" and execute_sweep:
             for res in cs2_slate_cards:
                 match_id = get_match_id(res['full_team'], res['full_opp'])
                 
-                t_abbr, o_abbr = str(r.get('Team', '')).upper(), str(r.get('Opponent', '')).upper()
-                match_id = get_match_id(t_abbr, o_abbr)
-                
-                # 🛡️ THE WORKFLOW ENFORCER
-                is_ready = str(r.get('Ready', 'TRUE')).upper() == 'TRUE'
-                if not is_ready: continue
-                
-                base_kpr = safe_float(cs2_codex.get(p_lower, {}).get('kpr', 0.0))
-
                 if match_id not in cs2_match_map: cs2_match_map[match_id] = {}
                 p_name = res['player']
                 if p_name not in cs2_match_map[match_id]: cs2_match_map[match_id][p_name] = []
