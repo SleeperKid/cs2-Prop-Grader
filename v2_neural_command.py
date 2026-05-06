@@ -5,6 +5,8 @@ import re
 import numpy as np
 import pandas as pd
 import gspread
+import requests
+from itertools import combinations
 from groq import Groq
 from tavily import TavilyClient
 
@@ -102,7 +104,10 @@ CS2_LIVE = load_live_ranks("CS2")
 VAL_LIVE = load_live_ranks("VALORANT")
 MANIFEST = { "VALORANT": VAL_LIVE, "CS2": CS2_LIVE }
 
-CS2_ARCHETYPES = {"Anubis": 1.12, "Ancient": 1.12, "Dust 2": 1.15, "Inferno": 0.90, "Mirage": 1.05, "Nuke": 0.90, "Overpass": 1.00}
+# --- GLOBAL GAME ENGINES ---
+CS2_ARCHETYPES = {"Anubis": 1.12, "Ancient": 1.12, "Dust 2": 1.15, "Inferno": 0.90, "Mirage": 1.05, "Nuke": 0.90, "Overpass": 1.00, "Vertigo": 1.08}
+CS2_GRAVITY = {"Entry": 1.10, "Star": 1.08, "Primary AWP": 1.10, "Rifler": 1.00, "IGL": 0.88, "Anchor": 0.88}
+
 VAL_GRAVITY = {"Duelist": 1.12, "Hybrid": 1.08, "Initiator": 1.00, "Controller": 0.88, "Sentinel": 0.80}
 
 AGENT_ROLES = {
@@ -245,12 +250,12 @@ def apply_kill_economy_dampener(sweep_cards, r_total, theater="CS2"):
 def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, heat, opp_dpr, r_total, impact_stat, theater, prop_type, hs_pcts, rank_respect_val=0.0, hr_override=None):
     raw_stat = safe_float(data.get('base_stat'), 150.0 if theater == "VALORANT" else 0.70)
     if theater == "CS2" and raw_stat > 3.0: raw_stat = (raw_stat / 100) if raw_stat < 150 else 0.72
-    k_glob = (raw_stat / 150) if theater == "VALORANT" else raw_stat
+    
     rank_gap = safe_float(data.get('o_rank', st.session_state['o_rank'])) - safe_float(data.get('p_rank', st.session_state['p_rank']))
     
     if rank_gap > 0 and rank_respect_val > 0:
         penalty = (rank_gap / 100) * rank_respect_val * 0.15
-        k_glob, raw_stat = k_glob * (1 - penalty), raw_stat * (1 - penalty)
+        raw_stat = raw_stat * (1 - penalty)
 
     hist_kills = [safe_float(k) for k in data.get('last_10_kills', []) if safe_float(k) > 0]
 
@@ -270,25 +275,56 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
     # 🧠 1. INDIVIDUAL EFFICIENCY MULTIPLIER
     match_mult = 1.08 if rank_gap >= 50 else 1.04 if rank_gap >= 15 else 0.92 if rank_gap <= -50 else 0.96 if rank_gap <= -15 else 1.0
     
-    # 🧠 2. THE HOLY GRAIL VOLUME/PACE MODIFIER (From Simulator)
+    # 🧠 2. THE HOLY GRAIL VOLUME/PACE MODIFIER
     abs_gap = abs(rank_gap)
-    pace_mod = 1.15 if abs_gap <= 15 else 0.75 if abs_gap >= 45 else 1.0
+    if theater == "CS2":
+        pace_mod = max(0.85, 1.08 - (abs_gap / 250.0)) # Softer penalty for CS2
+    else:
+        pace_mod = 1.15 if abs_gap <= 15 else 0.75 if abs_gap >= 45 else 1.0
 
+    # 🧠 3. ROLE GRAVITY & IMPACT TAMING
     if theater == "CS2":
         role = data.get('role', 'Rifler')
-        volume_mod = 1.10 if role == "Primary AWP" else 1.0
-        hs_mod = 0.65 if role == "Primary AWP" else 1.0
-        impact_mult = 1.0 + (impact_stat / 100) 
+        volume_mod = CS2_GRAVITY.get(role, 1.0) 
+        hs_mod = 0.65 if role == "Primary AWP" else 1.0 
+        impact_mult = 1.0 + (impact_stat * 0.005) 
     else:
         volume_mod = 1.0
         hs_mod = 1.0
         impact_mult = 1.0 + ((impact_stat - 72.0) * 0.015)
+        
+    # 🧠 THE MULTIPLIER SQUEEZE
+    combined_mult = volume_mod * impact_mult * pace_mod * match_mult
+    if combined_mult > 1.25:
+        combined_mult = 1.25 + (combined_mult - 1.25) * 0.3
+    elif combined_mult < 0.85:
+        combined_mult = 0.85 - (0.85 - combined_mult) * 0.3
     
-    per_map_proj = []
+    # 🧠 4. DUAL-ENGINE ARCHITECTURE SETUP
+    if theater == "VALORANT":
+        pess_k_glob = raw_stat / 180.0
+        opt_k_glob = raw_stat / 150.0
+        pess_r_total = 34.0 if r_total == 40.0 else (r_total * 0.85)
+        opt_r_total = 40.0 if r_total == 40.0 else r_total
+    else:
+        pess_k_glob = raw_stat / 1.10
+        opt_k_glob = raw_stat * 1.08
+        pess_r_total = 38.0 if r_total >= 42.0 else (r_total * 0.88)
+        opt_r_total = 48.0 if r_total >= 42.0 else (r_total * 1.15) 
+
+    pess_map_proj = []
+    opt_map_proj = []
+    
     for i in range(2):
         raw_m = m_vals[i]
         if theater == "CS2" and raw_m > 3.0: raw_m = raw_m / 100
-        m_kpr = (raw_m / 150) if (theater == "VALORANT" and raw_m > 0) else (raw_m if raw_m > 0 else k_glob)
+        
+        if raw_m > 0:
+            pess_m_kpr = (raw_m / 180.0) if theater == "VALORANT" else (raw_m / 1.10)
+            # FIX: Explicitly apply the optimistic pop-off buff to CS2 Map stats
+            opt_m_kpr = (raw_m / 150.0) if theater == "VALORANT" else (raw_m * 1.08) 
+        else:
+            pess_m_kpr, opt_m_kpr = pess_k_glob, opt_k_glob
         
         if theater == "VALORANT":
             c_agent = str(targets[i]).strip().title()
@@ -300,79 +336,99 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
             spec_mult = CS2_ARCHETYPES.get(t_map, 1.0)
             targets[i] = t_map if t_map and t_map != 'Nan' else 'TBD'
             
-        r_mult = spec_mult * match_mult * (opp_dpr / 0.65)
+        r_mult = spec_mult * (opp_dpr / 0.65)
         if r_mult > 1.15: r_mult = 1.15 + (r_mult - 1.15) * 0.4
         elif r_mult < 0.85: r_mult = 0.85 - (0.85 - r_mult) * 0.4
         
-        weighted_kpr = m_kpr * r_mult * (1 - (heat / 100) * 0.25)
-        map_kills = weighted_kpr * (r_total / 2) * volume_mod
+        pess_kills = pess_m_kpr * r_mult * (1 - (heat / 100) * 0.25) * (pess_r_total / 2)
+        opt_kills = opt_m_kpr * r_mult * (1 - (heat / 100) * 0.25) * (opt_r_total / 2)
         
         if prop_type == "Headshots" and hs_pcts[i] > 0: 
-            map_kills *= (hs_pcts[i] / 100) * hs_mod 
+            pess_kills *= (hs_pcts[i] / 100) * hs_mod 
+            opt_kills *= (hs_pcts[i] / 100) * hs_mod 
             
-        per_map_proj.append(map_kills)
+        pess_map_proj.append(pess_kills)
+        opt_map_proj.append(opt_kills)
 
-    final_proj = sum(per_map_proj) * impact_mult * pace_mod
+    # 🧠 5. THE DUAL REALITIES
+    pess_proj = sum(pess_map_proj) * combined_mult * 0.96 
+    opt_proj = sum(opt_map_proj) * combined_mult 
     
-    # 🧠 3. THE 20% LOGARITHMIC GOVERNOR (From Simulator)
-    baseline_kills = sum(hist_kills) / len(hist_kills) if hist_kills else u_line
-    if baseline_kills > 0:
-        raw_delta_pct = (final_proj - baseline_kills) / baseline_kills
-        if raw_delta_pct > 0.20:
-            final_proj = baseline_kills * 1.20  
-        elif raw_delta_pct < -0.20:
-            final_proj = baseline_kills * 0.80  
+    # 🧠 6. THE 25% LOGARITHMIC GOVERNOR (Isolated safely)
+    if hist_kills:
+        hist_avg = sum(hist_kills) / len(hist_kills)
+        if theater == "CS2":
+            # FIX: Stops the "Slump Choke" by blending history with the line
+            baseline_kills = (hist_avg + u_line) / 2.0 
+        else:
+            # Keeps Valorant functioning exactly as it did yesterday
+            baseline_kills = hist_avg
+    else:
+        baseline_kills = u_line
+        
+    cap = 0.25
+    
+    p_delta_pct = (pess_proj - baseline_kills) / baseline_kills
+    if p_delta_pct > cap: pess_proj = baseline_kills * (1 + cap)
+    elif p_delta_pct < -cap: pess_proj = baseline_kills * (1 - cap)
 
-    delta = final_proj - u_line
+    o_delta_pct = (opt_proj - baseline_kills) / baseline_kills
+    if o_delta_pct > cap: opt_proj = baseline_kills * (1 + cap)
+    elif o_delta_pct < -cap: opt_proj = baseline_kills * (1 - cap)
+
+    # 🧠 7. ASYMMETRIC DECISION ENGINE
+    pess_edge = pess_proj - u_line
+    opt_edge = u_line - opt_proj
+
+    if pess_edge > 0 and opt_edge < 0:
+        pick, final_proj, delta, survived_edge = "OVER", pess_proj, pess_edge, pess_edge
+    elif opt_edge > 0 and pess_edge < 0:
+        pick, final_proj, delta, survived_edge = "UNDER", opt_proj, -opt_edge, opt_edge
+    else:
+        if pess_edge > opt_edge:
+            pick, final_proj, delta, survived_edge = "OVER", pess_proj, pess_edge, pess_edge
+        else:
+            pick, final_proj, delta, survived_edge = "UNDER", opt_proj, -opt_edge, opt_edge
+
     win_prob = (np.random.normal(final_proj, 5.5, 10000) > u_line).mean() * 100
     if delta < 0: win_prob = 100 - win_prob
-    abs_d = abs(delta)
     
-    # 🧠 4. S-TIER CONSISTENCY & RECOMMENDATION ENGINE
     is_consistent = abs(impact_stat) <= 8.0 if theater == "CS2" else impact_stat >= 74.0
-
-    # Base raw confidence calculation (Win Prob + Momentum HR)
     raw_conf = ((min(100.0, abs(win_prob - 50.0) * 2.0)) * 0.7) + (hr_val * 0.3)
 
-    if abs_d >= 10.0: 
-        grade, color = "C", "#FFFFFF" 
-        rec, rec_color = "🛑 TRAP LINE (DO NOT BET)", "#FF4444"
-        conf = min(raw_conf, 45.0) # Crush confidence, this is an anomaly
-        
-    elif 7.5 < abs_d < 10.0:
-        grade, color = "C", "#A0A0A0"
-        rec, rec_color = "🛑 NO BET (EDGE TOO HIGH)", "#FF8C00"
-        conf = min(raw_conf, 55.0) # Cap confidence, historical data says this is a trap
-        
-    elif 3.5 <= abs_d <= 7.5:
+    # 🧠 8. THE NEW PROFITABILITY GRADES
+    if survived_edge >= 7.5: 
+        if survived_edge >= 10.0:
+            grade, color, rec, rec_color = "C", "#FFFFFF", "🛑 TRAP LINE (DO NOT BET)", "#FF4444"
+            conf = min(raw_conf, 45.0) 
+        else:
+            grade, color, rec, rec_color = "C", "#A0A0A0", "🛑 NO BET (EDGE TOO HIGH)", "#FF8C00"
+            conf = min(raw_conf, 55.0) 
+    elif 3.0 <= survived_edge < 7.5:
         if is_consistent:
-            grade, color = ("S+", "#FFD700") if abs_d >= 5.0 else ("S", "#FFC125")
+            grade, color = ("S+", "#FFD700") if survived_edge >= 4.0 else ("S", "#FFC125")
             rec, rec_color = "🟢 GREEN LIGHT (LOCK)", "#00FF7F"
         else:
-            grade, color = ("A+", "#00FF7F") if abs_d >= 5.0 else ("A", "#00ccff")
-            rec, rec_color = "🟡 NEUTRAL (SPRINKLE)", "#00ccff"
-        conf = raw_conf # Let the high confidence shine
-        
-    elif 2.0 <= abs_d < 3.5:
-        grade, color = "A", "#00ccff"
-        rec, rec_color = "🟡 NEUTRAL (SPRINKLE)", "#00ccff"
+            grade, color = ("A+", "#00FF7F") if survived_edge >= 4.0 else ("A", "#00ccff")
+            rec, rec_color = "🟢 SOLID PLAY (STANDARD)", "#00ccff"
         conf = raw_conf 
-        
-    else: # abs_d < 2.0
-        grade, color = "C", "#A0A0A0"
-        rec, rec_color = "🛑 NO BET (COIN FLIP)", "#A0A0A0"
-        conf = min(raw_conf, 52.0) # True coin flip, cap confidence near 50
+    elif 2.5 <= survived_edge < 3.0:
+        grade, color, rec, rec_color = "A", "#00ccff", "🟡 NEUTRAL (SPRINKLE)", "#00ccff"
+        conf = raw_conf 
+    else: 
+        grade, color, rec, rec_color = "C", "#A0A0A0", "🛑 NO BET (COIN FLIP)", "#A0A0A0"
+        conf = min(raw_conf, 52.0) 
 
     return {
         "player": p_name.upper(), "full_team": full_p, "full_opp": full_o,
         "grade": grade, "color": color, "rec": rec, "rec_color": rec_color, "prob": win_prob, "stat_baseline": m_vals[0] if m_vals[0] > 0 else raw_stat, 
-        "proj": final_proj, "delta": delta, "is_nuke": (6.0 <= abs_d <= 8.5 and win_prob >= 85 and is_consistent), 
+        "proj": final_proj, "delta": delta, "is_nuke": (6.0 <= survived_edge <= 8.5 and win_prob >= 85 and is_consistent), 
         "hr": f"{hr_val:.0f}%", "hr_raw": hr_val, "gap": rank_gap, "trace": f"M1: {targets[0]} | M2: {targets[1]}",
         "confidence": round(min(99.9, max(1.0, conf)), 1), "source": data.get("source", "UNKNOWN"), "line": u_line, 
         "prop_type": prop_type, "open_duel": safe_float(data.get('opening_win_pct', 50.0)), "impact_stat": impact_stat,
         "t_rank": data.get('p_rank', 'UNK'), "o_rank": data.get('o_rank', 'UNK'), 
-        "dampened": data.get("dampened", False) or (abs_d >= 10.0),
-        "pick": "OVER" if delta > 0 else "UNDER", "rounds": r_total
+        "dampened": data.get("dampened", False) or (survived_edge >= 10.0),
+        "pick": pick, "rounds": r_total
     }
 
 @st.cache_data(ttl=3600, show_spinner=False)
@@ -559,6 +615,114 @@ def run_precision_research(prompt, targets, m_vals, heat, opp_dpr, r_total, impa
         )
         st.session_state['last_intel'] = intel
         st.rerun()
+
+# --- ALPHA SLIP GENERATOR ENGINES ---
+def get_alpha_slips(results_dict, mode="Mixed"):
+    elite_pool = []
+    
+    for match_id, teams in results_dict.items():
+        for item in teams:
+            theater = item['type']
+            if mode != "Mixed" and theater != mode: continue
+            
+            for p in item['data']:
+                if p.get('Locked'): continue 
+                if p.get('grade') in ["S+", "S", "A+", "A"]:
+                    p['match_id'] = match_id
+                    p['theater'] = theater
+                    elite_pool.append(p)
+
+    # 🛡️ Must return a list AND a string
+    if len(elite_pool) < 2: 
+        return [], f"⚠️ Found only {len(elite_pool)} eligible, unlocked S/A-tier player(s). Need at least 2 to form a slip."
+
+    valid_slips = []
+    for p1, p2 in combinations(elite_pool, 2):
+        # 🛡️ THE INDEPENDENCE RULE: Must be different matches
+        if p1['match_id'] == p2['match_id']: continue 
+        
+        prob1 = p1.get('prob', p1.get('win_prob', 50)) / 100
+        prob2 = p2.get('prob', p2.get('win_prob', 50)) / 100
+        combined_prob = prob1 * prob2
+        
+        base_prob = combined_prob * 100
+        alpha_score = min(99.9, max(0.0, ((base_prob - 33.3) * 3.5) + 75.0))
+        
+        valid_slips.append({
+            "leg1": p1, "leg2": p2,
+            "true_prob": base_prob,
+            "alpha_score": alpha_score
+        })
+        
+    # 🛡️ Must return a list AND a string
+    if not valid_slips:
+        return [], f"⚠️ Found {len(elite_pool)} elite players, but they are all in the SAME match! The Independence Rule prevents same-game parlays."
+        
+    valid_slips.sort(key=lambda x: x['alpha_score'], reverse=True)
+    
+    # 🛡️ Must return the slips AND None
+    return valid_slips[:3], None
+
+def generate_slip_writeup(slip):
+    try:
+        l1, l2 = slip['leg1'], slip['leg2']
+        prompt = f"""
+        You are a sharp esports betting analyst for a syndicate. I am pairing these two props into a 2-leg parlay slip.
+        
+        LEG 1 ({l1['theater']}): {l1['player']} ({l1['full_team']})
+        Prop: {l1['pick']} {l1['line']} {l1['prop_type']}
+        Model Projection: {l1['proj']:.1f} (Edge: {l1['delta']:.1f})
+        Matchup: Team Rank #{l1.get('t_rank', 'UNK')} vs Opponent Rank #{l1.get('o_rank', 'UNK')}
+        
+        LEG 2 ({l2['theater']}): {l2['player']} ({l2['full_team']})
+        Prop: {l2['pick']} {l2['line']} {l2['prop_type']}
+        Model Projection: {l2['proj']:.1f} (Edge: {l2['delta']:.1f})
+        Matchup: Team Rank #{l2.get('t_rank', 'UNK')} vs Opponent Rank #{l2.get('o_rank', 'UNK')}
+        
+        Write a punchy, highly analytical, 3-sentence justification for why this specific 2-man slip has massive positive expected value (+EV). 
+        Focus strictly on the math, rank disparities, and the projection edge. 
+        Use an authoritative, professional tone. Do not use hashtags or emojis.
+        """
+        
+        completion = groq_client.chat.completions.create(
+            messages=[{"role": "user", "content": prompt}],
+            model="llama-3.3-70b-versatile",
+            temperature=0.4,
+            max_tokens=150
+        )
+        return completion.choices[0].message.content.strip()
+    except Exception as e:
+        return f"AI Generation Failed: {e}"
+
+def push_to_discord(slip, writeup, webhook_url):
+    l1, l2 = slip['leg1'], slip['leg2']
+    
+    embed = {
+        "title": f"🚨 SOVEREIGN ALPHA SLIP 🚨",
+        "description": f"**Alpha Score: {slip['alpha_score']:.1f}/100** | *True Prob: {slip['true_prob']:.1f}%*\n\n{writeup}",
+        "color": 65280, 
+        "fields": [
+            {
+                "name": f"Leg 1: {l1['player']} ({l1['theater']})",
+                "value": f"**{l1['pick']} {l1['line']} {l1['prop_type']}**\nProj: {l1['proj']:.1f} | Grade: {l1['grade']}",
+                "inline": False
+            },
+            {
+                "name": f"Leg 2: {l2['player']} ({l2['theater']})",
+                "value": f"**{l2['pick']} {l2['line']} {l2['prop_type']}**\nProj: {l2['proj']:.1f} | Grade: {l2['grade']}",
+                "inline": False
+            }
+        ],
+        "footer": {"text": "Iron Guard Syndicate Engine"}
+    }
+    
+    payload = {"embeds": [embed]}
+    try:
+        resp = requests.post(webhook_url, json=payload)
+        return resp.status_code in [200, 204]
+    except Exception as e:
+        st.error(f"Webhook Exception: {e}")
+        return False
 
 # --- 3. UI LAYER ---
 execute_sweep = False
@@ -953,6 +1117,110 @@ elif cmd_mode == "Syndicate Sweep (API)" and execute_sweep:
                 cs2_sheet.update_cells(cs2_updates)
         except Exception as e: st.error(f"CS2 Sync Error: {e}")
 
+# --- ALPHA SLIP GENERATOR ENGINES ---
+def get_alpha_slips(results_dict, mode="Mixed"):
+    elite_pool = []
+    
+    for match_id, teams in results_dict.items():
+        for item in teams:
+            theater = item['type']
+            if mode != "Mixed" and theater != mode: continue
+            
+            for p in item['data']:
+                if p.get('Locked'): continue 
+                if p.get('grade') in ["S+", "S", "A+", "A"]:
+                    p['match_id'] = match_id
+                    p['theater'] = theater
+                    elite_pool.append(p)
+
+    if len(elite_pool) < 2: 
+        return [], f"⚠️ Found only {len(elite_pool)} eligible, unlocked S/A-tier player(s). Need at least 2 to form a slip."
+
+    valid_slips = []
+    for p1, p2 in combinations(elite_pool, 2):
+        if p1['match_id'] == p2['match_id']: continue 
+        
+        prob1 = p1.get('prob', p1.get('win_prob', 50)) / 100
+        prob2 = p2.get('prob', p2.get('win_prob', 50)) / 100
+        combined_prob = prob1 * prob2
+        
+        base_prob = combined_prob * 100
+        alpha_score = min(99.9, max(0.0, ((base_prob - 33.3) * 3.5) + 75.0))
+        
+        valid_slips.append({
+            "leg1": p1, "leg2": p2,
+            "true_prob": base_prob,
+            "alpha_score": alpha_score
+        })
+        
+    if not valid_slips:
+        return [], f"⚠️ Found {len(elite_pool)} elite players, but they are all in the SAME match! The Independence Rule prevents same-game parlays."
+        
+    valid_slips.sort(key=lambda x: x['alpha_score'], reverse=True)
+    return valid_slips[:3], None
+
+def generate_slip_writeup(slip):
+    try:
+        l1, l2 = slip['leg1'], slip['leg2']
+        prompt = f"""
+        You are a sharp esports betting analyst for a syndicate. I am pairing these two props into a 2-leg parlay slip.
+        
+        LEG 1 ({l1['theater']}): {l1['player']} ({l1['full_team']})
+        Prop: {l1['pick']} {l1['line']} {l1['prop_type']}
+        Model Projection: {l1['proj']:.1f} (Edge: {l1['delta']:.1f})
+        Matchup: Team Rank #{l1.get('t_rank', 'UNK')} vs Opponent Rank #{l1.get('o_rank', 'UNK')}
+        
+        LEG 2 ({l2['theater']}): {l2['player']} ({l2['full_team']})
+        Prop: {l2['pick']} {l2['line']} {l2['prop_type']}
+        Model Projection: {l2['proj']:.1f} (Edge: {l2['delta']:.1f})
+        Matchup: Team Rank #{l2.get('t_rank', 'UNK')} vs Opponent Rank #{l2.get('o_rank', 'UNK')}
+        
+        Write a punchy, highly analytical, 3-sentence justification for why this specific 2-man slip has massive positive expected value (+EV). 
+        Focus strictly on the math, rank disparities, and the projection edge. 
+        Use an authoritative, professional tone. Do not use hashtags or emojis.
+        """
+        
+        completion = groq_client.chat.completions.create(
+            messages=[{"role": "user", "content": prompt}],
+            model="llama-3.3-70b-versatile",
+            temperature=0.4,
+            max_tokens=150
+        )
+        return completion.choices[0].message.content.strip()
+    except Exception as e:
+        return f"AI Generation Failed: {e}"
+
+def push_to_discord(slip, writeup, webhook_url):
+    l1, l2 = slip['leg1'], slip['leg2']
+    
+    embed = {
+        "title": f"🚨 SOVEREIGN ALPHA SLIP 🚨",
+        "description": f"**Alpha Score: {slip['alpha_score']:.1f}/100** | *True Prob: {slip['true_prob']:.1f}%*\n\n{writeup}",
+        "color": 65280, 
+        "fields": [
+            {
+                "name": f"Leg 1: {l1['player']} ({l1['theater']})",
+                "value": f"**{l1['pick']} {l1['line']} {l1['prop_type']}**\nProj: {l1['proj']:.1f} | Grade: {l1['grade']}",
+                "inline": False
+            },
+            {
+                "name": f"Leg 2: {l2['player']} ({l2['theater']})",
+                "value": f"**{l2['pick']} {l2['line']} {l2['prop_type']}**\nProj: {l2['proj']:.1f} | Grade: {l2['grade']}",
+                "inline": False
+            }
+        ],
+        "footer": {"text": "Iron Guard Syndicate Engine"}
+    }
+    
+    payload = {"embeds": [embed]}
+    try:
+        resp = requests.post(webhook_url, json=payload)
+        return resp.status_code in [200, 204]
+    except Exception as e:
+        st.error(f"Webhook Exception: {e}")
+        return False
+
+
 # --- 5. RENDER PHASE (THE 3-TAB ARCHITECTURE) ---
 if st.session_state.get('sweep_results'):
     all_slate_cards = []
@@ -970,8 +1238,8 @@ if st.session_state.get('sweep_results'):
     
     graveyard = [c for c in all_slate_cards if c.get('grade') == "C"]
     
-    # 🎯 2. BUILD THE TABS
-    tab_titles = ["🎯 THE HIT LIST (High Confidence)", "🪦 THE GRAVEYARD"]
+    # 🎯 2. BUILD THE TABS 
+    tab_titles = ["🎯 THE HIT LIST", "⚡ ALPHA SLIPS", "🪦 THE GRAVEYARD"]
     for mk in match_keys:
         theater = st.session_state['sweep_results'][mk][0]['type']
         prefix = "🔴 VAL |" if theater == "VALORANT" else "🟠 CS2 |"
@@ -995,8 +1263,88 @@ if st.session_state.get('sweep_results'):
                     if i + 1 < len(hit_list):
                         render_grade_card(hit_list[i+1], hit_list[i+1]['_theater'], is_dual=True, key_prefix=f"hit_{i+1}")
 
-    # --- TAB 1: THE GRAVEYARD ---
+    # --- TAB 1: ⚡ ALPHA SLIPS ---
     with tabs[1]:
+        st.markdown("<h3 style='color: #FFD700; margin-top: 0px;'>⚡ ALPHA SLIP GENERATOR</h3>", unsafe_allow_html=True)
+        st.caption("Auto-generates the Top 3 highest +EV independent parlay pairs.")
+        
+        if 'active_slips' not in st.session_state: st.session_state['active_slips'] = []
+        if 'slip_writeups' not in st.session_state: st.session_state['slip_writeups'] = {}
+        if 'slip_error' not in st.session_state: st.session_state['slip_error'] = None
+        
+        col_mode, col_btn = st.columns([1, 2])
+        with col_mode:
+            slip_mode = st.radio("Select Slip Engine Mode:", ["Mixed", "VALORANT", "CS2"], horizontal=True)
+        with col_btn:
+            st.markdown("<br>", unsafe_allow_html=True)
+            if st.button("🎲 GENERATE TOP 3 SLIPS", type="primary", use_container_width=True):
+                slips, msg = get_alpha_slips(st.session_state['sweep_results'], slip_mode)
+                st.session_state['active_slips'] = slips
+                st.session_state['slip_error'] = msg
+                st.session_state['slip_writeups'] = {} 
+                st.rerun()
+
+        if st.session_state.get('slip_error'):
+            st.warning(st.session_state['slip_error'])
+
+        if not st.session_state.get('active_slips') and st.button("Clear Generator State", key="clear_gen"):
+            st.session_state['slip_error'] = None
+            st.rerun()
+            
+        if st.session_state.get('active_slips'):
+            for idx, slip in enumerate(st.session_state['active_slips']):
+                l1, l2 = slip['leg1'], slip['leg2']
+                
+                st.markdown(f"""
+                <div style='background: #0d1117; border: 1px solid #FFD700; border-radius: 10px; padding: 15px; margin-bottom: 15px;'>
+                    <div style='display: flex; justify-content: space-between;'>
+                        <h3 style='margin: 0; color: white;'>SLIP #{idx+1}</h3>
+                        <h3 style='margin: 0; color: #00FF7F;'>ALPHA SCORE: {slip['alpha_score']:.1f}/100</h3>
+                    </div>
+                    <hr style='border: 1px solid #333;'>
+                    <div style='display: flex; gap: 20px;'>
+                        <div style='flex: 1;'>
+                            <p style='color: #888; font-size: 11px; margin: 0;'>LEG 1 ({l1['theater']})</p>
+                            <h4 style='color: white; margin: 0;'>{l1['player']}</h4>
+                            <p style='color: {l1.get('rec_color', '#FFF')}; font-weight: bold; margin: 5px 0;'>{l1['pick']} {l1['line']} {l1['prop_type']}</p>
+                            <p style='color: #bbb; font-size: 12px;'>Proj: {l1['proj']:.1f} | Grade: {l1['grade']}</p>
+                        </div>
+                        <div style='flex: 1;'>
+                            <p style='color: #888; font-size: 11px; margin: 0;'>LEG 2 ({l2['theater']})</p>
+                            <h4 style='color: white; margin: 0;'>{l2['player']}</h4>
+                            <p style='color: {l2.get('rec_color', '#FFF')}; font-weight: bold; margin: 5px 0;'>{l2['pick']} {l2['line']} {l2['prop_type']}</p>
+                            <p style='color: #bbb; font-size: 12px;'>Proj: {l2['proj']:.1f} | Grade: {l2['grade']}</p>
+                        </div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                a_col1, a_col2 = st.columns(2)
+                slip_key = f"slip_{idx}"
+                
+                with a_col1:
+                    if st.button(f"🧠 Draft AI Analysis for Slip #{idx+1}", key=f"ai_{idx}", use_container_width=True):
+                        with st.spinner("Groq is writing..."):
+                            analysis = generate_slip_writeup(slip)
+                            st.session_state['slip_writeups'][slip_key] = analysis
+                            st.rerun()
+                            
+                with a_col2:
+                    if slip_key in st.session_state['slip_writeups']:
+                        if st.button(f"🎯 Snipe to Discord", key=f"disc_{idx}", type="primary", use_container_width=True):
+                            webhook = st.secrets.get("DISCORD_WEBHOOK_URL", "")
+                            if not webhook:
+                                st.error("Add DISCORD_WEBHOOK_URL = 'your_url' to your secrets.toml!")
+                            else:
+                                success = push_to_discord(slip, st.session_state['slip_writeups'][slip_key], webhook)
+                                if success: st.success("✅ Alpha Slip pushed to Discord!")
+                                else: st.error("❌ Discord push failed. Check your Webhook URL.")
+                
+                if slip_key in st.session_state['slip_writeups']:
+                    st.info(st.session_state['slip_writeups'][slip_key])
+
+    # --- TAB 2: THE GRAVEYARD ---
+    with tabs[2]:
         st.markdown("<h3 style='color: #A0A0A0; margin-top: 0px;'>🪦 THE GRAVEYARD</h3>", unsafe_allow_html=True)
         st.caption("These are Trap Lines, anomalies, or strict coin-flips. DO NOT BET.")
         
@@ -1011,9 +1359,9 @@ if st.session_state.get('sweep_results'):
                     if i + 1 < len(graveyard):
                         render_grade_card(graveyard[i+1], graveyard[i+1]['_theater'], is_dual=True, key_prefix=f"grave_{i+1}")
 
-    # --- TAB 2+: INDIVIDUAL MATCH TABS ---
+    # --- TAB 3+: INDIVIDUAL MATCH TABS ---
     for i, match_key in enumerate(match_keys):
-        with tabs[i+2]:
+        with tabs[i+3]:
             colA, colB = st.columns([3, 1])
             with colB:
                 st.button(f"🔒 LOCK MATCH IN PROPVAULT", key=f"lock_btn_{match_key}", on_click=lock_match_in_sheet, args=(match_key,), use_container_width=True, type="primary")
