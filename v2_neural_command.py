@@ -255,9 +255,12 @@ def apply_kill_economy_dampener(sweep_cards, r_total, theater="CS2"):
 
     return sweep_cards
 
-def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, heat, opp_dpr, r_total, impact_stat, theater, prop_type, hs_pcts, rank_respect_val=0.0, hr_override=None):
+def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, heat, opp_dpr, r_total, impact_stat, theater, prop_type, hs_pcts, rank_respect_val=0.0, hr_override=None, is_bo5_flag=False):
     raw_stat = safe_float(data.get('base_stat'), 150.0 if theater == "VALORANT" else 0.70)
     if theater == "CS2" and raw_stat > 3.0: raw_stat = (raw_stat / 100) if raw_stat < 150 else 0.72
+    
+    # 🧠 STRICT BO5 DETECTION (Fed directly from the Architect)
+    is_bo5 = theater == "VALORANT" and is_bo5_flag
     
     rank_gap = safe_float(data.get('o_rank', st.session_state['o_rank'])) - safe_float(data.get('p_rank', st.session_state['p_rank']))
     
@@ -300,10 +303,12 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
     if combined_mult > 1.25: combined_mult = 1.25 + (combined_mult - 1.25) * 0.3
     elif combined_mult < 0.85: combined_mult = 0.85 - (0.85 - combined_mult) * 0.3
     
-    # 🧠 3. DUAL REALITY BRANCHES
+    # 🧠 3. DUAL REALITY BRANCHES (Bo5 Sensitive)
     if theater == "VALORANT":
         pess_k, opt_k = raw_stat / 180.0, raw_stat / 150.0
-        p_rounds, o_rounds = (r_total * 0.85), r_total
+        # Bo5 uses higher round floors/ceilings
+        p_rounds = 52.0 if is_bo5 else (r_total * 0.85)
+        o_rounds = 60.0 if is_bo5 else r_total
     else:
         pess_k, opt_k = raw_stat / 1.10, raw_stat * 1.08
         p_rounds, o_rounds = (r_total * 0.88), (r_total * 1.15)
@@ -397,41 +402,49 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
 def apply_dota_math(base_kills, role, opp_rank, line):
     """
     The DOTA 2 MOBA Engine.
-    Applies strict resource-allocation multipliers based on Pos 1-5.
+    Incorporates Positional Gravity and Match Duration Dampeners.
     """
-    # 1. Base Positional Gravity
     gravity = DOTA_GRAVITY.get(role, 1.0)
     
-    # 2. Economy / Duration Dampener 
-    # If playing a Top 10 team, matches end faster, starving the Carries.
+    # Economy/Duration Dampener: Top tier teams end games faster, reducing kill volume.
     calc_o_rank = float(opp_rank) if opp_rank else 110.0
     opp_mod = 0.88 if calc_o_rank <= 10 else 0.95 if calc_o_rank <= 30 else 1.05
     
-    # 3. Calculate Raw Projection
+    # Anchored Pivot: Blend the two realities to find the natural bias
     raw_proj = base_kills * gravity * opp_mod
+    is_over_biased = raw_proj > line
     
-    # 4. Asymmetric Dual-Engine Core (Borrowed from Shooters)
-    delta = raw_proj - line
-    if delta > 0: # OVER Projection
+    if is_over_biased:
         final_proj = raw_proj * 0.95 # Pessimistic dampener for Overs
-    else:         # UNDER Projection
+        pick = "OVER"
+    else:
         final_proj = raw_proj * 1.05 # Optimistic dampener for Unders
+        pick = "UNDER"
         
     final_delta = final_proj - line
+    survived_edge = abs(final_delta)
     
-    # 5. VIP Grading Scale (Aligned with the 3.5 S-Tier update)
-    if final_delta >= 3.5 or final_delta <= -3.5:
-        grade, conf = "S+", 85.0 + (abs(final_delta) * 2)
-    elif final_delta >= 2.5 or final_delta <= -2.5:
-        grade, conf = "S", 75.0 + (abs(final_delta) * 1.5)
-    elif final_delta >= 1.5 or final_delta <= -1.5:
-        grade, conf = "A", 65.0 + (abs(final_delta) * 1.2)
-    elif final_delta >= 0.8 or final_delta <= -0.8:
-        grade, conf = "B", 58.0 + (abs(final_delta) * 1.0)
+    # Grading Scale aligned with V2 3.5-edge standards
+    if survived_edge >= 3.5:
+        grade, color, rec, rec_color = "S+", "#FFD700", "🟢 DOTA ELITE PLAY", "#00FF7F"
+        conf = 85.0 + (survived_edge * 2)
+    elif survived_edge >= 2.0:
+        grade, color, rec, rec_color = "A", "#00ccff", "🟡 DOTA STANDARD", "#00ccff"
+        conf = 70.0 + (survived_edge * 1.5)
     else:
-        grade, conf = "C", 50.0
-        
-    return {"proj": round(final_proj, 1), "delta": round(final_delta, 1), "grade": grade, "conf": min(conf, 99.0)}
+        grade, color, rec, rec_color = "C", "#A0A0A0", "🛑 NO BET", "#A0A0A0"
+        conf = 50.0
+
+    return {
+        "proj": round(final_proj, 1), 
+        "delta": round(final_delta, 1), 
+        "grade": grade, 
+        "color": color,
+        "rec": rec,
+        "rec_color": rec_color,
+        "conf": min(conf, 99.0),
+        "pick": pick
+    }
 
 @st.cache_data(ttl=3600, show_spinner=False)
 def fetch_player_stats(t_p, p_team_full, domain, stat_target, theater):
@@ -882,7 +895,8 @@ elif cmd_mode == "Syndicate Sweep (API)" and execute_sweep:
                     "M1_AGENT": get_v_col("M1 AGENT"), "M2_AGENT": get_v_col("M2 AGENT"),
                     "M1_ADR": get_v_col("M1 ADR"), "M2_ADR": get_v_col("M2 ADR"),
                     "ROUNDS": get_v_col("TOTAL ROUNDS", "ROUNDS", "EST ROUNDS"),
-                    "READY": get_v_col("READY")
+                    "READY": get_v_col("READY"),
+                    "BO5": get_v_col("BO5") #
                 }
                 
                 v_updates = []
@@ -961,12 +975,18 @@ elif cmd_mode == "Syndicate Sweep (API)" and execute_sweep:
                     else:
                         raw_hr = str(r_get("L10_HR", "")).replace('%', '').strip()
                         sheet_hr = float(raw_hr) if raw_hr.replace('.', '', 1).isdigit() else 0.0
+                        
+                        # 🛡️ Extract Bo5 Flag
+                        sheet_bo5 = str(r_get("BO5", "FALSE")).strip().upper() == "TRUE"
+
                         res = apply_sovereign_math(
                             p_data, p_name, safe_float(k_line_str), t_abbr, o_abbr,
                             [str(r_get('M1_AGENT', 'Unk')), str(r_get('M2_AGENT', 'Unk'))],
                             [safe_float(r_get('M1_ADR', 0)), safe_float(r_get('M2_ADR', 0))],
                             safe_float(r_get("HEAT")) or heat_val, safe_float(r_get("OPP_DPR")) or (raw_dpr_api/100 if raw_dpr_api > 2 else raw_dpr_api),
-                            active_rounds, kast_val, "VALORANT", "Kills", [0.0, 0.0], rank_respect_val=rank_respect, hr_override=sheet_hr if sheet_hr > 0 else None
+                            active_rounds, kast_val, "VALORANT", "Kills", [0.0, 0.0], 
+                            rank_respect_val=rank_respect, hr_override=sheet_hr if sheet_hr > 0 else None,
+                            is_bo5_flag=sheet_bo5 # 🛡️ Pass it to the engine
                         )
                         res['Locked'], res['row_num'] = False, row_num
                     
@@ -988,82 +1008,50 @@ elif cmd_mode == "Syndicate Sweep (API)" and execute_sweep:
                 if v_updates: val_sheet.update_cells(v_updates)
         except Exception as e: st.error(f"Valorant Sync Error: {e}")
     
-    # --- DOTA 2 MASTER W/ BATCH WRITE ---
-    with st.spinner("Processing & Writing DOTA Master..."):
-        try:
-            dota_sheet = sh.worksheet("DOTA Master")
-            df_dota = pd.DataFrame(dota_sheet.get_all_records()).fillna(0)
-            df_cols_upper = [str(c).strip().upper() for c in df_dota.columns]
-            
-            def get_d_col(*names):
-                for n in names:
-                    if n.upper() in df_cols_upper: return df_cols_upper.index(n.upper()) + 1
-                return None
-
-            d_proj_col = get_d_col("K PROJ", "PROJ KILLS")
-            d_edge_col = get_d_col("K EDGE", "KILL EDGE")
-            
-            dota_updates = []
-            dota_slate_cards = []
-            dota_match_map = {}
-
-            for idx, r in df_dota.iterrows():
-                row_num = idx + 2
-                r_upper = {str(k).strip().upper(): v for k, v in r.items()}
+    # --- DOTA 2 MASTER SWEEP ---
+        with st.spinner("Processing DOTA Master..."):
+            try:
+                dota_sheet = sh.worksheet("DOTA Master")
+                df_dota = pd.DataFrame(dota_sheet.get_all_records()).fillna("")
                 
-                def r_get(*keys, default=None):
-                    for k in keys:
-                        val = r_upper.get(k.upper())
-                        if val is not None and str(val).strip() != "": return val
-                    return default
-
-                p_raw = r_get('PLAYER')
-                if not p_raw: continue
-                
-                status = str(r_get('STATUS', default='UNPLAYED')).strip().upper()
-                if status == 'PLAYED': continue
-                
-                t_abbr = str(r_get('TEAM', default='UNK')).upper()
-                o_abbr = str(r_get('OPPONENT', 'OPP', default='UNK')).upper()
-                role = str(r_get('ROLE', default='Pos 2')).strip().title()
-                avg_kills = safe_float(r_get('AVG KILLS', default=0))
-                k_line_raw = str(r_get('KILL LINE', default='')).strip().upper()
-                
-                if k_line_raw != "DNP" and safe_float(k_line_raw) > 0:
-                    k_line = safe_float(k_line_raw)
-                    res = apply_dota_math(avg_kills, role, 110.0, k_line)
+                dota_updates = []
+                for idx, r in df_dota.iterrows():
+                    row_num = idx + 2
+                    p_name = str(r.get('PLAYER', '')).strip()
+                    if not p_name or str(r.get('STATUS', '')).upper() == 'PLAYED': continue
                     
-                    d_res = {
-                        "player": str(p_raw).upper(), "full_team": t_abbr, "full_opp": o_abbr,
-                        "line": k_line, "Locked": False, "pick": "OVER" if res['delta'] > 0 else "UNDER",
-                        "grade": res['grade'], "proj": res['proj'], "delta": res['delta'],
-                        "prop_type": "Kills", "row_num": row_num, "stat_baseline": avg_kills,
-                        "gap": 0, "impact_stat": 0, "hr": "UNK", "hr_raw": 50,
-                        "trace": f"Role: {role}", "t_rank": "UNK", "o_rank": "UNK",
-                        "rounds": "DOTA", "confidence": res['conf'], "color": "#00FF7F" if res['delta'] > 0 else "#FF4500",
-                        "rec": f"{res['grade']} Grade Play", "rec_color": "#00FF7F"
-                    }
-                    dota_slate_cards.append(d_res)
-
-            for res in dota_slate_cards:
-                match_id = get_match_id(res['full_team'], res['full_opp'])
-                if match_id not in dota_match_map: dota_match_map[match_id] = {}
-                p_n = res['player']
-                if p_n not in dota_match_map[match_id]: dota_match_map[match_id][p_n] = []
-                dota_match_map[match_id][p_n].append(res)
-                
-                if d_proj_col: dota_updates.append(gspread.Cell(row=res['row_num'], col=d_proj_col, value=round(res['proj'], 1)))
-                if d_edge_col: dota_updates.append(gspread.Cell(row=res['row_num'], col=d_edge_col, value=round(res['delta'], 1)))
-                
-            for m_id, players in dota_match_map.items():
-                if m_id not in st.session_state['sweep_results']: st.session_state['sweep_results'][m_id] = []
-                for p_n, p_cards in players.items():
-                    st.session_state['sweep_results'][m_id].append({"type": "DOTA 2", "data": p_cards})
+                    role = r.get('ROLE', 'Pos 2')
+                    avg_kills = safe_float(r.get('AVG KILLS', 0))
+                    k_line = safe_float(r.get('KILL LINE', 0))
                     
-            if dota_updates:
-                dota_sheet.update_cells(dota_updates)
-                
-        except Exception as e: st.error(f"DOTA 2 Sync Error: {e}")
+                    if k_line > 0:
+                        res = apply_dota_math(avg_kills, role, 110.0, k_line)
+                        
+                        # Add to UI display
+                        match_id = f"{r.get('TEAM', 'UNK')} vs {r.get('OPPONENT', 'UNK')}"
+                        if match_id not in st.session_state['sweep_results']:
+                            st.session_state['sweep_results'][match_id] = []
+                        
+                        st.session_state['sweep_results'][match_id].append({
+                            "type": "DOTA 2",
+                            "data": [{
+                                "player": p_name.upper(), "line": k_line, "proj": res['proj'],
+                                "delta": res['delta'], "grade": res['grade'], "color": res['color'],
+                                "rec": res['rec'], "rec_color": res['rec_color'], "pick": res['pick'],
+                                "confidence": res['conf'], "trace": f"Role: {role}", "prob": 50 + (res['delta']*5)
+                            }]
+                        })
+                        
+                        # Prepare sheet updates for K PROJ and K EDGE columns
+                        # (Assumes columns 7 and 8 are Proj and Edge based on your sheet setup)
+                        dota_updates.append(gspread.Cell(row_num, 7, res['proj']))
+                        dota_updates.append(gspread.Cell(row_num, 8, res['delta']))
+
+                if dota_updates:
+                    dota_sheet.update_cells(dota_updates)
+                    
+            except Exception as e:
+                st.error(f"DOTA Master Sync Error: {e}")
 
    # --- CS2 MASTER W/ BATCH WRITE ---
     with st.spinner("Processing & Writing CS2 Master..."):
