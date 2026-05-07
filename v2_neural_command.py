@@ -108,6 +108,14 @@ MANIFEST = { "VALORANT": VAL_LIVE, "CS2": CS2_LIVE }
 CS2_ARCHETYPES = {"Anubis": 1.12, "Ancient": 1.12, "Dust 2": 1.15, "Inferno": 0.90, "Mirage": 1.05, "Nuke": 0.90, "Overpass": 1.00, "Vertigo": 1.08}
 CS2_GRAVITY = {"Entry": 1.10, "Star": 1.08, "Primary AWP": 1.10, "Rifler": 1.00, "IGL": 0.88, "Anchor": 0.88}
 
+DOTA_GRAVITY = {
+    "Pos 1": 1.15,  # Hard Carry: Starts slow, gets all the gold, secures late game.
+    "Pos 2": 1.25,  # Mid: Tempo controller, gets early kills/ganks. Most stable OVERs.
+    "Pos 3": 0.85,  # Offlane: Initiator. High deaths, high assists, lower final blows.
+    "Pos 4": 0.65,  # Soft Support: Roamer. Participates in kills but yields the last hit.
+    "Pos 5": 0.35,  # Hard Support: Sacrificial lamb. Ward buyer. Lowest kill share.
+}
+
 VAL_GRAVITY = {"Duelist": 1.12, "Hybrid": 1.08, "Initiator": 1.00, "Controller": 0.88, "Sentinel": 0.80}
 
 AGENT_ROLES = {
@@ -272,138 +280,92 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
             hr_val = (w_h / t_w) * 100
         else: hr_val = 50.0
 
-    # 🧠 1. INDIVIDUAL EFFICIENCY MULTIPLIER
+    # 🧠 1. MULTIPLIERS (Regional & Pace)
     match_mult = 1.08 if rank_gap >= 50 else 1.04 if rank_gap >= 15 else 0.92 if rank_gap <= -50 else 0.96 if rank_gap <= -15 else 1.0
-    
-    # 🧠 2. THE HOLY GRAIL VOLUME/PACE MODIFIER
     abs_gap = abs(rank_gap)
-    if theater == "CS2":
-        pace_mod = max(0.85, 1.08 - (abs_gap / 250.0)) # Softer penalty for CS2
-    else:
-        pace_mod = 1.15 if abs_gap <= 15 else 0.75 if abs_gap >= 45 else 1.0
+    if theater == "CS2": pace_mod = max(0.85, 1.08 - (abs_gap / 250.0))
+    else: pace_mod = 1.15 if abs_gap <= 15 else 0.75 if abs_gap >= 45 else 1.0
 
-    # 🧠 3. ROLE GRAVITY & IMPACT TAMING
+    # 🧠 2. ROLE GRAVITY & IMPACT
     if theater == "CS2":
         role = data.get('role', 'Rifler')
         volume_mod = CS2_GRAVITY.get(role, 1.0) 
         hs_mod = 0.65 if role == "Primary AWP" else 1.0 
         impact_mult = 1.0 + (impact_stat * 0.005) 
     else:
-        volume_mod = 1.0
-        hs_mod = 1.0
+        volume_mod, hs_mod = 1.0, 1.0
         impact_mult = 1.0 + ((impact_stat - 72.0) * 0.015)
         
-    # 🧠 THE MULTIPLIER SQUEEZE
     combined_mult = volume_mod * impact_mult * pace_mod * match_mult
-    if combined_mult > 1.25:
-        combined_mult = 1.25 + (combined_mult - 1.25) * 0.3
-    elif combined_mult < 0.85:
-        combined_mult = 0.85 - (0.85 - combined_mult) * 0.3
+    if combined_mult > 1.25: combined_mult = 1.25 + (combined_mult - 1.25) * 0.3
+    elif combined_mult < 0.85: combined_mult = 0.85 - (0.85 - combined_mult) * 0.3
     
-    # 🧠 4. DUAL-ENGINE ARCHITECTURE SETUP
+    # 🧠 3. DUAL REALITY BRANCHES
     if theater == "VALORANT":
-        pess_k_glob = raw_stat / 180.0
-        opt_k_glob = raw_stat / 150.0
-        pess_r_total = 34.0 if r_total == 40.0 else (r_total * 0.85)
-        opt_r_total = 40.0 if r_total == 40.0 else r_total
+        pess_k, opt_k = raw_stat / 180.0, raw_stat / 150.0
+        p_rounds, o_rounds = (r_total * 0.85), r_total
     else:
-        pess_k_glob = raw_stat / 1.10
-        opt_k_glob = raw_stat * 1.08
-        pess_r_total = 38.0 if r_total >= 42.0 else (r_total * 0.88)
-        opt_r_total = 48.0 if r_total >= 42.0 else (r_total * 1.15) 
+        pess_k, opt_k = raw_stat / 1.10, raw_stat * 1.08
+        p_rounds, o_rounds = (r_total * 0.88), (r_total * 1.15)
 
-    pess_map_proj = []
-    opt_map_proj = []
-    
+    pess_maps, opt_maps = [], []
     for i in range(2):
         raw_m = m_vals[i]
         if theater == "CS2" and raw_m > 3.0: raw_m = raw_m / 100
+        p_m_kpr, o_m_kpr = (raw_m/180.0, raw_m/150.0) if raw_m > 0 and theater == "VALORANT" else (raw_m/1.10, raw_m*1.08) if raw_m > 0 else (pess_k, opt_k)
         
-        if raw_m > 0:
-            pess_m_kpr = (raw_m / 180.0) if theater == "VALORANT" else (raw_m / 1.10)
-            # FIX: Explicitly apply the optimistic pop-off buff to CS2 Map stats
-            opt_m_kpr = (raw_m / 150.0) if theater == "VALORANT" else (raw_m * 1.08) 
-        else:
-            pess_m_kpr, opt_m_kpr = pess_k_glob, opt_k_glob
+        t_map = str(targets[i]).strip().title()
+        spec_mult = (VAL_GRAVITY.get(AGENT_ROLES.get(t_map, "Initiator"), 1.0) if theater == "VALORANT" else CS2_ARCHETYPES.get(t_map, 1.0))
         
-        if theater == "VALORANT":
-            c_agent = str(targets[i]).strip().title()
-            if c_agent in ["Kay/O", "Kayo", "Kay-O"]: c_agent = "Kayo"
-            spec_mult = VAL_GRAVITY.get(AGENT_ROLES.get(c_agent, "Initiator"), 1.0)
-            targets[i] = c_agent 
-        else: 
-            t_map = str(targets[i]).strip().title()
-            spec_mult = CS2_ARCHETYPES.get(t_map, 1.0)
-            targets[i] = t_map if t_map and t_map != 'Nan' else 'TBD'
-            
         r_mult = spec_mult * (opp_dpr / 0.65)
-        if r_mult > 1.15: r_mult = 1.15 + (r_mult - 1.15) * 0.4
-        elif r_mult < 0.85: r_mult = 0.85 - (0.85 - r_mult) * 0.4
+        heat_nerf = (1 - (heat / 100) * 0.25)
         
-        pess_kills = pess_m_kpr * r_mult * (1 - (heat / 100) * 0.25) * (pess_r_total / 2)
-        opt_kills = opt_m_kpr * r_mult * (1 - (heat / 100) * 0.25) * (opt_r_total / 2)
+        pess_map = p_m_kpr * r_mult * heat_nerf * (p_rounds / 2)
+        opt_map = o_m_kpr * r_mult * heat_nerf * (o_rounds / 2)
         
-        if prop_type == "Headshots" and hs_pcts[i] > 0: 
-            pess_kills *= (hs_pcts[i] / 100) * hs_mod 
-            opt_kills *= (hs_pcts[i] / 100) * hs_mod 
+        if prop_type == "Headshots" and hs_pcts[i] > 0:
+            pess_map *= (hs_pcts[i] / 100) * hs_mod 
+            opt_map *= (hs_pcts[i] / 100) * hs_mod 
             
-        pess_map_proj.append(pess_kills)
-        opt_map_proj.append(opt_kills)
+        pess_maps.append(pess_map)
+        opt_maps.append(opt_map)
 
-    # 🧠 5. THE DUAL REALITIES
-    pess_proj = sum(pess_map_proj) * combined_mult * 0.96 
-    opt_proj = sum(opt_map_proj) * combined_mult 
+    # 🧠 4. THE ANCHORED PIVOT (THE BUG FIX)
+    # Determine direction based on a neutral blend BEFORE dual realties are applied
+    master_raw = ((sum(pess_maps) * 0.96) + sum(opt_maps)) / 2.0 * combined_mult
+    is_over_biased = master_raw > u_line
     
-    # 🧠 6. THE 25% LOGARITHMIC GOVERNOR (Isolated safely)
+    if is_over_biased:
+        pick = "OVER"
+        final_proj = sum(pess_maps) * combined_mult * 0.96 # Harder Over requirement
+    else:
+        pick = "UNDER"
+        final_proj = sum(opt_maps) * combined_mult # Conservative Under requirement
+
+    # 🧠 5. LOGARITHMIC GOVERNOR (STABILITY ANCHOR)
     if hist_kills:
-        hist_avg = sum(hist_kills) / len(hist_kills)
-        if theater == "CS2":
-            # FIX: Stops the "Slump Choke" by blending history with the line
-            baseline_kills = (hist_avg + u_line) / 2.0 
-        else:
-            # Keeps Valorant functioning exactly as it did yesterday
-            baseline_kills = hist_avg
+        baseline_kills = (sum(hist_kills)/len(hist_kills) + u_line)/2.0 if theater == "CS2" else sum(hist_kills)/len(hist_kills)
     else:
         baseline_kills = u_line
-        
+
     cap = 0.25
-    
-    p_delta_pct = (pess_proj - baseline_kills) / baseline_kills
-    if p_delta_pct > cap: pess_proj = baseline_kills * (1 + cap)
-    elif p_delta_pct < -cap: pess_proj = baseline_kills * (1 - cap)
+    delta_pct = (final_proj - baseline_kills) / baseline_kills if baseline_kills > 0 else 0
+    if delta_pct > cap: final_proj = baseline_kills * (1 + cap)
+    elif delta_pct < -cap: final_proj = baseline_kills * (1 - cap)
 
-    o_delta_pct = (opt_proj - baseline_kills) / baseline_kills
-    if o_delta_pct > cap: opt_proj = baseline_kills * (1 + cap)
-    elif o_delta_pct < -cap: opt_proj = baseline_kills * (1 - cap)
+    delta = final_proj - u_line
+    survived_edge = abs(delta)
 
-    # 🧠 7. ASYMMETRIC DECISION ENGINE
-    pess_edge = pess_proj - u_line
-    opt_edge = u_line - opt_proj
-
-    if pess_edge > 0 and opt_edge < 0:
-        pick, final_proj, delta, survived_edge = "OVER", pess_proj, pess_edge, pess_edge
-    elif opt_edge > 0 and pess_edge < 0:
-        pick, final_proj, delta, survived_edge = "UNDER", opt_proj, -opt_edge, opt_edge
-    else:
-        if pess_edge > opt_edge:
-            pick, final_proj, delta, survived_edge = "OVER", pess_proj, pess_edge, pess_edge
-        else:
-            pick, final_proj, delta, survived_edge = "UNDER", opt_proj, -opt_edge, opt_edge
-
+    # 🧠 6. WIN PROBABILITY & GRADING
     win_prob = (np.random.normal(final_proj, 5.5, 10000) > u_line).mean() * 100
     if delta < 0: win_prob = 100 - win_prob
     
     is_consistent = abs(impact_stat) <= 8.0 if theater == "CS2" else impact_stat >= 74.0
     raw_conf = ((min(100.0, abs(win_prob - 50.0) * 2.0)) * 0.7) + (hr_val * 0.3)
 
-    # 🧠 8. THE NEW PROFITABILITY GRADES
     if survived_edge >= 7.5: 
-        if survived_edge >= 10.0:
-            grade, color, rec, rec_color = "C", "#FFFFFF", "🛑 TRAP LINE (DO NOT BET)", "#FF4444"
-            conf = min(raw_conf, 45.0) 
-        else:
-            grade, color, rec, rec_color = "C", "#A0A0A0", "🛑 NO BET (EDGE TOO HIGH)", "#FF8C00"
-            conf = min(raw_conf, 55.0) 
+        grade, color, rec, rec_color = ("C", "#FFFFFF", "🛑 TRAP LINE", "#FF4444") if survived_edge >= 10.0 else ("C", "#A0A0A0", "🛑 EDGE TOO HIGH", "#FF8C00")
+        conf = min(raw_conf, 45.0 if survived_edge >= 10 else 55.0)
     elif 3.0 <= survived_edge < 7.5:
         if is_consistent:
             grade, color = ("S+", "#FFD700") if survived_edge >= 4.0 else ("S", "#FFC125")
@@ -421,7 +383,8 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
 
     return {
         "player": p_name.upper(), "full_team": full_p, "full_opp": full_o,
-        "grade": grade, "color": color, "rec": rec, "rec_color": rec_color, "prob": win_prob, "stat_baseline": m_vals[0] if m_vals[0] > 0 else raw_stat, 
+        "grade": grade, "color": color, "rec": rec, "rec_color": rec_color, "prob": win_prob, 
+        "stat_baseline": m_vals[0] if m_vals[0] > 0 else raw_stat, 
         "proj": final_proj, "delta": delta, "is_nuke": (6.0 <= survived_edge <= 8.5 and win_prob >= 85 and is_consistent), 
         "hr": f"{hr_val:.0f}%", "hr_raw": hr_val, "gap": rank_gap, "trace": f"M1: {targets[0]} | M2: {targets[1]}",
         "confidence": round(min(99.9, max(1.0, conf)), 1), "source": data.get("source", "UNKNOWN"), "line": u_line, 
@@ -430,6 +393,45 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
         "dampened": data.get("dampened", False) or (survived_edge >= 10.0),
         "pick": pick, "rounds": r_total
     }
+
+def apply_dota_math(base_kills, role, opp_rank, line):
+    """
+    The DOTA 2 MOBA Engine.
+    Applies strict resource-allocation multipliers based on Pos 1-5.
+    """
+    # 1. Base Positional Gravity
+    gravity = DOTA_GRAVITY.get(role, 1.0)
+    
+    # 2. Economy / Duration Dampener 
+    # If playing a Top 10 team, matches end faster, starving the Carries.
+    calc_o_rank = float(opp_rank) if opp_rank else 110.0
+    opp_mod = 0.88 if calc_o_rank <= 10 else 0.95 if calc_o_rank <= 30 else 1.05
+    
+    # 3. Calculate Raw Projection
+    raw_proj = base_kills * gravity * opp_mod
+    
+    # 4. Asymmetric Dual-Engine Core (Borrowed from Shooters)
+    delta = raw_proj - line
+    if delta > 0: # OVER Projection
+        final_proj = raw_proj * 0.95 # Pessimistic dampener for Overs
+    else:         # UNDER Projection
+        final_proj = raw_proj * 1.05 # Optimistic dampener for Unders
+        
+    final_delta = final_proj - line
+    
+    # 5. VIP Grading Scale (Aligned with the 3.5 S-Tier update)
+    if final_delta >= 3.5 or final_delta <= -3.5:
+        grade, conf = "S+", 85.0 + (abs(final_delta) * 2)
+    elif final_delta >= 2.5 or final_delta <= -2.5:
+        grade, conf = "S", 75.0 + (abs(final_delta) * 1.5)
+    elif final_delta >= 1.5 or final_delta <= -1.5:
+        grade, conf = "A", 65.0 + (abs(final_delta) * 1.2)
+    elif final_delta >= 0.8 or final_delta <= -0.8:
+        grade, conf = "B", 58.0 + (abs(final_delta) * 1.0)
+    else:
+        grade, conf = "C", 50.0
+        
+    return {"proj": round(final_proj, 1), "delta": round(final_delta, 1), "grade": grade, "conf": min(conf, 99.0)}
 
 @st.cache_data(ttl=3600, show_spinner=False)
 def fetch_player_stats(t_p, p_team_full, domain, stat_target, theater):
@@ -557,8 +559,40 @@ def render_grade_card(i, theater_sel, is_dual=False, key_prefix="main"):
             
             with col_btn2:
                 if st.button(f"🚀 FIRE TO DISCORD", key=btn_key_disc, type="primary", use_container_width=True):
-                    # Webhook logic goes here!
-                    st.success(f"Sniper shot fired to Discord for {i['player']}!")
+                    # Using your hardcoded webhook as a fallback if not in secrets
+                    webhook_url = st.secrets.get("DISCORD_WEBHOOK_URL", "https://discord.com/api/webhooks/1499281396902924348/LZRttUM1XzicW27HhwDXHHbTMu6Uj9kU71irHOiK6RT6RdLEdOpzxO06NB0ruFL1KcR6")
+                    
+                    if i['grade'] == "S+": color = 16766720 
+                    elif i['grade'] == "S": color = 16761125 
+                    else: color = 65450 
+                    
+                    decision = "OVER" if i['delta'] > 0 else "UNDER"
+                    conf = i.get('confidence', 0)
+                    u_size = "2.0U 💣 (NUKE)" if conf >= 85 else "1.5U" if conf >= 75 else "1.0U" if conf >= 60 else "0.5U"
+                    
+                    payload = {
+                        "content": f"🚨 **KINGDOM ALERT: {i['grade']} GRADE {decision}** 🚨",
+                        "embeds": [
+                            {
+                                "title": f"{i['player']} {decision} {i['line']} {i.get('prop_type', 'Kills')}",
+                                "description": f"Matchup: vs {i.get('full_opp', 'UNK')}\n\n*Mathematical projection locked via Sovereign V42.2.*",
+                                "color": color,
+                                "fields": [
+                                    {"name": "Projection", "value": f"**{i['proj']:.1f}**", "inline": True},
+                                    {"name": "Delta", "value": f"{i['delta']:+.1f}", "inline": True},
+                                    {"name": "Confidence", "value": f"{conf:.1f}%", "inline": True},
+                                    {"name": "L10 Hit Rate", "value": str(i.get('hr', '50%')), "inline": True},
+                                    {"name": "Units", "value": u_size, "inline": True}
+                                ],
+                                "footer": {"text": "Iron Guard Syndicate Engine"}
+                            }
+                        ]
+                    }
+                    try:
+                        requests.post(webhook_url, json=payload)
+                        st.success(f"Sniper shot fired to Discord for {i['player']}!")
+                    except Exception as e:
+                        st.error(f"Webhook Failed: {e}")
 
 def run_precision_research(prompt, targets, m_vals, heat, opp_dpr, r_total, impact_stat, sync_duel, sync_ranks, opp_name, theater, prop_type, hs_pcts):
     parts = prompt.split()
@@ -609,10 +643,26 @@ def run_precision_research(prompt, targets, m_vals, heat, opp_dpr, r_total, impa
         if theater == "CS2" and prop_type == "Headshots":
             raw_data['last_10_kills'] = codex_data.get(theater_key, {}).get(p_name.lower(), {}).get('l10_maps_1_and_2_headshots', [])
 
-        intel = apply_sovereign_math(
-            raw_data, p_name, u_line, full_p, full_o, targets, m_vals, 
-            heat, opp_dpr, r_total, impact_stat, theater, prop_type, hs_pcts
-        )
+        if theater == "DOTA 2":
+            # Direct routing to the DOTA Asymmetric Engine
+            d_res = apply_dota_math(base_kills=m_vals[0], role=targets[0], opp_rank=st.session_state['o_rank'], line=u_line)
+            intel = {
+                "player": p_name.upper(), "full_team": "UNK", "full_opp": opp_name,
+                "grade": d_res['grade'], "color": "#00FF7F" if d_res['delta'] > 0 else "#FF4500", 
+                "rec": f"{d_res['grade']} Grade Play", "rec_color": "#00FF7F",
+                "prob": 50.0 + (d_res['delta'] * 4), "stat_baseline": m_vals[0], 
+                "proj": d_res['proj'], "delta": d_res['delta'], "is_nuke": False, 
+                "hr": "UNK", "hr_raw": 50, "gap": 0, "trace": f"Role: {targets[0]}",
+                "confidence": d_res['conf'], "source": "MANUAL", "line": u_line, 
+                "prop_type": "Kills", "impact_stat": 0, "t_rank": "UNK", "o_rank": "UNK", 
+                "dampened": False, "pick": "OVER" if d_res['delta'] > 0 else "UNDER", "rounds": "DOTA"
+            }
+        else:
+            intel = apply_sovereign_math(
+                raw_data, p_name, u_line, full_p, full_o, targets, m_vals, 
+                heat, opp_dpr, r_total, impact_stat, theater, prop_type, hs_pcts
+            )
+        
         st.session_state['last_intel'] = intel
         st.rerun()
 
@@ -733,16 +783,16 @@ with st.sidebar:
     st.divider()
 
     if cmd_mode == "Single Target (Manual)":
-        theater_sel = st.radio("Theater", ["VALORANT", "CS2"])
-        prop_type = "Kills" if theater_sel == "VALORANT" else st.radio("Prop Type", ["Kills", "Headshots"])
+        theater_sel = st.radio("Theater", ["VALORANT", "CS2", "DOTA 2"])
+        prop_type = "Kills" if theater_sel in ["VALORANT", "DOTA 2"] else st.radio("Prop Type", ["Kills", "Headshots"])
         
         with st.expander("👤 PLAYER TACTICAL", expanded=True):
-            label = "Agent" if theater_sel == "VALORANT" else "Map"
-            stat_lbl = "ADR" if theater_sel == "VALORANT" else "KPR"
-            target_list = VAL_AGENTS if theater_sel == "VALORANT" else list(CS2_ARCHETYPES.keys())
+            label = "Agent" if theater_sel == "VALORANT" else "Role" if theater_sel == "DOTA 2" else "Map"
+            stat_lbl = "ADR" if theater_sel == "VALORANT" else "Avg Kills" if theater_sel == "DOTA 2" else "KPR"
+            target_list = VAL_AGENTS if theater_sel == "VALORANT" else list(DOTA_GRAVITY.keys()) if theater_sel == "DOTA 2" else list(CS2_ARCHETYPES.keys())
             
             t1 = st.selectbox(f"{label} 1", target_list, key="t1_select")
-            t1_v = safe_float(st.text_input(f"{t1} {stat_lbl} (Override)", "", key="t1_stat_input"))
+            t1_v = safe_float(st.text_input(f"{t1} {stat_lbl} (Override/Base)", "", key="t1_stat_input"))
             t1_hs = safe_float(st.text_input(f"{t1} HS%", "50.0", key="t1_hs_input")) if (theater_sel == "CS2" and prop_type == "Headshots") else 0.0
             
             t2 = st.selectbox(f"{label} 2", target_list, key="t2_select")
@@ -755,7 +805,7 @@ with st.sidebar:
             
             if theater_sel == "CS2":
                 sync_duel = st.checkbox("🛰️ Auto-Sync Open Duel", value=True)
-                st.session_state['auto_duel'] = st.slider("Open Duel (1-10)", 1.0, 10.0, value=st.session_state['auto_duel'], step=0.1, disabled=sync_duel, help="Player's opening duel win percentage scaled to a 1-10 rating.")
+                st.session_state['auto_duel'] = st.slider("Open Duel (1-10)", 1.0, 10.0, value=st.session_state['auto_duel'], step=0.1, disabled=sync_duel, help="Player's opening duel win pct scaled to 1-10.")
             
             r_total_manual = safe_float(st.text_input("Total Rounds Expected", "40.0" if theater_sel == "VALORANT" else "44.0"))
             
@@ -773,11 +823,11 @@ with st.sidebar:
         st.subheader("📊 PropVault API Sync")
         st.caption("Hardcoded direct connection via gspread.")
         
-        r_total_v = safe_float(st.text_input("Total Rounds Est. (Global Default)", "40.0", help="Defaults to 40.0 for Valorant baseline. Used to model stomps/blowouts if the 'Total Rounds' column in your sheet is blank."))
-        raw_dpr_api = safe_float(st.text_input("Global Opp DPR (Fallback)", "0.65", help="Used only if the Google Sheet row is blank."))
+        r_total_v = safe_float(st.text_input("Total Rounds Est. (Global Default)", "40.0", help="Defaults to 40.0 for Valorant baseline."))
+        raw_dpr_api = safe_float(st.text_input("Global Opp DPR (Fallback)", "0.65"))
         
-        heat_val = st.slider("Global Pacing Dampener / Heat (%)", 0, 100, 0, help="Use this to globally model slow matches or steal rates. Can be overridden in your Sheet.")
-        rank_respect = st.slider("🎓 Rank Respect", 0.0, 1.0, 0.3, help="Higher = more doubt on stats gained against weak teams.")
+        heat_val = st.slider("Global Pacing Dampener / Heat (%)", 0, 100, 0)
+        rank_respect = st.slider("🎓 Rank Respect", 0.0, 1.0, 0.3)
         
         execute_sweep = st.button("🔥 EXECUTE SYNDICATE SWEEP", use_container_width=True, type="primary")
 
@@ -937,6 +987,83 @@ elif cmd_mode == "Syndicate Sweep (API)" and execute_sweep:
                 
                 if v_updates: val_sheet.update_cells(v_updates)
         except Exception as e: st.error(f"Valorant Sync Error: {e}")
+    
+    # --- DOTA 2 MASTER W/ BATCH WRITE ---
+    with st.spinner("Processing & Writing DOTA Master..."):
+        try:
+            dota_sheet = sh.worksheet("DOTA Master")
+            df_dota = pd.DataFrame(dota_sheet.get_all_records()).fillna(0)
+            df_cols_upper = [str(c).strip().upper() for c in df_dota.columns]
+            
+            def get_d_col(*names):
+                for n in names:
+                    if n.upper() in df_cols_upper: return df_cols_upper.index(n.upper()) + 1
+                return None
+
+            d_proj_col = get_d_col("K PROJ", "PROJ KILLS")
+            d_edge_col = get_d_col("K EDGE", "KILL EDGE")
+            
+            dota_updates = []
+            dota_slate_cards = []
+            dota_match_map = {}
+
+            for idx, r in df_dota.iterrows():
+                row_num = idx + 2
+                r_upper = {str(k).strip().upper(): v for k, v in r.items()}
+                
+                def r_get(*keys, default=None):
+                    for k in keys:
+                        val = r_upper.get(k.upper())
+                        if val is not None and str(val).strip() != "": return val
+                    return default
+
+                p_raw = r_get('PLAYER')
+                if not p_raw: continue
+                
+                status = str(r_get('STATUS', default='UNPLAYED')).strip().upper()
+                if status == 'PLAYED': continue
+                
+                t_abbr = str(r_get('TEAM', default='UNK')).upper()
+                o_abbr = str(r_get('OPPONENT', 'OPP', default='UNK')).upper()
+                role = str(r_get('ROLE', default='Pos 2')).strip().title()
+                avg_kills = safe_float(r_get('AVG KILLS', default=0))
+                k_line_raw = str(r_get('KILL LINE', default='')).strip().upper()
+                
+                if k_line_raw != "DNP" and safe_float(k_line_raw) > 0:
+                    k_line = safe_float(k_line_raw)
+                    res = apply_dota_math(avg_kills, role, 110.0, k_line)
+                    
+                    d_res = {
+                        "player": str(p_raw).upper(), "full_team": t_abbr, "full_opp": o_abbr,
+                        "line": k_line, "Locked": False, "pick": "OVER" if res['delta'] > 0 else "UNDER",
+                        "grade": res['grade'], "proj": res['proj'], "delta": res['delta'],
+                        "prop_type": "Kills", "row_num": row_num, "stat_baseline": avg_kills,
+                        "gap": 0, "impact_stat": 0, "hr": "UNK", "hr_raw": 50,
+                        "trace": f"Role: {role}", "t_rank": "UNK", "o_rank": "UNK",
+                        "rounds": "DOTA", "confidence": res['conf'], "color": "#00FF7F" if res['delta'] > 0 else "#FF4500",
+                        "rec": f"{res['grade']} Grade Play", "rec_color": "#00FF7F"
+                    }
+                    dota_slate_cards.append(d_res)
+
+            for res in dota_slate_cards:
+                match_id = get_match_id(res['full_team'], res['full_opp'])
+                if match_id not in dota_match_map: dota_match_map[match_id] = {}
+                p_n = res['player']
+                if p_n not in dota_match_map[match_id]: dota_match_map[match_id][p_n] = []
+                dota_match_map[match_id][p_n].append(res)
+                
+                if d_proj_col: dota_updates.append(gspread.Cell(row=res['row_num'], col=d_proj_col, value=round(res['proj'], 1)))
+                if d_edge_col: dota_updates.append(gspread.Cell(row=res['row_num'], col=d_edge_col, value=round(res['delta'], 1)))
+                
+            for m_id, players in dota_match_map.items():
+                if m_id not in st.session_state['sweep_results']: st.session_state['sweep_results'][m_id] = []
+                for p_n, p_cards in players.items():
+                    st.session_state['sweep_results'][m_id].append({"type": "DOTA 2", "data": p_cards})
+                    
+            if dota_updates:
+                dota_sheet.update_cells(dota_updates)
+                
+        except Exception as e: st.error(f"DOTA 2 Sync Error: {e}")
 
    # --- CS2 MASTER W/ BATCH WRITE ---
     with st.spinner("Processing & Writing CS2 Master..."):
@@ -1332,7 +1459,7 @@ if st.session_state.get('sweep_results'):
                 with a_col2:
                     if slip_key in st.session_state['slip_writeups']:
                         if st.button(f"🎯 Snipe to Discord", key=f"disc_{idx}", type="primary", use_container_width=True):
-                            webhook = st.secrets.get("DISCORD_WEBHOOK_URL", "")
+                            webhook = st.secrets.get("DISCORD_WEBHOOK_URL", "https://discord.com/api/webhooks/1499281396902924348/LZRttUM1XzicW27HhwDXHHbTMu6Uj9kU71irHOiK6RT6RdLEdOpzxO06NB0ruFL1KcR6")
                             if not webhook:
                                 st.error("Add DISCORD_WEBHOOK_URL = 'your_url' to your secrets.toml!")
                             else:
