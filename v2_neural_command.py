@@ -104,6 +104,13 @@ CS2_LIVE = load_live_ranks("CS2")
 VAL_LIVE = load_live_ranks("VALORANT")
 MANIFEST = { "VALORANT": VAL_LIVE, "CS2": CS2_LIVE }
 
+# --- LOAD DOTA MANIFEST ---
+try:
+    with open("dota_manifest.json", "r", encoding="utf-8") as f:
+        dota_manifest = json.load(f)
+except Exception:
+    dota_manifest = {}
+
 # --- GLOBAL GAME ENGINES ---
 CS2_ARCHETYPES = {"Anubis": 1.12, "Ancient": 1.12, "Dust 2": 1.15, "Inferno": 0.90, "Mirage": 1.05, "Nuke": 0.90, "Overpass": 1.00, "Vertigo": 1.08}
 CS2_GRAVITY = {"Entry": 1.10, "Star": 1.08, "Primary AWP": 1.10, "Rifler": 1.00, "IGL": 0.88, "Anchor": 0.88}
@@ -335,18 +342,28 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
         pess_maps.append(pess_map)
         opt_maps.append(opt_map)
 
-    # 🧠 4. THE ANCHORED PIVOT (THE BUG FIX)
-    # Determine direction based on a neutral blend BEFORE dual realties are applied
-    master_raw = ((sum(pess_maps) * 0.96) + sum(opt_maps)) / 2.0 * combined_mult
-    is_over_biased = master_raw > u_line
+    # 🧠 4. THE PARADOX-FREE DUAL ENGINE
+    pess_sum = sum(pess_maps) * combined_mult * 0.96
+    opt_sum = sum(opt_maps) * combined_mult
+    master_raw = (pess_sum + opt_sum) / 2.0
     
-    if is_over_biased:
-        pick = "OVER"
-        final_proj = sum(pess_maps) * combined_mult * 0.96 # Harder Over requirement
+    if master_raw > u_line:
+        # Model leans OVER. Stress test against the pessimistic floor.
+        if pess_sum > u_line:
+            final_proj = pess_sum  # Survives the floor test! Display the harsh floor.
+            pick = "OVER"
+        else:
+            final_proj = master_raw # Fails the test. Revert to True Average.
+            pick = "OVER"
     else:
-        pick = "UNDER"
-        final_proj = sum(opt_maps) * combined_mult # Conservative Under requirement
-
+        # Model leans UNDER. Stress test against the optimistic ceiling.
+        if opt_sum < u_line:
+            final_proj = opt_sum   # Survives the ceiling test! Display the high ceiling.
+            pick = "UNDER"
+        else:
+            final_proj = master_raw # Fails the test. Revert to True Average.
+            pick = "UNDER"
+            
     # 🧠 5. LOGARITHMIC GOVERNOR (STABILITY ANCHOR)
     if hist_kills:
         baseline_kills = (sum(hist_kills)/len(hist_kills) + u_line)/2.0 if theater == "CS2" else sum(hist_kills)/len(hist_kills)
@@ -1023,12 +1040,22 @@ elif cmd_mode == "Syndicate Sweep (API)" and execute_sweep:
                     role = r.get('ROLE', 'Pos 2')
                     avg_kills = safe_float(r.get('AVG KILLS', 0))
                     k_line = safe_float(r.get('KILL LINE', 0))
+                    opp_team = str(r.get('OPPONENT', '')).strip()
+                    
+                    # 🧠 NEW: DOTA SOVEREIGN RANK ASSIGNMENT
+                    # Defaults to 110 (Average) if opponent is unranked or unknown
+                    opp_rank = 110.0
+                    for abbr, info in dota_manifest.items():
+                        # Match by explicit abbreviation or fuzzy-match the full name
+                        if opp_team.upper() == abbr or opp_team.lower() in info.get("full", "").lower():
+                            opp_rank = float(info.get("norm_rank", 110.0))
+                            break
                     
                     if k_line > 0:
-                        res = apply_dota_math(avg_kills, role, 110.0, k_line)
+                        # Pass the dynamically acquired opponent rank into the Engine!
+                        res = apply_dota_math(avg_kills, role, opp_rank, k_line)
                         
-                        # Add to UI display
-                        match_id = f"{r.get('TEAM', 'UNK')} vs {r.get('OPPONENT', 'UNK')}"
+                        match_id = f"{r.get('TEAM', 'UNK')} vs {opp_team}"
                         if match_id not in st.session_state['sweep_results']:
                             st.session_state['sweep_results'][match_id] = []
                         
@@ -1038,12 +1065,13 @@ elif cmd_mode == "Syndicate Sweep (API)" and execute_sweep:
                                 "player": p_name.upper(), "line": k_line, "proj": res['proj'],
                                 "delta": res['delta'], "grade": res['grade'], "color": res['color'],
                                 "rec": res['rec'], "rec_color": res['rec_color'], "pick": res['pick'],
-                                "confidence": res['conf'], "trace": f"Role: {role}", "prob": 50 + (res['delta']*5)
+                                "confidence": res['conf'], 
+                                "trace": f"Role: {role} | Opp Rank: #{int(opp_rank)}", # Prints rank to the UI card!
+                                "prob": 50 + (res['delta']*5)
                             }]
                         })
                         
                         # Prepare sheet updates for K PROJ and K EDGE columns
-                        # (Assumes columns 7 and 8 are Proj and Edge based on your sheet setup)
                         dota_updates.append(gspread.Cell(row_num, 7, res['proj']))
                         dota_updates.append(gspread.Cell(row_num, 8, res['delta']))
 
