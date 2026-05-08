@@ -3,1438 +3,695 @@
         "full": "Paper Rex",
         "rank": 1,
         "norm_rank": 1,
-        "region": "Singapore",
+        "region": "Asia-Pacific",
+        "regional_rank": 1
+    },
+    "NRG": {
+        "full": "NRG",
+        "rank": 2,
+        "norm_rank": 3,
+        "region": "North America",
         "regional_rank": 1
     },
     "FNC": {
         "full": "Fnatic",
-        "rank": 2,
-        "norm_rank": 2,
-        "region": "United Kingdom",
-        "regional_rank": 1
-    },
-    "TH": {
-        "full": "Team Heretics",
         "rank": 3,
-        "norm_rank": 3,
-        "region": "Spain",
-        "regional_rank": 6
-    },
-    "EDG": {
-        "full": "EDward Gaming",
-        "rank": 4,
-        "norm_rank": 5,
-        "region": "China",
-        "regional_rank": 2
-    },
-    "NRG": {
-        "full": "NRG",
-        "rank": 5,
-        "norm_rank": 5,
-        "region": "United States",
+        "norm_rank": 4,
+        "region": "Europe",
         "regional_rank": 1
-    },
-    "LOUD": {
-        "full": "LOUD",
-        "rank": 6,
-        "norm_rank": 6,
-        "region": "Brazil",
-        "regional_rank": 9
-    },
-    "EG": {
-        "full": "Evil Geniuses",
-        "rank": 7,
-        "norm_rank": 7,
-        "region": "United States",
-        "regional_rank": 37
-    },
-    "KRX": {
-        "full": "DRX",
-        "rank": 8,
-        "norm_rank": 8,
-        "region": "South Korea",
-        "regional_rank": 3
-    },
-    "GEN": {
-        "full": "Gen.G Esports",
-        "rank": 9,
-        "norm_rank": 9,
-        "region": "United States",
-        "regional_rank": 5
-    },
-    "G2": {
-        "full": "G2 Esports",
-        "rank": 10,
-        "norm_rank": 12,
-        "region": "Europe",
-        "regional_rank": 2
-    },
-    "TL": {
-        "full": "Team Liquid",
-        "rank": 11,
-        "norm_rank": 14,
-        "region": "Netherlands",
-        "regional_rank": 4
-    },
-    "FPX": {
-        "full": "FunPlus Phoenix",
-        "rank": 12,
-        "norm_rank": 14,
-        "region": "Europe",
-        "regional_rank": 11
     },
     "T1": {
-        "full": "T1",
-        "rank": 13,
-        "norm_rank": 14,
-        "region": "United States",
-        "regional_rank": 2
-    },
-    "SEN": {
-        "full": "Sentinels",
-        "rank": 14,
-        "norm_rank": 15,
-        "region": "United States",
-        "regional_rank": 4
-    },
-    "LEV": {
-        "full": "Leviat\u00e1n Esports",
-        "rank": 15,
-        "norm_rank": 16,
-        "region": "Chile",
-        "regional_rank": 6
+        "full": "T",
+        "rank": 4,
+        "norm_rank": 5,
+        "region": "Unknown"
     },
     "NS": {
         "full": "Nongshim RedForce",
-        "rank": 16,
-        "norm_rank": 16,
+        "rank": 5,
+        "norm_rank": 6,
         "region": "South Korea",
         "regional_rank": 1
     },
-    "FUT": {
-        "full": "FUT Esports",
-        "rank": 17,
-        "norm_rank": 20,
-        "region": "Turkey",
-        "regional_rank": 8
-    },
-    "KR\u00dc": {
-        "full": "KR\u00dc Esports",
-        "rank": 18,
-        "norm_rank": 19,
-        "region": "Chile",
-        "regional_rank": 1
-    },
-    "G2G": {
-        "full": "G2 Gozen",
-        "rank": 19,
-        "norm_rank": 22,
-        "region": "Europe",
-        "regional_rank": 53
-    },
-    "BLG": {
-        "full": "Bilibili Gaming",
-        "rank": 20,
-        "norm_rank": 25,
-        "region": "China",
+    "KRX": {
+        "full": "KIWOOM DRX",
+        "rank": 6,
+        "norm_rank": 8,
+        "region": "South Korea",
         "regional_rank": 4
+    },
+    "G2": {
+        "full": "G2 Esports",
+        "rank": 7,
+        "norm_rank": 9,
+        "region": "North America",
+        "regional_rank": 2
+    },
+    "TL.BR": {
+        "full": "Team Liquid Brazil",
+        "rank": 8,
+        "norm_rank": 10,
+        "region": "Brazil",
+        "regional_rank": 12
     },
     "RRQ": {
         "full": "Rex Regum Qeon",
-        "rank": 21,
-        "norm_rank": 21,
-        "region": "Philippines",
+        "rank": 9,
+        "norm_rank": 12,
+        "region": "Asia-Pacific",
+        "regional_rank": 4
+    },
+    "LEVIAT\u00c1N": {
+        "full": "Leviat\u00e1n",
+        "rank": 10,
+        "norm_rank": 13,
+        "region": "North America",
+        "regional_rank": 6
+    },
+    "TH": {
+        "full": "Team Heretics",
+        "rank": 11,
+        "norm_rank": 14,
+        "region": "Europe",
+        "regional_rank": 7
+    },
+    "TL": {
+        "full": "Team Liquid",
+        "rank": 12,
+        "norm_rank": 16,
+        "region": "Europe",
+        "regional_rank": 6
+    },
+    "FS": {
+        "full": "FULL SENSE",
+        "rank": 13,
+        "norm_rank": 17,
+        "region": "Asia-Pacific",
         "regional_rank": 3
     },
-    "VITA": {
-        "full": "Team Vitality",
-        "rank": 22,
-        "norm_rank": 25,
+    "EP": {
+        "full": "Enterprise Esports",
+        "rank": 14,
+        "norm_rank": 18,
         "region": "Europe",
-        "regional_rank": 10
+        "regional_rank": 2
     },
-    "ZETA": {
-        "full": "ZETA DIVISION",
-        "rank": 23,
+    "KR\u00dc BLAZE": {
+        "full": "KR\u00dc Blaze",
+        "rank": 15,
+        "norm_rank": 20,
+        "region": "Latin America South",
+        "regional_rank": 13
+    },
+    "BOOM": {
+        "full": "BOOM Esports",
+        "rank": 16,
+        "norm_rank": 21,
+        "region": "Asia-Pacific",
+        "regional_rank": 7
+    },
+    "EF": {
+        "full": "Eternal Fire",
+        "rank": 17,
+        "norm_rank": 22,
+        "region": "Europe",
+        "regional_rank": 3
+    },
+    "SEN": {
+        "full": "Sentinels",
+        "rank": 18,
         "norm_rank": 23,
-        "region": "Japan",
-        "regional_rank": 11
+        "region": "North America",
+        "regional_rank": 4
     },
-    "GX": {
-        "full": "GIANTX",
-        "rank": 24,
-        "norm_rank": 28,
-        "region": "Europe",
-        "regional_rank": 12
+    "100T": {
+        "full": "Thieves",
+        "rank": 19,
+        "norm_rank": 25,
+        "region": "Unknown"
     },
-    "SRB": {
-        "full": "Shopify Rebellion Black",
-        "rank": 25,
+    "MIBR GC": {
+        "full": "MIBR GC",
+        "rank": 20,
         "norm_rank": 26,
-        "region": "United States",
-        "regional_rank": 9
+        "region": "Unknown"
     },
-    "NAVI": {
-        "full": "Natus Vincere",
-        "rank": 26,
-        "norm_rank": 30,
-        "region": "Europe",
-        "regional_rank": 26
-    },
-    "XLG": {
-        "full": "XLG Esports",
-        "rank": 27,
-        "norm_rank": 34,
-        "region": "China",
-        "regional_rank": 1
+    "MTV": {
+        "full": "Motiv Esports",
+        "rank": 21,
+        "norm_rank": 27,
+        "region": "Asia-Pacific",
+        "regional_rank": 11
     },
     "MIBR": {
         "full": "MIBR",
-        "rank": 28,
+        "rank": 22,
         "norm_rank": 29,
         "region": "Brazil",
         "regional_rank": 4
     },
-    "100T": {
-        "full": "100 Thieves",
-        "rank": 29,
+    "XLG": {
+        "full": "XLG Esports",
+        "rank": 23,
         "norm_rank": 30,
-        "region": "United States",
-        "regional_rank": 3
+        "region": "Unknown"
     },
-    "SRG": {
-        "full": "Shopify Rebellion Gold",
-        "rank": 30,
-        "norm_rank": 32,
-        "region": "United States",
-        "regional_rank": 149
-    },
-    "BBL": {
-        "full": "BBL Esports",
-        "rank": 31,
-        "norm_rank": 36,
-        "region": "Turkey",
-        "regional_rank": 5
-    },
-    "BME": {
-        "full": "BOOM Esports",
-        "rank": 32,
-        "norm_rank": 32,
-        "region": "Indonesia",
-        "regional_rank": 5
-    },
-    "FURI": {
-        "full": "FURIA Esports",
-        "rank": 33,
-        "norm_rank": 35,
-        "region": "Brazil"
-    },
-    "M8": {
-        "full": "Gentle Mates",
-        "rank": 34,
-        "norm_rank": 39,
-        "region": "France",
-        "regional_rank": 16
-    },
-    "C9": {
-        "full": "Cloud9",
-        "rank": 35,
-        "norm_rank": 37,
-        "region": "United States",
-        "regional_rank": 7
-    },
-    "TS": {
-        "full": "Team Secret",
-        "rank": 36,
-        "norm_rank": 36,
-        "region": "Philippines",
-        "regional_rank": 171
-    },
-    "WOL": {
-        "full": "Wolves Esports",
-        "rank": 37,
-        "norm_rank": 46,
-        "region": "China",
-        "regional_rank": 19
-    },
-    "DRG": {
-        "full": "Dragon Ranger Gaming",
-        "rank": 38,
-        "norm_rank": 48,
-        "region": "China",
-        "regional_rank": 5
-    },
-    "TE": {
-        "full": "Trace Esports",
-        "rank": 39,
-        "norm_rank": 49,
-        "region": "China",
-        "regional_rank": 14
-    },
-    "GE": {
-        "full": "Global Esports",
-        "rank": 40,
-        "norm_rank": 40,
-        "region": "India",
-        "regional_rank": 7
-    },
-    "KC": {
-        "full": "Karmine Corp",
-        "rank": 41,
-        "norm_rank": 47,
-        "region": "France",
-        "regional_rank": 176
-    },
-    "2G": {
-        "full": "2GAME Esports",
-        "rank": 42,
-        "norm_rank": 44,
-        "region": "Brazil",
-        "regional_rank": 5
-    },
-    "FS": {
-        "full": "FULL SENSE",
-        "rank": 43,
-        "norm_rank": 43,
-        "region": "Thailand",
+    "FCY": {
+        "full": "Fancy United Esports",
+        "rank": 24,
+        "norm_rank": 31,
+        "region": "Asia-Pacific",
         "regional_rank": 6
-    },
-    "KOI": {
-        "full": "KOI",
-        "rank": 44,
-        "norm_rank": 51,
-        "region": "Europe"
-    },
-    "MIT": {
-        "full": "Made in Thailand",
-        "rank": 45,
-        "norm_rank": 45,
-        "region": "Thailand"
-    },
-    "NAOS": {
-        "full": "NAOS Esports",
-        "rank": 46,
-        "norm_rank": 46,
-        "region": "Philippines",
-        "regional_rank": 35
-    },
-    "KF": {
-        "full": "KR\u00dc Fem",
-        "rank": 47,
-        "norm_rank": 49,
-        "region": "Chile"
-    },
-    "VG": {
-        "full": "Velocity Gaming",
-        "rank": 48,
-        "norm_rank": 48,
-        "region": "India"
-    },
-    "SLT": {
-        "full": "SLT",
-        "rank": 49,
-        "norm_rank": 49,
-        "region": "South Korea",
-        "regional_rank": 4
-    },
-    "MOTI": {
-        "full": "Motiv Esports",
-        "rank": 50,
-        "norm_rank": 65,
-        "region": "Southeast Asia",
-        "regional_rank": 11
-    },
-    "FENN": {
-        "full": "FENNEL",
-        "rank": 51,
-        "norm_rank": 51,
-        "region": "Japan",
-        "regional_rank": 6
-    },
-    "EL": {
-        "full": "E-Xolos LAZER",
-        "rank": 52,
-        "norm_rank": 55,
-        "region": "Colombia"
-    },
-    "DK": {
-        "full": "Dplus KIA",
-        "rank": 53,
-        "norm_rank": 53,
-        "region": "South Korea",
-        "regional_rank": 8
-    },
-    "ORAN": {
-        "full": "Orangutan",
-        "rank": 54,
-        "norm_rank": 54,
-        "region": "India"
-    },
-    "TU": {
-        "full": "The Union",
-        "rank": 55,
-        "norm_rank": 58,
-        "region": "Brazil",
-        "regional_rank": 113
-    },
-    "TSM": {
-        "full": "TSM",
-        "rank": 56,
-        "norm_rank": 59,
-        "region": "United States"
-    },
-    "TM": {
-        "full": "Twisted Minds",
-        "rank": 57,
-        "norm_rank": 66,
-        "region": "Saudi Arabia"
-    },
-    "9Z": {
-        "full": "9z Team",
-        "rank": 58,
-        "norm_rank": 61,
-        "region": "Argentina"
-    },
-    "ENVY": {
-        "full": "Team Envy",
-        "rank": 59,
-        "norm_rank": 62,
-        "region": "United States",
-        "regional_rank": 8
-    },
-    "ACEN": {
-        "full": "Acend",
-        "rank": 60,
-        "norm_rank": 69,
-        "region": "Europe"
-    },
-    "VERS": {
-        "full": "Version1",
-        "rank": 61,
-        "norm_rank": 64,
-        "region": "Canada"
-    },
-    "GUIL": {
-        "full": "Guild Esports",
-        "rank": 62,
-        "norm_rank": 71,
-        "region": "Europe"
-    },
-    "CW": {
-        "full": "Cloud9 White",
-        "rank": 63,
-        "norm_rank": 66,
-        "region": "United States"
-    },
-    "NIP": {
-        "full": "Ninjas in Pyjamas",
-        "rank": 64,
-        "norm_rank": 67,
-        "region": "Brazil"
-    },
-    "FALC": {
-        "full": "Team Falcons",
-        "rank": 65,
-        "norm_rank": 75,
-        "region": "Saudi Arabia"
-    },
-    "SOLI": {
-        "full": "Team Solid",
-        "rank": 66,
-        "norm_rank": 69,
-        "region": "Brazil",
-        "regional_rank": 1
-    },
-    "M80": {
-        "full": "M80",
-        "rank": 67,
-        "norm_rank": 70,
-        "region": "Canada",
-        "regional_rank": 11
-    },
-    "SK": {
-        "full": "Six Karma",
-        "rank": 68,
-        "norm_rank": 71,
-        "region": "Colombia"
-    },
-    "SG": {
-        "full": "Stellae Gaming",
-        "rank": 69,
-        "norm_rank": 72,
-        "region": "Brazil"
-    },
-    "ULF": {
-        "full": "ULF Esports",
-        "rank": 70,
-        "norm_rank": 80,
-        "region": "Turkey"
-    },
-    "RC": {
-        "full": "RED Canids",
-        "rank": 71,
-        "norm_rank": 75,
-        "region": "Brazil",
-        "regional_rank": 10
-    },
-    "TU1": {
-        "full": "The Ultimates",
-        "rank": 72,
-        "norm_rank": 83,
-        "region": "Saudi Arabia",
-        "regional_rank": 3
     },
     "CGN": {
         "full": "CGN Esports",
-        "rank": 73,
-        "norm_rank": 84,
-        "region": "Germany",
-        "regional_rank": 9
-    },
-    "AE": {
-        "full": "Alter Ego",
-        "rank": 74,
-        "norm_rank": 74,
-        "region": "Indonesia",
-        "regional_rank": 30
-    },
-    "RECK": {
-        "full": "Reckoning Esports",
-        "rank": 75,
-        "norm_rank": 75,
-        "region": "India",
-        "regional_rank": 27
-    },
-    "FOKU": {
-        "full": "FOKUS",
-        "rank": 76,
-        "norm_rank": 87,
-        "region": "Germany",
-        "regional_rank": 14
-    },
-    "OXYG": {
-        "full": "Oxygen Esports",
-        "rank": 77,
-        "norm_rank": 81,
-        "region": "United States"
-    },
-    "MAND": {
-        "full": "Mandatory",
-        "rank": 78,
-        "norm_rank": 90,
-        "region": "France",
-        "regional_rank": 20
-    },
-    "TEC": {
-        "full": "TEC Esports",
-        "rank": 79,
-        "norm_rank": 99,
-        "region": "China",
-        "regional_rank": 17
-    },
-    "AB": {
-        "full": "Akave Esports Black",
-        "rank": 80,
-        "norm_rank": 84,
-        "region": "Colombia"
-    },
-    "RA'A": {
-        "full": "Team RA'AD",
-        "rank": 81,
-        "norm_rank": 93,
-        "region": "Egypt",
-        "regional_rank": 5
-    },
-    "MOUZ": {
-        "full": "MOUZ",
-        "rank": 82,
-        "norm_rank": 94,
-        "region": "Europe"
-    },
-    "FUSI": {
-        "full": "FUSION",
-        "rank": 83,
-        "norm_rank": 87,
-        "region": "Colombia",
-        "regional_rank": 11
-    },
-    "QADS": {
-        "full": "Qadsiah Esports",
-        "rank": 84,
-        "norm_rank": 97,
-        "region": "Saudi Arabia"
-    },
-    "BQ": {
-        "full": "BBL Queens",
-        "rank": 85,
-        "norm_rank": 98,
-        "region": "Turkey"
-    },
-    "FLYR": {
-        "full": "FlyQuest RED",
-        "rank": 86,
-        "norm_rank": 90,
-        "region": "North America",
-        "regional_rank": 144
-    },
-    "KS": {
-        "full": "Keyd Stars",
-        "rank": 87,
-        "norm_rank": 91,
-        "region": "Brazil"
-    },
-    "ENTE": {
-        "full": "Enterprise Esports",
-        "rank": 88,
-        "norm_rank": 114,
-        "region": "Czech Republic",
-        "regional_rank": 2
-    },
-    "TR": {
-        "full": "True Rippers",
-        "rank": 89,
-        "norm_rank": 89,
-        "region": "India"
-    },
-    "SCAR": {
-        "full": "SCARZ",
-        "rank": 90,
-        "norm_rank": 90,
-        "region": "Japan",
-        "regional_rank": 8
-    },
-    "REVE": {
-        "full": "Revenant Esports",
-        "rank": 91,
-        "norm_rank": 91,
-        "region": "India"
-    },
-    "DISG": {
-        "full": "Disguised",
-        "rank": 92,
-        "norm_rank": 97,
-        "region": "Canada"
-    },
-    "OG": {
-        "full": "Oasis Gaming",
-        "rank": 93,
-        "norm_rank": 93,
-        "region": "Philippines",
-        "regional_rank": 9
-    },
-    "BONK": {
-        "full": "Bonkers",
-        "rank": 94,
-        "norm_rank": 94,
-        "region": "Australia",
-        "regional_rank": 1
-    },
-    "AS": {
-        "full": "Attacking Soul Esports",
-        "rank": 95,
-        "norm_rank": 119,
-        "region": "China"
-    },
-    "GX1": {
-        "full": "Guild X",
-        "rank": 96,
-        "norm_rank": 110,
-        "region": "Europe"
-    },
-    "RIDD": {
-        "full": "RIDDLE",
-        "rank": 97,
-        "norm_rank": 97,
-        "region": "Japan"
-    },
-    "MG": {
-        "full": "Maru Gaming",
-        "rank": 98,
-        "norm_rank": 98,
-        "region": "South Korea"
-    },
-    "AG": {
-        "full": "All Gamers",
-        "rank": 99,
-        "norm_rank": 124,
-        "region": "China",
-        "regional_rank": 3
-    },
-    "DSYR": {
-        "full": "Dsyre",
-        "rank": 100,
-        "norm_rank": 115,
-        "region": "Italy"
-    },
-    "OF": {
-        "full": "Oblivion Force",
-        "rank": 101,
-        "norm_rank": 126,
-        "region": "Hong Kong"
-    },
-    "DF": {
-        "full": "DetonatioN FocusMe",
-        "rank": 102,
-        "norm_rank": 102,
-        "region": "Japan",
-        "regional_rank": 1
-    },
-    "SMG": {
-        "full": "Team SMG",
-        "rank": 103,
-        "norm_rank": 103,
-        "region": "Singapore"
-    },
-    "GALO": {
-        "full": "Galorys",
-        "rank": 104,
-        "norm_rank": 109,
-        "region": "Brazil"
-    },
-    "NORT": {
-        "full": "Northeption",
-        "rank": 105,
-        "norm_rank": 105,
-        "region": "Japan"
-    },
-    "TBK": {
-        "full": "TBK Esports",
-        "rank": 106,
-        "norm_rank": 111,
-        "region": "Brazil",
-        "regional_rank": 7
-    },
-    "LG": {
-        "full": "Los Grandes",
-        "rank": 107,
-        "norm_rank": 112,
-        "region": "Brazil"
-    },
-    "ONE": {
-        "full": "ONE Team",
-        "rank": 108,
-        "norm_rank": 135,
-        "region": "Taiwan"
-    },
-    "HB": {
-        "full": "Hero Base",
-        "rank": 109,
-        "norm_rank": 114,
-        "region": "Brazil"
-    },
-    "FC": {
-        "full": "FaZe Clan",
-        "rank": 110,
-        "norm_rank": 116,
-        "region": "United States"
-    },
-    "NKT": {
-        "full": "Team NKT",
-        "rank": 111,
-        "norm_rank": 111,
-        "region": "Thailand",
+        "rank": 25,
+        "norm_rank": 32,
+        "region": "Europe",
         "regional_rank": 10
     },
-    "PK": {
-        "full": "Pittsburgh Knights",
-        "rank": 112,
-        "norm_rank": 118,
-        "region": "United States"
-    },
-    "CASE": {
-        "full": "Case Esports",
-        "rank": 113,
-        "norm_rank": 130,
-        "region": "Spain"
-    },
-    "XS": {
-        "full": "X10 Sapphire",
-        "rank": 114,
-        "norm_rank": 114,
-        "region": "Thailand"
-    },
-    "FV": {
-        "full": "Falcons Vega",
-        "rank": 115,
-        "norm_rank": 132,
-        "region": "Saudi Arabia"
-    },
-    "NASR": {
-        "full": "NASR Esports",
-        "rank": 116,
-        "norm_rank": 133,
-        "region": "United Arab Emirates"
-    },
-    "STAL": {
-        "full": "Stallions Esports",
-        "rank": 117,
-        "norm_rank": 135,
-        "region": "Saudi Arabia",
+    "EDG": {
+        "full": "EDward Gaming",
+        "rank": 26,
+        "norm_rank": 34,
+        "region": "China",
         "regional_rank": 2
     },
-    "EXCE": {
-        "full": "Excel Esports",
-        "rank": 118,
-        "norm_rank": 136,
-        "region": "Europe"
+    "AKV": {
+        "full": "Akave Esports Black",
+        "rank": 27,
+        "norm_rank": 35,
+        "region": "Unknown"
     },
-    "CERB": {
-        "full": "CERBERUS Esports",
-        "rank": 119,
-        "norm_rank": 119,
-        "region": "Vietnam"
+    "STS": {
+        "full": "Stallions Esports",
+        "rank": 28,
+        "norm_rank": 36,
+        "region": "MENA",
+        "regional_rank": 2
     },
-    "MF": {
-        "full": "MIBR Female",
-        "rank": 120,
-        "norm_rank": 126,
-        "region": "Brazil"
-    },
-    "S8UL": {
-        "full": "S8UL Esports",
-        "rank": 121,
-        "norm_rank": 121,
-        "region": "India",
-        "regional_rank": 14
-    },
-    "AK": {
-        "full": "All Knights",
-        "rank": 122,
-        "norm_rank": 128,
-        "region": "Chile"
-    },
-    "BP": {
-        "full": "BBL PCIFIC",
-        "rank": 123,
-        "norm_rank": 141,
-        "region": "Turkey"
-    },
-    "TENS": {
-        "full": "TENSTAR",
-        "rank": 124,
-        "norm_rank": 143,
-        "region": "United Kingdom"
-    },
-    "MXSR": {
-        "full": "Moist x Shopify Rebellion",
-        "rank": 125,
-        "norm_rank": 131,
-        "region": "United States"
-    },
-    "MC": {
-        "full": "M3 Champions",
-        "rank": 126,
-        "norm_rank": 145,
-        "region": "russia (terrorist state)"
-    },
-    "FF": {
-        "full": "FENNEL Female",
-        "rank": 127,
-        "norm_rank": 127,
-        "region": "Japan"
-    },
-    "WADA": {
-        "full": "Wadadaa",
-        "rank": 128,
-        "norm_rank": 134,
-        "region": "United States",
-        "regional_rank": 27
-    },
-    "GHST": {
-        "full": "Ghost Gaming",
-        "rank": 129,
-        "norm_rank": 135,
-        "region": "North America"
-    },
-    "FLAS": {
-        "full": "Team Flash",
-        "rank": 130,
-        "norm_rank": 130,
-        "region": "Vietnam"
-    },
-    "ZOL": {
-        "full": "ZOL Esports",
-        "rank": 131,
-        "norm_rank": 131,
-        "region": "Philippines"
-    },
-    "OS": {
-        "full": "On Sla2ers",
-        "rank": 132,
-        "norm_rank": 132,
-        "region": "South Korea"
-    },
-    "YX": {
-        "full": "YFP X",
-        "rank": 133,
-        "norm_rank": 140,
-        "region": "United States"
-    },
-    "CHE": {
-        "full": "Chao Hui EDG",
-        "rank": 134,
-        "norm_rank": 168,
-        "region": "Taiwan"
-    },
-    "LF": {
-        "full": "Leviat\u00e1n Female",
-        "rank": 135,
-        "norm_rank": 142,
-        "region": "Argentina"
-    },
-    "CG": {
-        "full": "Complexity GX3",
-        "rank": 136,
-        "norm_rank": 143,
-        "region": "North America",
-        "regional_rank": 265
-    },
-    "OVAT": {
-        "full": "Ovation eSports",
-        "rank": 137,
-        "norm_rank": 158,
-        "region": "Germany"
-    },
-    "SUPE": {
-        "full": "SuperMassive Esports",
-        "rank": 138,
-        "norm_rank": 159,
-        "region": "Turkey",
-        "regional_rank": 115
-    },
-    "FG": {
-        "full": "FAV gaming",
-        "rank": 139,
-        "norm_rank": 139,
-        "region": "Japan"
-    },
-    "0N": {
-        "full": "00 Nation",
-        "rank": 140,
-        "norm_rank": 147,
-        "region": "Brazil"
-    },
-    "SE": {
-        "full": "Sharper Esport",
-        "rank": 141,
-        "norm_rank": 141,
-        "region": "Thailand"
-    },
-    "OXEN": {
-        "full": "OXEN",
-        "rank": 142,
-        "norm_rank": 149,
-        "region": "Argentina",
-        "regional_rank": 11
-    },
-    "RETA": {
-        "full": "RETA Esports",
-        "rank": 143,
-        "norm_rank": 150,
-        "region": "Argentina"
-    },
-    "ORDE": {
-        "full": "Order",
-        "rank": 144,
-        "norm_rank": 144,
-        "region": "Australia"
-    },
-    "RA": {
-        "full": "Rare Atom",
-        "rank": 145,
-        "norm_rank": 181,
-        "region": "China",
-        "regional_rank": 7
-    },
-    "BB": {
-        "full": "Team Big BAAM",
-        "rank": 146,
-        "norm_rank": 146,
-        "region": "Vietnam"
-    },
-    "AT": {
-        "full": "Angry Titans",
-        "rank": 147,
-        "norm_rank": 169,
-        "region": "Europe"
-    },
-    "BONK1": {
-        "full": "Bonk",
-        "rank": 148,
-        "norm_rank": 170,
+    "BBL": {
+        "full": "BBL Esports",
+        "rank": 29,
+        "norm_rank": 38,
         "region": "Europe",
-        "regional_rank": 33
-    },
-    "EG1": {
-        "full": "Enigma Gaming",
-        "rank": 149,
-        "norm_rank": 149,
-        "region": "India"
-    },
-    "IAM": {
-        "full": "IAM",
-        "rank": 150,
-        "norm_rank": 150,
-        "region": "South Korea",
-        "regional_rank": 7
-    },
-    "YG": {
-        "full": "YFP Gaming",
-        "rank": 151,
-        "norm_rank": 159,
-        "region": "United States"
-    },
-    "FF1": {
-        "full": "Fire Flux Esports",
-        "rank": 152,
-        "norm_rank": 175,
-        "region": "Turkey",
-        "regional_rank": 182
-    },
-    "CB": {
-        "full": "City Boys",
-        "rank": 153,
-        "norm_rank": 161,
-        "region": "United States"
-    },
-    "MLT": {
-        "full": "MLT Esports",
-        "rank": 154,
-        "norm_rank": 154,
-        "region": "India"
-    },
-    "SPG": {
-        "full": "Sin Prisa Gaming",
-        "rank": 155,
-        "norm_rank": 155,
-        "region": "South Korea"
-    },
-    "LP": {
-        "full": "LFG Portal",
-        "rank": 156,
-        "norm_rank": 156,
-        "region": "South Korea"
-    },
-    "SB": {
-        "full": "South Built Esports",
-        "rank": 157,
-        "norm_rank": 157,
-        "region": "Philippines"
-    },
-    "ONIC": {
-        "full": "ONIC Esports",
-        "rank": 158,
-        "norm_rank": 158,
-        "region": "Singapore"
-    },
-    "THE7": {
-        "full": "The7",
-        "rank": 159,
-        "norm_rank": 167,
-        "region": "Brazil"
-    },
-    "GE1": {
-        "full": "Griffin E-Sports",
-        "rank": 160,
-        "norm_rank": 200,
-        "region": "Taiwan"
-    },
-    "RX": {
-        "full": "Revenant XSpark",
-        "rank": 161,
-        "norm_rank": 161,
-        "region": "India",
-        "regional_rank": 15
-    },
-    "XIPT": {
-        "full": "Xipto Esports",
-        "rank": 162,
-        "norm_rank": 162,
-        "region": "Philippines",
-        "regional_rank": 20
-    },
-    "GONE": {
-        "full": "GoNext Esports",
-        "rank": 163,
-        "norm_rank": 187,
-        "region": "Europe"
-    },
-    "GALA": {
-        "full": "Galatasaray Esports",
-        "rank": 164,
-        "norm_rank": 189,
-        "region": "Turkey",
-        "regional_rank": 67
-    },
-    "ELEV": {
-        "full": "ELEVATE",
-        "rank": 165,
-        "norm_rank": 173,
-        "region": "United States",
-        "regional_rank": 11
-    },
-    "NF": {
-        "full": "NOEZ FOXX",
-        "rank": 166,
-        "norm_rank": 166,
-        "region": "Japan"
-    },
-    "DIAM": {
-        "full": "Diamant Esports",
-        "rank": 167,
-        "norm_rank": 217,
-        "region": "Slovenia"
-    },
-    "FEAR": {
-        "full": "FearX",
-        "rank": 168,
-        "norm_rank": 168,
-        "region": "South Korea",
-        "regional_rank": 22
-    },
-    "SHIN": {
-        "full": "ShindeN",
-        "rank": 169,
-        "norm_rank": 177,
-        "region": "Brazil",
-        "regional_rank": 3
-    },
-    "RG": {
-        "full": "Rebels Gaming",
-        "rank": 170,
-        "norm_rank": 195,
-        "region": "Europe"
-    },
-    "GEEK": {
-        "full": "Geekay Esports",
-        "rank": 171,
-        "norm_rank": 197,
-        "region": "United Arab Emirates"
-    },
-    "TARI": {
-        "full": "Team tarik",
-        "rank": 172,
-        "norm_rank": 181,
-        "region": "Brazil"
-    },
-    "FRTT": {
-        "full": "Team FRTTT",
-        "rank": 173,
-        "norm_rank": 182,
-        "region": "Brazil"
-    },
-    "MOGO": {
-        "full": "MOGO eSports",
-        "rank": 174,
-        "norm_rank": 174,
-        "region": "India"
-    },
-    "ARF": {
-        "full": "ARF TEAM",
-        "rank": 175,
-        "norm_rank": 175,
-        "region": "Indonesia"
-    },
-    "SAW": {
-        "full": "SAW",
-        "rank": 176,
-        "norm_rank": 229,
-        "region": "Portugal"
-    },
-    "OLU": {
-        "full": "OG LDN UTD",
-        "rank": 177,
-        "norm_rank": 230,
-        "region": "Lithuania"
-    },
-    "BOBO": {
-        "full": "BOBO",
-        "rank": 178,
-        "norm_rank": 178,
-        "region": "Australia"
-    },
-    "BA": {
-        "full": "Bigetron Arctic",
-        "rank": 179,
-        "norm_rank": 179,
-        "region": "Indonesia"
+        "regional_rank": 4
     },
     "LYON": {
         "full": "LYON",
-        "rank": 180,
-        "norm_rank": 189,
-        "region": "Mexico",
+        "rank": 30,
+        "norm_rank": 39,
+        "region": "Latin America North",
         "regional_rank": 1
+    },
+    "C9": {
+        "full": "Cloud",
+        "rank": 31,
+        "norm_rank": 40,
+        "region": "Unknown"
+    },
+    "SGE": {
+        "full": "Eintracht Frankfurt",
+        "rank": 32,
+        "norm_rank": 42,
+        "region": "Europe",
+        "regional_rank": 12
+    },
+    "M8.GC": {
+        "full": "Gentle Mates GC",
+        "rank": 33,
+        "norm_rank": 43,
+        "region": "Unknown"
+    },
+    "SPE": {
+        "full": "Sharper Esport",
+        "rank": 34,
+        "norm_rank": 44,
+        "region": "Unknown"
+    },
+    "G2.G": {
+        "full": "G2 Gozen",
+        "rank": 35,
+        "norm_rank": 46,
+        "region": "Europe",
+        "regional_rank": 53
+    },
+    "TL.A": {
+        "full": "Team Liquid Academy",
+        "rank": 36,
+        "norm_rank": 47,
+        "region": "Europe",
+        "regional_rank": 8
     },
     "JL": {
         "full": "Joblife",
-        "rank": 181,
-        "norm_rank": 208,
-        "region": "France",
+        "rank": 37,
+        "norm_rank": 48,
+        "region": "Europe",
         "regional_rank": 28
     },
-    "GRAY": {
-        "full": "Grayfox Esports",
-        "rank": 182,
-        "norm_rank": 182,
-        "region": "India"
+    "TS": {
+        "full": "Team Solid",
+        "rank": 38,
+        "norm_rank": 49,
+        "region": "Brazil",
+        "regional_rank": 1
     },
-    "RL": {
-        "full": "Rapid Lofi",
-        "rank": 183,
-        "norm_rank": 183,
-        "region": "Vietnam"
-    },
-    "SG1": {
-        "full": "Supernova Galaxy",
-        "rank": 184,
-        "norm_rank": 193,
-        "region": "United States"
-    },
-    "REJE": {
-        "full": "REJECT",
-        "rank": 185,
-        "norm_rank": 185,
-        "region": "Japan",
-        "regional_rank": 13
-    },
-    "AA": {
-        "full": "Aster Army",
-        "rank": 186,
-        "norm_rank": 186,
-        "region": "India"
-    },
-    "CONT": {
-        "full": "Contra",
-        "rank": 187,
-        "norm_rank": 196,
-        "region": "Mexico",
-        "regional_rank": 2
-    },
-    "EF": {
-        "full": "Eternal Fire",
-        "rank": 188,
-        "norm_rank": 216,
-        "region": "Turkey",
-        "regional_rank": 3
-    },
-    "KG": {
-        "full": "KPI Gaming",
-        "rank": 189,
-        "norm_rank": 217,
-        "region": "russia (terrorist state)",
-        "regional_rank": 122
-    },
-    "BIG": {
-        "full": "BIG",
-        "rank": 190,
-        "norm_rank": 218,
-        "region": "Germany"
-    },
-    "S2G": {
-        "full": "S2G Esports",
-        "rank": 191,
-        "norm_rank": 220,
-        "region": "Turkey"
-    },
-    "DRAG": {
-        "full": "Dragons Esports",
-        "rank": 192,
-        "norm_rank": 221,
-        "region": "Saudi Arabia"
-    },
-    "CR": {
-        "full": "Crazy Raccoon",
-        "rank": 193,
-        "norm_rank": 193,
-        "region": "Japan"
-    },
-    "QOR": {
-        "full": "QoR",
-        "rank": 194,
-        "norm_rank": 204,
-        "region": "United States",
-        "regional_rank": 15
-    },
-    "FUEG": {
-        "full": "Fuego",
-        "rank": 195,
-        "norm_rank": 224,
+    "FUT": {
+        "full": "FUT Esports",
+        "rank": 39,
+        "norm_rank": 51,
         "region": "Europe",
-        "regional_rank": 6
+        "regional_rank": 9
     },
-    "PARL": {
-        "full": "Parla Esports",
-        "rank": 196,
-        "norm_rank": 225,
-        "region": "Turkey"
+    "NKT": {
+        "full": "Team NKT",
+        "rank": 40,
+        "norm_rank": 52,
+        "region": "Asia-Pacific",
+        "regional_rank": 10
     },
-    "FX": {
-        "full": "FUSION X",
-        "rank": 197,
-        "norm_rank": 207,
-        "region": "Mexico",
-        "regional_rank": 299
+    "ULF": {
+        "full": "ULF Esports",
+        "rank": 41,
+        "norm_rank": 53,
+        "region": "Unknown"
     },
-    "VALI": {
-        "full": "Valiant",
-        "rank": 198,
-        "norm_rank": 228,
-        "region": "France"
+    "MDR": {
+        "full": "Mandatory",
+        "rank": 42,
+        "norm_rank": 55,
+        "region": "Europe",
+        "regional_rank": 20
     },
-    "ODDI": {
-        "full": "ODDIK",
-        "rank": 199,
-        "norm_rank": 209,
-        "region": "Brazil"
+    "FKS": {
+        "full": "FOKUS",
+        "rank": 43,
+        "norm_rank": 56,
+        "region": "Europe",
+        "regional_rank": 14
     },
-    "LG1": {
-        "full": "Luminosity Gaming",
-        "rank": 200,
-        "norm_rank": 210,
-        "region": "United States"
+    "NAVIJUNIOR": {
+        "full": "Natus Vincere Junior",
+        "rank": 44,
+        "norm_rank": 57,
+        "region": "Europe",
+        "regional_rank": 17
     },
-    "GALA1": {
-        "full": "Galakticos",
-        "rank": 201,
-        "norm_rank": 231,
-        "region": "Turkey",
-        "regional_rank": 338
+    "FLC.V": {
+        "full": "Falcons Vega",
+        "rank": 45,
+        "norm_rank": 58,
+        "region": "Unknown"
     },
-    "SG2": {
-        "full": "Sengoku Gaming",
-        "rank": 202,
-        "norm_rank": 202,
-        "region": "Japan"
+    "REBORN": {
+        "full": "REBORN",
+        "rank": 46,
+        "norm_rank": 60,
+        "region": "Europe",
+        "regional_rank": 11
     },
-    "HL": {
-        "full": "Havan Liberty",
-        "rank": 203,
-        "norm_rank": 213,
-        "region": "Brazil"
+    "VIT": {
+        "full": "Team Vitality",
+        "rank": 47,
+        "norm_rank": 61,
+        "region": "Europe",
+        "regional_rank": 5
     },
-    "CGZ": {
-        "full": "Crest Gaming Zst",
-        "rank": 204,
-        "norm_rank": 204,
-        "region": "Japan",
-        "regional_rank": 2
+    "GEN.G GC": {
+        "full": "Gen.G GC",
+        "rank": 48,
+        "norm_rank": 62,
+        "region": "Unknown"
     },
-    "OG1": {
+    "SRB": {
+        "full": "Shopify Rebellion Black",
+        "rank": 49,
+        "norm_rank": 64,
+        "region": "North America",
+        "regional_rank": 11
+    },
+    "M80": {
+        "full": "M",
+        "rank": 50,
+        "norm_rank": 65,
+        "region": "Unknown"
+    },
+    "DSY": {
+        "full": "DNSTY",
+        "rank": 51,
+        "norm_rank": 66,
+        "region": "Europe",
+        "regional_rank": 24
+    },
+    "AQ": {
+        "full": "Any Questions",
+        "rank": 52,
+        "norm_rank": 68,
+        "region": "Unknown"
+    },
+    "UCAM": {
+        "full": "UCAM Esports Club",
+        "rank": 53,
+        "norm_rank": 69,
+        "region": "Europe",
+        "regional_rank": 21
+    },
+    "BAR": {
+        "full": "Bar\u00e7a eSports",
+        "rank": 54,
+        "norm_rank": 70,
+        "region": "Europe",
+        "regional_rank": 23
+    },
+    "SK NEBULA": {
+        "full": "SK Nebula",
+        "rank": 55,
+        "norm_rank": 72,
+        "region": "Europe",
+        "regional_rank": 49
+    },
+    "OAS": {
+        "full": "Oasis Gaming",
+        "rank": 56,
+        "norm_rank": 73,
+        "region": "Asia-Pacific",
+        "regional_rank": 9
+    },
+    "ONG": {
         "full": "ONSIDE GAMING",
-        "rank": 205,
-        "norm_rank": 205,
+        "rank": 57,
+        "norm_rank": 74,
         "region": "South Korea",
         "regional_rank": 6
     },
-    "FG1": {
-        "full": "Furious Gaming",
-        "rank": 206,
-        "norm_rank": 216,
-        "region": "Argentina"
+    "WIP": {
+        "full": "WIP Esports",
+        "rank": 58,
+        "norm_rank": 75,
+        "region": "Europe",
+        "regional_rank": 15
     },
-    "ANON": {
-        "full": "Anonymo Esports",
-        "rank": 207,
-        "norm_rank": 238,
-        "region": "Poland"
+    "FNL": {
+        "full": "FENNEL",
+        "rank": 59,
+        "norm_rank": 77,
+        "region": "Japan",
+        "regional_rank": 6
     },
-    "JB": {
-        "full": "JijieHao BONK",
-        "rank": 208,
-        "norm_rank": 208,
-        "region": "Australia"
+    "MKG": {
+        "full": "Melser Kindergarten",
+        "rank": 60,
+        "norm_rank": 78,
+        "region": "Unknown"
     },
-    "TG": {
-        "full": "Thunderbolts Gaming",
-        "rank": 209,
-        "norm_rank": 240,
-        "region": "Turkey"
+    "UW": {
+        "full": "University War",
+        "rank": 61,
+        "norm_rank": 79,
+        "region": "Unknown"
     },
-    "UOL": {
-        "full": "Unicorns Of Love",
-        "rank": 210,
-        "norm_rank": 241,
-        "region": "Germany"
+    "TRINITY": {
+        "full": "TrinitY",
+        "rank": 62,
+        "norm_rank": 81,
+        "region": "Asia-Pacific",
+        "regional_rank": 12
     },
-    "GR": {
-        "full": "Gods Reign",
-        "rank": 211,
-        "norm_rank": 211,
-        "region": "India",
-        "regional_rank": 119
+    "WOOF": {
+        "full": "Puppy Thieves",
+        "rank": 63,
+        "norm_rank": 82,
+        "region": "Unknown"
+    },
+    "TWIS O": {
+        "full": "Twisted Minds Orchid",
+        "rank": 64,
+        "norm_rank": 83,
+        "region": "Unknown"
+    },
+    "KISS": {
+        "full": "Kiss",
+        "rank": 65,
+        "norm_rank": 84,
+        "region": "Unknown"
+    },
+    "XLB": {
+        "full": "XLB",
+        "rank": 66,
+        "norm_rank": 86,
+        "region": "Asia-Pacific",
+        "regional_rank": 17
+    },
+    "RVXS": {
+        "full": "Revenant XSpark",
+        "rank": 67,
+        "norm_rank": 87,
+        "region": "Asia-Pacific",
+        "regional_rank": 15
+    },
+    "SRG": {
+        "full": "Shopify Rebellion Gold",
+        "rank": 68,
+        "norm_rank": 88,
+        "region": "North America",
+        "regional_rank": 148
+    },
+    "FLY RED": {
+        "full": "FlyQuest Red",
+        "rank": 69,
+        "norm_rank": 90,
+        "region": "North America",
+        "regional_rank": 140
+    },
+    "SHN": {
+        "full": "ShindeN",
+        "rank": 70,
+        "norm_rank": 91,
+        "region": "Latin America South",
+        "regional_rank": 3
+    },
+    "SLEEPERS": {
+        "full": "sleepers",
+        "rank": 71,
+        "norm_rank": 92,
+        "region": "Unknown"
+    },
+    "DOLLS": {
+        "full": "Meikai Dolls",
+        "rank": 72,
+        "norm_rank": 94,
+        "region": "Unknown"
+    },
+    "JL1": {
+        "full": "Jade Lions",
+        "rank": 73,
+        "norm_rank": 95,
+        "region": "Asia-Pacific",
+        "regional_rank": 22
+    },
+    "VF PANTHER": {
+        "full": "VF: Panther",
+        "rank": 74,
+        "norm_rank": 96,
+        "region": "Unknown"
+    },
+    "MIR": {
+        "full": "MIR",
+        "rank": 75,
+        "norm_rank": 98,
+        "region": "Europe",
+        "regional_rank": 25
+    },
+    "QAD": {
+        "full": "AlQadsiah Esports",
+        "rank": 76,
+        "norm_rank": 99,
+        "region": "MENA",
+        "regional_rank": 1
+    },
+    "OY": {
+        "full": "OverPowered Youths",
+        "rank": 77,
+        "norm_rank": 100,
+        "region": "Asia-Pacific",
+        "regional_rank": 29
+    },
+    "MISA": {
+        "full": "Misa Esports",
+        "rank": 78,
+        "norm_rank": 101,
+        "region": "Europe",
+        "regional_rank": 18
+    },
+    "OG": {
+        "full": "Olimpo Gold",
+        "rank": 79,
+        "norm_rank": 103,
+        "region": "Unknown"
+    },
+    "PH REJECTS": {
+        "full": "PH Rejects",
+        "rank": 80,
+        "norm_rank": 104,
+        "region": "Unknown"
+    },
+    "VYRES": {
+        "full": "VYRES Esports",
+        "rank": 81,
+        "norm_rank": 105,
+        "region": "Unknown"
+    },
+    "GDB": {
+        "full": "G\u00eanias do Bem",
+        "rank": 82,
+        "norm_rank": 107,
+        "region": "Unknown"
+    },
+    "D1": {
+        "full": "Division One",
+        "rank": 83,
+        "norm_rank": 108,
+        "region": "North America",
+        "regional_rank": 12
+    },
+    "FLYQUEST": {
+        "full": "FlyQuest",
+        "rank": 84,
+        "norm_rank": 109,
+        "region": "North America",
+        "regional_rank": 5
+    },
+    "FLOWERZ": {
+        "full": "Million Flowerz",
+        "rank": 85,
+        "norm_rank": 110,
+        "region": "Europe",
+        "regional_rank": 224
+    },
+    "HABOSBABOS": {
+        "full": "Habos Babos",
+        "rank": 86,
+        "norm_rank": 112,
+        "region": "Unknown"
+    },
+    "ROY ESPORT": {
+        "full": "ROY Esports",
+        "rank": 87,
+        "norm_rank": 113,
+        "region": "Asia-Pacific",
+        "regional_rank": 33
+    },
+    "AE": {
+        "full": "Alter Ego",
+        "rank": 88,
+        "norm_rank": 114,
+        "region": "Asia-Pacific",
+        "regional_rank": 30
+    },
+    "RA'AD": {
+        "full": "Team RA'AD",
+        "rank": 89,
+        "norm_rank": 116,
+        "region": "MENA",
+        "regional_rank": 5
+    },
+    "T1.A": {
+        "full": "T1 Academy",
+        "rank": 90,
+        "norm_rank": 117,
+        "region": "South Korea",
+        "regional_rank": 11
+    },
+    "NAOS": {
+        "full": "NAOS Esports",
+        "rank": 91,
+        "norm_rank": 118,
+        "region": "Unknown"
+    },
+    "FL FE": {
+        "full": "FENNEL Female",
+        "rank": 92,
+        "norm_rank": 120,
+        "region": "Unknown"
+    },
+    "QOR": {
+        "full": "QoR",
+        "rank": 93,
+        "norm_rank": 121,
+        "region": "North America",
+        "regional_rank": 15
+    },
+    "COLORS": {
+        "full": "Colors Esport",
+        "rank": 94,
+        "norm_rank": 122,
+        "region": "Europe",
+        "regional_rank": 99
+    },
+    "MVR": {
+        "full": "MYVRA GC",
+        "rank": 95,
+        "norm_rank": 124,
+        "region": "Unknown"
     },
     "TT": {
-        "full": "Turtle Troops",
-        "rank": 212,
-        "norm_rank": 223,
-        "region": "United States"
+        "full": "Terraria Terrors",
+        "rank": 96,
+        "norm_rank": 125,
+        "region": "Unknown"
     },
-    "CORI": {
-        "full": "Corinthians Esports",
-        "rank": 213,
-        "norm_rank": 224,
-        "region": "Brazil"
+    "CDM": {
+        "full": "Cristaux de Menthe",
+        "rank": 97,
+        "norm_rank": 126,
+        "region": "Unknown"
     },
-    "NA": {
-        "full": "Nearest Airport",
-        "rank": 214,
-        "norm_rank": 225,
-        "region": "United States"
+    "NVL": {
+        "full": "NEVERLAND",
+        "rank": 98,
+        "norm_rank": 127,
+        "region": "Unknown"
     },
-    "KK": {
-        "full": "KIMMY KITTENS",
-        "rank": 215,
-        "norm_rank": 215,
-        "region": "Singapore"
-    },
-    "FW": {
-        "full": "FW ESPORTS",
-        "rank": 216,
-        "norm_rank": 216,
-        "region": "Thailand"
-    },
-    "GA": {
-        "full": "Ghetto Artist",
-        "rank": 217,
-        "norm_rank": 271,
-        "region": "Taiwan"
-    },
-    "RC1": {
-        "full": "Rio Company",
-        "rank": 218,
-        "norm_rank": 218,
-        "region": "South Korea"
-    },
-    "AR": {
-        "full": "Acend Rising",
-        "rank": 219,
-        "norm_rank": 252,
-        "region": "Europe"
-    },
-    "FLY": {
-        "full": "Flyquest",
+    "100T1": {
+        "full": "100 Thieves",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 5,
-        "vlr_abbr": "FLY"
+        "regional_rank": 3,
+        "vlr_abbr": "100T"
+    },
+    "C91": {
+        "full": "Cloud9",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 7,
+        "vlr_abbr": "C9"
+    },
+    "ENVY": {
+        "full": "Envy",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 8,
+        "vlr_abbr": "ENVY"
     },
     "DYNA": {
         "full": "Dynamo",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 10,
+        "regional_rank": 9,
         "vlr_abbr": "DYNA"
     },
-    "D1": {
-        "full": "Division One",
+    "M801": {
+        "full": "M80",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 12,
-        "vlr_abbr": "D1"
+        "regional_rank": 10,
+        "vlr_abbr": "M80"
     },
     "SAD": {
         "full": "Sad Esports",
@@ -1484,21 +741,21 @@
         "regional_rank": 19,
         "vlr_abbr": "EGA"
     },
-    "BLUE": {
-        "full": "Blue Otter",
-        "rank": 250,
-        "norm_rank": 262,
-        "region": "North America",
-        "regional_rank": 20,
-        "vlr_abbr": "BLUE"
-    },
     "COO": {
         "full": "Pigeons",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 21,
+        "regional_rank": 20,
         "vlr_abbr": "COO"
+    },
+    "BLUE": {
+        "full": "Blue Otter",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 21,
+        "vlr_abbr": "BLUE"
     },
     "MX": {
         "full": "Monarch X",
@@ -1521,7 +778,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 24,
+        "regional_rank": 25,
         "vlr_abbr": "HTTA"
     },
     "EVX": {
@@ -1529,7 +786,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 25,
+        "regional_rank": 24,
         "vlr_abbr": "EVX"
     },
     "FOG": {
@@ -1539,6 +796,14 @@
         "region": "North America",
         "regional_rank": 26,
         "vlr_abbr": "FOG"
+    },
+    "WADA": {
+        "full": "Wadadaa",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 27,
+        "vlr_abbr": "WADA"
     },
     "ADG": {
         "full": "Azure Dragon Gaming",
@@ -1556,20 +821,12 @@
         "regional_rank": 29,
         "vlr_abbr": "PP"
     },
-    "BOX": {
-        "full": "Bread Box",
-        "rank": 250,
-        "norm_rank": 262,
-        "region": "North America",
-        "regional_rank": 30,
-        "vlr_abbr": "BOX"
-    },
     "HYDR": {
         "full": "Hydra Esports",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 31,
+        "regional_rank": 29,
         "vlr_abbr": "HYDR"
     },
     "BWAF": {
@@ -1577,7 +834,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 32,
+        "regional_rank": 30,
         "vlr_abbr": "BWAF"
     },
     "DIVI": {
@@ -1585,7 +842,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 33,
+        "regional_rank": 31,
         "vlr_abbr": "DIVI"
     },
     "RU": {
@@ -1593,7 +850,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 34,
+        "regional_rank": 33,
         "vlr_abbr": "RU"
     },
     "PG": {
@@ -1601,7 +858,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 35,
+        "regional_rank": 32,
         "vlr_abbr": "PG"
     },
     "PULS": {
@@ -1609,24 +866,40 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 36,
+        "regional_rank": 34,
         "vlr_abbr": "PULS"
     },
-    "CT": {
-        "full": "Certified Turtles",
+    "EG": {
+        "full": "Evil Geniuses",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 38,
-        "vlr_abbr": "CT"
+        "regional_rank": 35,
+        "vlr_abbr": "EG"
     },
     "MINU": {
         "full": "Minutemen",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 39,
+        "regional_rank": 37,
         "vlr_abbr": "MINU"
+    },
+    "CT": {
+        "full": "Certified Turtles",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 36,
+        "vlr_abbr": "CT"
+    },
+    "DIGI": {
+        "full": "Team Digital",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 38,
+        "vlr_abbr": "DIGI"
     },
     "NW": {
         "full": "Northwood University",
@@ -1636,36 +909,28 @@
         "regional_rank": 40,
         "vlr_abbr": "NW"
     },
-    "DIGI": {
-        "full": "Team Digital",
+    "BABO": {
+        "full": "Baboons",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
         "regional_rank": 41,
-        "vlr_abbr": "DIGI"
+        "vlr_abbr": "BABO"
     },
     "KIND": {
         "full": "Kindred",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 42,
+        "regional_rank": 39,
         "vlr_abbr": "KIND"
-    },
-    "BABO": {
-        "full": "Baboons",
-        "rank": 250,
-        "norm_rank": 262,
-        "region": "North America",
-        "regional_rank": 43,
-        "vlr_abbr": "BABO"
     },
     "HU": {
         "full": "Harrisburg University",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 44,
+        "regional_rank": 42,
         "vlr_abbr": "HU"
     },
     "AXS": {
@@ -1673,31 +938,31 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 45,
+        "regional_rank": 43,
         "vlr_abbr": "AxS"
-    },
-    "FREE": {
-        "full": "Freedat",
-        "rank": 250,
-        "norm_rank": 262,
-        "region": "North America",
-        "regional_rank": 46,
-        "vlr_abbr": "FREE"
     },
     "CCG": {
         "full": "Ccg Esports",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 47,
+        "regional_rank": 45,
         "vlr_abbr": "CCG"
+    },
+    "FREE": {
+        "full": "Freedat",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 44,
+        "vlr_abbr": "FREE"
     },
     "WG": {
         "full": "Wanted Goons",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 48,
+        "regional_rank": 46,
         "vlr_abbr": "WG"
     },
     "F5": {
@@ -1705,7 +970,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 49,
+        "regional_rank": 47,
         "vlr_abbr": "F5"
     },
     "AXG": {
@@ -1713,7 +978,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 50,
+        "regional_rank": 48,
         "vlr_abbr": "AXG"
     },
     "ATNA": {
@@ -1721,7 +986,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 51,
+        "regional_rank": 50,
         "vlr_abbr": "ATNA"
     },
     "NOCT": {
@@ -1729,7 +994,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 52,
+        "regional_rank": 49,
         "vlr_abbr": "NOCT"
     },
     "X8": {
@@ -1737,7 +1002,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 53,
+        "regional_rank": 51,
         "vlr_abbr": "X8"
     },
     "INCO": {
@@ -1745,7 +1010,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 54,
+        "regional_rank": 53,
         "vlr_abbr": "INCO"
     },
     "MW": {
@@ -1753,7 +1018,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 55,
+        "regional_rank": 52,
         "vlr_abbr": "MW"
     },
     "XORA": {
@@ -1761,7 +1026,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 56,
+        "regional_rank": 54,
         "vlr_abbr": "XORA"
     },
     "UL": {
@@ -1769,7 +1034,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 57,
+        "regional_rank": 55,
         "vlr_abbr": "UL"
     },
     "HERO": {
@@ -1777,47 +1042,47 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 58,
+        "regional_rank": 57,
         "vlr_abbr": "HERO"
-    },
-    "SS": {
-        "full": "Street Sweepers",
-        "rank": 250,
-        "norm_rank": 262,
-        "region": "North America",
-        "regional_rank": 59,
-        "vlr_abbr": "SS"
     },
     "MVSK": {
         "full": "Mvsk Treasure",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 60,
+        "regional_rank": 58,
         "vlr_abbr": "MVSK"
     },
-    "SOL": {
-        "full": "Solestrix",
+    "SS": {
+        "full": "Street Sweepers",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 61,
-        "vlr_abbr": "SOL"
+        "regional_rank": 56,
+        "vlr_abbr": "SS"
     },
     "OCTO": {
         "full": "Octonauts",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 62,
+        "regional_rank": 60,
         "vlr_abbr": "OCTO"
+    },
+    "SOL": {
+        "full": "Solestrix",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 59,
+        "vlr_abbr": "SOL"
     },
     "KSU": {
         "full": "Ksu Gold",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 63,
+        "regional_rank": 61,
         "vlr_abbr": "KSU"
     },
     "1C34": {
@@ -1825,7 +1090,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 64,
+        "regional_rank": 62,
         "vlr_abbr": "1C34"
     },
     "BZK": {
@@ -1833,7 +1098,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 65,
+        "regional_rank": 63,
         "vlr_abbr": "BZK"
     },
     "BURG": {
@@ -1841,7 +1106,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 9,
+        "regional_rank": 64,
         "vlr_abbr": "BURG"
     },
     "GP": {
@@ -1849,7 +1114,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 67,
+        "regional_rank": 65,
         "vlr_abbr": "GP"
     },
     "KRYP": {
@@ -1857,55 +1122,47 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 68,
+        "regional_rank": 66,
         "vlr_abbr": "KRYP"
-    },
-    "MADE": {
-        "full": "Made In America",
-        "rank": 250,
-        "norm_rank": 262,
-        "region": "North America",
-        "regional_rank": 69,
-        "vlr_abbr": "MADE"
-    },
-    "SNS": {
-        "full": "Team Surelynotsierra",
-        "rank": 250,
-        "norm_rank": 262,
-        "region": "North America",
-        "regional_rank": 70,
-        "vlr_abbr": "SNS"
     },
     "PNBC": {
         "full": "Plz No Ban Chamber",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 71,
+        "regional_rank": 69,
         "vlr_abbr": "PNBC"
     },
-    "RC2": {
+    "SNS": {
+        "full": "Team Surelynotsierra",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 67,
+        "vlr_abbr": "SNS"
+    },
+    "MADE": {
+        "full": "Made In America",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 68,
+        "vlr_abbr": "MADE"
+    },
+    "RC": {
         "full": "Refugee Camp",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 72,
+        "regional_rank": 70,
         "vlr_abbr": "RC"
-    },
-    "PHX": {
-        "full": "Cumberland Phoenix",
-        "rank": 250,
-        "norm_rank": 262,
-        "region": "North America",
-        "regional_rank": 73,
-        "vlr_abbr": "PHX"
     },
     "MLV": {
         "full": "Michilovers",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 74,
+        "regional_rank": 71,
         "vlr_abbr": "MLV"
     },
     "PUG": {
@@ -1913,31 +1170,39 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 75,
+        "regional_rank": 73,
         "vlr_abbr": "PUG"
+    },
+    "PHX": {
+        "full": "Cumberland Phoenix",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 72,
+        "vlr_abbr": "PHX"
     },
     "FA": {
         "full": "Freest Agents",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 76,
+        "regional_rank": 74,
         "vlr_abbr": "FA"
     },
-    "OF1": {
-        "full": "Ora Farmers",
+    "GROK": {
+        "full": "Grokai",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
         "regional_rank": 77,
-        "vlr_abbr": "OF"
+        "vlr_abbr": "GROK"
     },
     "EVXB": {
         "full": "Team Evictix Black",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 78,
+        "regional_rank": 75,
         "vlr_abbr": "EVXB"
     },
     "DD": {
@@ -1945,31 +1210,23 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 79,
+        "regional_rank": 78,
         "vlr_abbr": "DD"
     },
-    "BB1": {
-        "full": "Bipolar Bears",
+    "OF": {
+        "full": "Ora Farmers",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 80,
-        "vlr_abbr": "BB"
-    },
-    "GROK": {
-        "full": "Grokai",
-        "rank": 250,
-        "norm_rank": 262,
-        "region": "North America",
-        "regional_rank": 81,
-        "vlr_abbr": "GROK"
+        "regional_rank": 76,
+        "vlr_abbr": "OF"
     },
     "ME": {
         "full": "Monarch-X Ekko",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 82,
+        "regional_rank": 80,
         "vlr_abbr": "ME"
     },
     "ROSO": {
@@ -1977,7 +1234,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 83,
+        "regional_rank": 79,
         "vlr_abbr": "ROSO"
     },
     "TK": {
@@ -1985,7 +1242,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 84,
+        "regional_rank": 81,
         "vlr_abbr": "TK"
     },
     "CRWN": {
@@ -1993,7 +1250,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 85,
+        "regional_rank": 82,
         "vlr_abbr": "CRWN"
     },
     "WHPR": {
@@ -2001,47 +1258,47 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 86,
+        "regional_rank": 83,
         "vlr_abbr": "WHPR"
-    },
-    "ROSE": {
-        "full": "Rose",
-        "rank": 250,
-        "norm_rank": 262,
-        "region": "North America",
-        "regional_rank": 87,
-        "vlr_abbr": "ROSE"
-    },
-    "TAPI": {
-        "full": "Tapioca",
-        "rank": 250,
-        "norm_rank": 262,
-        "region": "North America",
-        "regional_rank": 88,
-        "vlr_abbr": "TAPI"
-    },
-    "TEMP": {
-        "full": "Tempr",
-        "rank": 250,
-        "norm_rank": 262,
-        "region": "North America",
-        "regional_rank": 89,
-        "vlr_abbr": "TEMP"
     },
     "ORA": {
         "full": "Ora Esports",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 90,
+        "regional_rank": 87,
         "vlr_abbr": "ORA"
+    },
+    "ROSE": {
+        "full": "Rose",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 85,
+        "vlr_abbr": "ROSE"
+    },
+    "TEMP": {
+        "full": "Tempr",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 84,
+        "vlr_abbr": "TEMP"
+    },
+    "TAPI": {
+        "full": "Tapioca",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 86,
+        "vlr_abbr": "TAPI"
     },
     "TCOU": {
         "full": "The Chopped Of Us",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 91,
+        "regional_rank": 89,
         "vlr_abbr": "TCOU"
     },
     "CJ": {
@@ -2049,7 +1306,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 92,
+        "regional_rank": 88,
         "vlr_abbr": "CJ"
     },
     "ERIN": {
@@ -2057,7 +1314,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 93,
+        "regional_rank": 90,
         "vlr_abbr": "ERIN"
     },
     "NG": {
@@ -2065,7 +1322,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 94,
+        "regional_rank": 91,
         "vlr_abbr": "NG"
     },
     "LI": {
@@ -2073,7 +1330,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 95,
+        "regional_rank": 92,
         "vlr_abbr": "LI"
     },
     "INSO": {
@@ -2081,7 +1338,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 7,
+        "regional_rank": 93,
         "vlr_abbr": "INSO"
     },
     "EXF": {
@@ -2089,7 +1346,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 97,
+        "regional_rank": 94,
         "vlr_abbr": "EXF"
     },
     "OVER1": {
@@ -2097,63 +1354,71 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 98,
+        "regional_rank": 95,
         "vlr_abbr": "OVER"
-    },
-    "HEHE": {
-        "full": "Heheheha",
-        "rank": 250,
-        "norm_rank": 262,
-        "region": "North America",
-        "regional_rank": 99,
-        "vlr_abbr": "HEHE"
-    },
-    "KIRI": {
-        "full": "Team Kiri",
-        "rank": 250,
-        "norm_rank": 262,
-        "region": "North America",
-        "regional_rank": 100,
-        "vlr_abbr": "KIRI"
     },
     "CVU": {
         "full": "Converse University",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 101,
+        "regional_rank": 96,
         "vlr_abbr": "CVU"
     },
-    "BBB": {
-        "full": "Big Balled Baby'S",
+    "KIRI": {
+        "full": "Team Kiri",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 102,
-        "vlr_abbr": "BBB"
+        "regional_rank": 97,
+        "vlr_abbr": "KIRI"
     },
     "UCI": {
         "full": "Uc Irvine",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 103,
+        "regional_rank": 98,
         "vlr_abbr": "UCI"
     },
-    "PG1": {
-        "full": "Potent Gaming",
+    "BBB": {
+        "full": "Big Balled Baby'S",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 99,
+        "vlr_abbr": "BBB"
+    },
+    "FT": {
+        "full": "Full Tilt",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
         "regional_rank": 104,
-        "vlr_abbr": "PG"
+        "vlr_abbr": "FT"
+    },
+    "WVU": {
+        "full": "West Virginia University",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 105,
+        "vlr_abbr": "WVU"
+    },
+    "HEHE": {
+        "full": "Heheheha",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 102,
+        "vlr_abbr": "HEHE"
     },
     "TEMP1": {
         "full": "Tempers",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 105,
+        "regional_rank": 101,
         "vlr_abbr": "TEMP"
     },
     "CP": {
@@ -2161,50 +1426,50 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 106,
+        "regional_rank": 103,
         "vlr_abbr": "CP"
     },
-    "WVU": {
-        "full": "West Virginia University",
+    "PG1": {
+        "full": "Potent Gaming",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 107,
-        "vlr_abbr": "WVU"
-    },
-    "FT": {
-        "full": "Full Tilt",
-        "rank": 250,
-        "norm_rank": 262,
-        "region": "North America",
-        "regional_rank": 108,
-        "vlr_abbr": "FT"
-    },
-    "ER": {
-        "full": "Echelon Right",
-        "rank": 250,
-        "norm_rank": 262,
-        "region": "North America",
-        "regional_rank": 109,
-        "vlr_abbr": "ER"
+        "regional_rank": 100,
+        "vlr_abbr": "PG"
     },
     "YDZ": {
         "full": "Ydz Esports",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 110,
+        "regional_rank": 106,
         "vlr_abbr": "YDZ"
     },
-    "SN": {
-        "full": "Solestia Nova",
+    "ER": {
+        "full": "Echelon Right",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 107,
+        "vlr_abbr": "ER"
+    },
+    "SUPE": {
+        "full": "Superstars",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 113,
+        "vlr_abbr": "SUPE"
+    },
+    "SHU": {
+        "full": "Siena Heights University",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
         "regional_rank": 111,
-        "vlr_abbr": "SN"
+        "vlr_abbr": "SHU"
     },
-    "AS1": {
+    "AS": {
         "full": "Arrival Seven",
         "rank": 250,
         "norm_rank": 262,
@@ -2212,55 +1477,79 @@
         "regional_rank": 112,
         "vlr_abbr": "AS"
     },
-    "SHU": {
-        "full": "Siena Heights University",
+    "TU": {
+        "full": "The Unemployed",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 114,
-        "vlr_abbr": "SHU"
+        "regional_rank": 108,
+        "vlr_abbr": "TU"
     },
-    "TG1": {
+    "SN": {
+        "full": "Solestia Nova",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 109,
+        "vlr_abbr": "SN"
+    },
+    "TG": {
         "full": "Tedward Gaming",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 116,
+        "regional_rank": 110,
         "vlr_abbr": "TG"
-    },
-    "OR": {
-        "full": "Overtake Red",
-        "rank": 250,
-        "norm_rank": 262,
-        "region": "North America",
-        "regional_rank": 117,
-        "vlr_abbr": "OR"
-    },
-    "MIBR1": {
-        "full": "Made In Brampton",
-        "rank": 250,
-        "norm_rank": 262,
-        "region": "North America",
-        "regional_rank": 118,
-        "vlr_abbr": "MIBR"
     },
     "GLAC": {
         "full": "Glacial",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 119,
+        "regional_rank": 114,
         "vlr_abbr": "GLAC"
+    },
+    "OR": {
+        "full": "Overtake Red",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 116,
+        "vlr_abbr": "OR"
+    },
+    "BB": {
+        "full": "Bipolar Bears",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 117,
+        "vlr_abbr": "BB"
+    },
+    "MIBR1": {
+        "full": "Made In Brampton",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 115,
+        "vlr_abbr": "MIBR"
     },
     "DELE": {
         "full": "Deleta Esports",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 120,
+        "regional_rank": 118,
         "vlr_abbr": "DELE"
     },
-    "CG1": {
+    "7VEN": {
+        "full": "7Ven",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 119,
+        "vlr_abbr": "7VEN"
+    },
+    "CG": {
         "full": "Costco Guys",
         "rank": 250,
         "norm_rank": 262,
@@ -2273,23 +1562,15 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 122,
+        "regional_rank": 120,
         "vlr_abbr": "TAMU"
     },
-    "7VEN": {
-        "full": "7Ven",
-        "rank": 250,
-        "norm_rank": 262,
-        "region": "North America",
-        "regional_rank": 123,
-        "vlr_abbr": "7VEN"
-    },
-    "RA1": {
+    "RA": {
         "full": "Reign Above",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 124,
+        "regional_rank": 122,
         "vlr_abbr": "RA"
     },
     "BR": {
@@ -2297,47 +1578,39 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 125,
+        "regional_rank": 123,
         "vlr_abbr": "BR"
-    },
-    "OA": {
-        "full": "Opritivz Anarchy",
-        "rank": 250,
-        "norm_rank": 262,
-        "region": "North America",
-        "regional_rank": 126,
-        "vlr_abbr": "OA"
-    },
-    "BENE": {
-        "full": "Beneath",
-        "rank": 250,
-        "norm_rank": 262,
-        "region": "North America",
-        "regional_rank": 127,
-        "vlr_abbr": "BENE"
     },
     "UG": {
         "full": "Usf Gold",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 180,
+        "regional_rank": 125,
         "vlr_abbr": "UG"
     },
-    "WU": {
-        "full": "Winthrop University",
+    "BENE": {
+        "full": "Beneath",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 129,
-        "vlr_abbr": "WU"
+        "regional_rank": 126,
+        "vlr_abbr": "BENE"
+    },
+    "OA": {
+        "full": "Opritivz Anarchy",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 124,
+        "vlr_abbr": "OA"
     },
     "DX": {
         "full": "Dynamo X",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 130,
+        "regional_rank": 127,
         "vlr_abbr": "DX"
     },
     "BSU": {
@@ -2345,39 +1618,39 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 131,
+        "regional_rank": 129,
         "vlr_abbr": "BSU"
     },
-    "MP": {
-        "full": "Max Passion",
+    "WU": {
+        "full": "Winthrop University",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 132,
-        "vlr_abbr": "MP"
-    },
-    "UI": {
-        "full": "University Of Idaho",
-        "rank": 250,
-        "norm_rank": 262,
-        "region": "North America",
-        "regional_rank": 133,
-        "vlr_abbr": "UI"
+        "regional_rank": 128,
+        "vlr_abbr": "WU"
     },
     "DREA": {
         "full": "Dream Esports",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 134,
+        "regional_rank": 131,
         "vlr_abbr": "DREA"
+    },
+    "UI": {
+        "full": "University Of Idaho",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 130,
+        "vlr_abbr": "UI"
     },
     "BIOS": {
         "full": "Bioshock Esports",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 135,
+        "regional_rank": 132,
         "vlr_abbr": "BIOS"
     },
     "REV": {
@@ -2385,15 +1658,23 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 136,
+        "regional_rank": 133,
         "vlr_abbr": "REV"
+    },
+    "MP": {
+        "full": "Max Passion",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 134,
+        "vlr_abbr": "MP"
     },
     "YDZ.I": {
         "full": "Ydz Infinity",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 137,
+        "regional_rank": 135,
         "vlr_abbr": "YDZ.I"
     },
     "UF": {
@@ -2401,7 +1682,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 138,
+        "regional_rank": 136,
         "vlr_abbr": "UF"
     },
     "ELYS": {
@@ -2409,7 +1690,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 139,
+        "regional_rank": 137,
         "vlr_abbr": "ELYS"
     },
     "GREE": {
@@ -2417,7 +1698,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 140,
+        "regional_rank": 138,
         "vlr_abbr": "GREE"
     },
     "FU": {
@@ -2425,8 +1706,16 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 141,
+        "regional_rank": 139,
         "vlr_abbr": "FU"
+    },
+    "OA1": {
+        "full": "Oryn Academy",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 141,
+        "vlr_abbr": "OA"
     },
     "NXG": {
         "full": "Nxg",
@@ -2436,29 +1725,21 @@
         "regional_rank": 142,
         "vlr_abbr": "NXG"
     },
-    "OA1": {
-        "full": "Oryn Academy",
-        "rank": 250,
-        "norm_rank": 262,
-        "region": "North America",
-        "regional_rank": 143,
-        "vlr_abbr": "OA"
-    },
     "MECH": {
         "full": "Machine Esports",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 145,
+        "regional_rank": 143,
         "vlr_abbr": "MECH"
     },
-    "MJ": {
-        "full": "Mvsk Jokers",
+    "LION": {
+        "full": "Lionheart Esports",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 146,
-        "vlr_abbr": "MJ"
+        "regional_rank": 145,
+        "vlr_abbr": "LION"
     },
     "FROG": {
         "full": "Froggers",
@@ -2473,31 +1754,23 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 148,
+        "regional_rank": 146,
         "vlr_abbr": "UD"
     },
-    "LION": {
-        "full": "Lionheart Esports",
+    "MJ": {
+        "full": "Mvsk Jokers",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 150,
-        "vlr_abbr": "LION"
-    },
-    "EFN": {
-        "full": "Eternal Focus Night",
-        "rank": 250,
-        "norm_rank": 262,
-        "region": "North America",
-        "regional_rank": 151,
-        "vlr_abbr": "EFN"
+        "regional_rank": 144,
+        "vlr_abbr": "MJ"
     },
     "CF": {
         "full": "Cool Frogs",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 152,
+        "regional_rank": 149,
         "vlr_abbr": "CF"
     },
     "GS": {
@@ -2505,47 +1778,55 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 153,
+        "regional_rank": 150,
         "vlr_abbr": "GS"
-    },
-    "OCE5": {
-        "full": "Oce5N",
-        "rank": 250,
-        "norm_rank": 262,
-        "region": "North America",
-        "regional_rank": 154,
-        "vlr_abbr": "OCE5"
-    },
-    "SMC": {
-        "full": "Smc Esports",
-        "rank": 250,
-        "norm_rank": 262,
-        "region": "North America",
-        "regional_rank": 155,
-        "vlr_abbr": "SMC"
     },
     "KSU1": {
         "full": "Kent State University",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 156,
+        "regional_rank": 152,
         "vlr_abbr": "KSU"
     },
-    "AR1": {
+    "SMC": {
+        "full": "Smc Esports",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 153,
+        "vlr_abbr": "SMC"
+    },
+    "OCE5": {
+        "full": "Oce5N",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 151,
+        "vlr_abbr": "OCE5"
+    },
+    "AR": {
         "full": "Arctic Reign",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 157,
+        "regional_rank": 154,
         "vlr_abbr": "AR"
+    },
+    "MK": {
+        "full": "Mvsk Kings",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 157,
+        "vlr_abbr": "MK"
     },
     "NUGG": {
         "full": "Nugget",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 158,
+        "regional_rank": 156,
         "vlr_abbr": "NUGG"
     },
     "KU": {
@@ -2553,23 +1834,23 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 159,
+        "regional_rank": 155,
         "vlr_abbr": "KU"
     },
-    "MK": {
-        "full": "Mvsk Kings",
+    "EFN": {
+        "full": "Eternal Focus Night",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 160,
-        "vlr_abbr": "MK"
+        "regional_rank": 158,
+        "vlr_abbr": "EFN"
     },
     "ORBI": {
         "full": "Orbit",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 161,
+        "regional_rank": 159,
         "vlr_abbr": "ORBI"
     },
     "BH": {
@@ -2577,7 +1858,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 162,
+        "regional_rank": 160,
         "vlr_abbr": "BH"
     },
     "TMU.B": {
@@ -2585,32 +1866,56 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 163,
+        "regional_rank": 161,
         "vlr_abbr": "TMU.B"
+    },
+    "AO": {
+        "full": "Alphaware Olympians",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 162,
+        "vlr_abbr": "AO"
+    },
+    "INTE": {
+        "full": "Inters",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 163,
+        "vlr_abbr": "INTE"
     },
     "MST": {
         "full": "Mst Gold",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 165,
-        "vlr_abbr": "MST"
-    },
-    "FISH": {
-        "full": "Fishers",
-        "rank": 250,
-        "norm_rank": 262,
-        "region": "North America",
         "regional_rank": 166,
-        "vlr_abbr": "FISH"
+        "vlr_abbr": "MST"
     },
     "SERA": {
         "full": "Seraph",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 167,
+        "regional_rank": 165,
         "vlr_abbr": "SERA"
+    },
+    "FISH": {
+        "full": "Fishers",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 164,
+        "vlr_abbr": "FISH"
+    },
+    "EF1": {
+        "full": "Eternal Focus",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 167,
+        "vlr_abbr": "EF"
     },
     "ELAT": {
         "full": "Elation Esports",
@@ -2628,20 +1933,12 @@
         "regional_rank": 169,
         "vlr_abbr": "TA"
     },
-    "INTE": {
-        "full": "Inters",
-        "rank": 250,
-        "norm_rank": 262,
-        "region": "North America",
-        "regional_rank": 170,
-        "vlr_abbr": "INTE"
-    },
     "RO": {
         "full": "Rit Orange",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 171,
+        "regional_rank": 170,
         "vlr_abbr": "RO"
     },
     "ZG": {
@@ -2649,23 +1946,15 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 172,
+        "regional_rank": 171,
         "vlr_abbr": "ZG"
-    },
-    "AO": {
-        "full": "Alphaware Olympians",
-        "rank": 250,
-        "norm_rank": 262,
-        "region": "North America",
-        "regional_rank": 173,
-        "vlr_abbr": "AO"
     },
     "GLXY": {
         "full": "Galaxy Gaming",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 174,
+        "regional_rank": 172,
         "vlr_abbr": "GLXY"
     },
     "NTM": {
@@ -2673,7 +1962,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 175,
+        "regional_rank": 173,
         "vlr_abbr": "NTM"
     },
     "EV": {
@@ -2681,7 +1970,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 176,
+        "regional_rank": 174,
         "vlr_abbr": "EV"
     },
     "EXIL": {
@@ -2689,47 +1978,55 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 177,
+        "regional_rank": 175,
         "vlr_abbr": "EXIL"
-    },
-    "EM": {
-        "full": "Ends Meet",
-        "rank": 250,
-        "norm_rank": 262,
-        "region": "North America",
-        "regional_rank": 178,
-        "vlr_abbr": "EM"
     },
     "EMPI": {
         "full": "Empire Gaming",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 179,
+        "regional_rank": 177,
         "vlr_abbr": "EMPI"
     },
-    "KUMA": {
-        "full": "Onikuma",
+    "EM": {
+        "full": "Ends Meet",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 181,
-        "vlr_abbr": "KUMA"
+        "regional_rank": 176,
+        "vlr_abbr": "EM"
+    },
+    "UCSD": {
+        "full": "Ucsd Gold",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 178,
+        "vlr_abbr": "UCSD"
     },
     "ER1": {
         "full": "Empire Redux",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 182,
+        "regional_rank": 179,
         "vlr_abbr": "ER"
+    },
+    "KUMA": {
+        "full": "Onikuma",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 180,
+        "vlr_abbr": "KUMA"
     },
     "NEXT": {
         "full": "Nextgenesports",
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 183,
+        "regional_rank": 181,
         "vlr_abbr": "NEXT"
     },
     "EMU": {
@@ -2737,7 +2034,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 184,
+        "regional_rank": 182,
         "vlr_abbr": "EMU"
     },
     "VR": {
@@ -2745,104 +2042,48 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 185,
+        "regional_rank": 183,
         "vlr_abbr": "VR"
     },
-    "TLA": {
-        "full": "Team Liquid Academy",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 7,
-        "vlr_abbr": "TLA"
-    },
-    "REBO": {
-        "full": "Reborn",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 11,
-        "vlr_abbr": "REBO"
-    },
-    "SGE": {
-        "full": "Eintracht Frankfurt",
+    "GX": {
+        "full": "Giantx",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
         "regional_rank": 13,
-        "vlr_abbr": "SGE"
+        "vlr_abbr": "GX"
     },
-    "WIP": {
-        "full": "Wip Esports",
+    "M8": {
+        "full": "Gentle Mates",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 15,
-        "vlr_abbr": "WIP"
-    },
-    "NVJ": {
-        "full": "Natus Vincere Junior",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 17,
-        "vlr_abbr": "NVJ"
+        "regional_rank": 16,
+        "vlr_abbr": "M8"
     },
     "BJK": {
         "full": "Be\u015fikta\u015f Esports",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 18,
-        "vlr_abbr": "BJK"
-    },
-    "MISA": {
-        "full": "Misa Esports",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
         "regional_rank": 19,
-        "vlr_abbr": "MISA"
+        "vlr_abbr": "BJK"
     },
     "BFG": {
         "full": "Bitfix Gaming",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 21,
+        "regional_rank": 22,
         "vlr_abbr": "BFG"
     },
-    "UCAM": {
-        "full": "Ucam Esports Club",
+    "NAVI": {
+        "full": "Natus Vincere",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 22,
-        "vlr_abbr": "UCAM"
-    },
-    "BAR": {
-        "full": "Bar\u00e7a Esports",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 23,
-        "vlr_abbr": "BAR"
-    },
-    "DSY": {
-        "full": "Dnsty",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 24,
-        "vlr_abbr": "DSY"
-    },
-    "MIR": {
-        "full": "Mir",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 25,
-        "vlr_abbr": "MIR"
+        "regional_rank": 26,
+        "vlr_abbr": "NAVI"
     },
     "BM": {
         "full": "Bratan Mix",
@@ -2868,21 +2109,29 @@
         "regional_rank": 30,
         "vlr_abbr": "FA"
     },
-    "SM": {
-        "full": "Szach Mat",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 31,
-        "vlr_abbr": "SM"
-    },
     "TOG": {
         "full": "Teamorangegaming",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 32,
+        "regional_rank": 31,
         "vlr_abbr": "TOG"
+    },
+    "SM": {
+        "full": "Szach Mat",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 32,
+        "vlr_abbr": "SM"
+    },
+    "BNK": {
+        "full": "Bonk",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 33,
+        "vlr_abbr": "BNK"
     },
     "KLAN": {
         "full": "Klannalan",
@@ -2908,7 +2157,7 @@
         "regional_rank": 36,
         "vlr_abbr": "FORW"
     },
-    "LP1": {
+    "LP": {
         "full": "Lost Puppies",
         "rank": 250,
         "norm_rank": 288,
@@ -2996,20 +2245,20 @@
         "regional_rank": 47,
         "vlr_abbr": "JLM"
     },
-    "SKN": {
-        "full": "Sk Nebula",
+    "FKS.S": {
+        "full": "Fokus Sakura",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
         "regional_rank": 48,
-        "vlr_abbr": "SKN"
+        "vlr_abbr": "FKS.S"
     },
     "GOFU": {
         "full": "Gofund4Omarhouse",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 49,
+        "regional_rank": 50,
         "vlr_abbr": "GOFU"
     },
     "DXG": {
@@ -3017,16 +2266,8 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 335,
+        "regional_rank": 334,
         "vlr_abbr": "DXG"
-    },
-    "RZN": {
-        "full": "Rizon",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 51,
-        "vlr_abbr": "RZN"
     },
     "BRRR": {
         "full": "Brrr",
@@ -3044,13 +2285,13 @@
         "regional_rank": 54,
         "vlr_abbr": "RV"
     },
-    "QM": {
-        "full": "Questionmarks",
+    "RZN": {
+        "full": "Rizon",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
         "regional_rank": 55,
-        "vlr_abbr": "QM"
+        "vlr_abbr": "RZN"
     },
     "REIG": {
         "full": "Reign",
@@ -3060,21 +2301,21 @@
         "regional_rank": 56,
         "vlr_abbr": "REIG"
     },
+    "QM": {
+        "full": "Questionmarks",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 57,
+        "vlr_abbr": "QM"
+    },
     "AH": {
         "full": "Aka Hero",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 57,
-        "vlr_abbr": "AH"
-    },
-    "RLA": {
-        "full": "Royal Legion Academy",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
         "regional_rank": 58,
-        "vlr_abbr": "RLA"
+        "vlr_abbr": "AH"
     },
     "VCV": {
         "full": "Vct Champions V2",
@@ -3092,12 +2333,20 @@
         "regional_rank": 60,
         "vlr_abbr": "GL"
     },
+    "RLA": {
+        "full": "Royal Legion Academy",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 61,
+        "vlr_abbr": "RLA"
+    },
     "FLK": {
         "full": "Falke Esports",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 61,
+        "regional_rank": 62,
         "vlr_abbr": "FLK"
     },
     "SH": {
@@ -3105,7 +2354,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 62,
+        "regional_rank": 63,
         "vlr_abbr": "SH"
     },
     "KX": {
@@ -3113,7 +2362,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 63,
+        "regional_rank": 64,
         "vlr_abbr": "KX"
     },
     "HLT": {
@@ -3121,7 +2370,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 64,
+        "regional_rank": 65,
         "vlr_abbr": "HLT"
     },
     "FULL": {
@@ -3129,32 +2378,32 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 65,
+        "regional_rank": 66,
         "vlr_abbr": "FULL"
     },
-    "OTK": {
-        "full": "Otakar Esports",
+    "GS1": {
+        "full": "Galatasaray Esports",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 66,
-        "vlr_abbr": "OTK"
+        "regional_rank": 67,
+        "vlr_abbr": "GS"
     },
     "GG": {
         "full": "Glacial Guardians",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 297,
+        "regional_rank": 68,
         "vlr_abbr": "GG"
     },
-    "WHYB": {
-        "full": "Whybye",
+    "OTK": {
+        "full": "Otakar Esports",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
         "regional_rank": 69,
-        "vlr_abbr": "WHYB"
+        "vlr_abbr": "OTK"
     },
     "SUP": {
         "full": "Papara Supermassive",
@@ -3164,12 +2413,20 @@
         "regional_rank": 70,
         "vlr_abbr": "SUP"
     },
+    "WHYB": {
+        "full": "Whybye",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 71,
+        "vlr_abbr": "WHYB"
+    },
     "SZK": {
         "full": "Suzaku Esports",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 71,
+        "regional_rank": 72,
         "vlr_abbr": "SZK"
     },
     "PXL": {
@@ -3177,7 +2434,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 72,
+        "regional_rank": 73,
         "vlr_abbr": "PXL"
     },
     "CC": {
@@ -3185,15 +2442,23 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 73,
+        "regional_rank": 74,
         "vlr_abbr": "CC"
+    },
+    "BA": {
+        "full": "Bitfix Academy",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 75,
+        "vlr_abbr": "BA"
     },
     "4PLA": {
         "full": "4Players1Bot",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 74,
+        "regional_rank": 76,
         "vlr_abbr": "4PLA"
     },
     "LB": {
@@ -3201,32 +2466,16 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 75,
+        "regional_rank": 77,
         "vlr_abbr": "LB"
     },
-    "BA1": {
-        "full": "Bitfix Academy",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 76,
-        "vlr_abbr": "BA"
-    },
-    "TG2": {
+    "TG1": {
         "full": "Twoface Gaming",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 77,
-        "vlr_abbr": "TG"
-    },
-    "SN1": {
-        "full": "Ssp Numina",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
         "regional_rank": 78,
-        "vlr_abbr": "SN"
+        "vlr_abbr": "TG"
     },
     "F9": {
         "full": "F9 Eicar",
@@ -3236,13 +2485,13 @@
         "regional_rank": 79,
         "vlr_abbr": "F9"
     },
-    "FKS.S": {
-        "full": "Fokus Sakura",
+    "SN1": {
+        "full": "Ssp Numina",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
         "regional_rank": 80,
-        "vlr_abbr": "FKS.S"
+        "vlr_abbr": "SN"
     },
     "20LA": {
         "full": "20Latori",
@@ -3308,28 +2557,36 @@
         "regional_rank": 88,
         "vlr_abbr": "NXR"
     },
-    "EST": {
-        "full": "Easties",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 89,
-        "vlr_abbr": "EST"
-    },
     "LAG": {
         "full": "Input Lag Enjoyers",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 90,
+        "regional_rank": 89,
         "vlr_abbr": "LAG"
+    },
+    "SARD": {
+        "full": "Sardegnaenjoyers",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 90,
+        "vlr_abbr": "SARD"
+    },
+    "EST": {
+        "full": "Easties",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 91,
+        "vlr_abbr": "EST"
     },
     "KCGC": {
         "full": "Karmine Corp Gc",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 91,
+        "regional_rank": 92,
         "vlr_abbr": "KCGC"
     },
     "MONK": {
@@ -3337,16 +2594,8 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 92,
-        "vlr_abbr": "MONK"
-    },
-    "SARD": {
-        "full": "Sardegnaenjoyers",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
         "regional_rank": 93,
-        "vlr_abbr": "SARD"
+        "vlr_abbr": "MONK"
     },
     "LK": {
         "full": "Lotus Knights",
@@ -3356,21 +2605,21 @@
         "regional_rank": 94,
         "vlr_abbr": "LK"
     },
-    "WACK": {
-        "full": "Wack",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 95,
-        "vlr_abbr": "WACK"
-    },
     "AV": {
         "full": "Anime Virgins",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 96,
+        "regional_rank": 95,
         "vlr_abbr": "AV"
+    },
+    "WACK": {
+        "full": "Wack",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 96,
+        "vlr_abbr": "WACK"
     },
     "BLAZ": {
         "full": "Blaze",
@@ -3380,31 +2629,23 @@
         "regional_rank": 97,
         "vlr_abbr": "BLAZ"
     },
-    "CLS": {
-        "full": "Colors Esport",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 98,
-        "vlr_abbr": "CLS"
-    },
     "GHOS": {
         "full": "Ghosts",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 99,
+        "regional_rank": 98,
         "vlr_abbr": "GHOS"
     },
-    "RGN": {
-        "full": "Reignited",
+    "BAR.GC": {
+        "full": "Bar\u00e7a Esports Gc",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
         "regional_rank": 100,
-        "vlr_abbr": "RGN"
+        "vlr_abbr": "BAR.GC"
     },
-    "SG3": {
+    "SG": {
         "full": "Semurg Gaming",
         "rank": 250,
         "norm_rank": 288,
@@ -3412,20 +2653,28 @@
         "regional_rank": 101,
         "vlr_abbr": "SG"
     },
-    "BAR.GC": {
-        "full": "Bar\u00e7a Esports Gc",
+    "RGN": {
+        "full": "Reignited",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
         "regional_rank": 102,
-        "vlr_abbr": "BAR.GC"
+        "vlr_abbr": "RGN"
+    },
+    "B0T1": {
+        "full": "B0T1",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 103,
+        "vlr_abbr": "B0T1"
     },
     "GASI": {
         "full": "Gasing",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 103,
+        "regional_rank": 104,
         "vlr_abbr": "GASI"
     },
     "LIL": {
@@ -3433,16 +2682,8 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 104,
-        "vlr_abbr": "LIL"
-    },
-    "B0T1": {
-        "full": "B0T1",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
         "regional_rank": 105,
-        "vlr_abbr": "B0T1"
+        "vlr_abbr": "LIL"
     },
     "VERT": {
         "full": "Vertical7Even",
@@ -3484,21 +2725,21 @@
         "regional_rank": 110,
         "vlr_abbr": "ASTR"
     },
-    "FOCU": {
-        "full": "Focu5 Esports",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 111,
-        "vlr_abbr": "FOCU"
-    },
     "JABB": {
         "full": "Jabbawockeez",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 112,
+        "regional_rank": 111,
         "vlr_abbr": "JABB"
+    },
+    "TKC": {
+        "full": "Thy Kingdom Come",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 112,
+        "vlr_abbr": "TKC"
     },
     "PLOP": {
         "full": "Plop",
@@ -3508,20 +2749,28 @@
         "regional_rank": 113,
         "vlr_abbr": "PLOP"
     },
-    "TKC": {
-        "full": "Thy Kingdom Come",
+    "FOCU": {
+        "full": "Focu5 Esports",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
         "regional_rank": 114,
-        "vlr_abbr": "TKC"
+        "vlr_abbr": "FOCU"
     },
-    "GR1": {
-        "full": "Grube Ryby",
+    "M'PA": {
+        "full": "M'Pafwax",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
         "regional_rank": 115,
+        "vlr_abbr": "M'PA"
+    },
+    "GR": {
+        "full": "Grube Ryby",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 116,
         "vlr_abbr": "GR"
     },
     "BAND": {
@@ -3529,16 +2778,8 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 116,
-        "vlr_abbr": "BAND"
-    },
-    "M'PA": {
-        "full": "M'Pafwax",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
         "regional_rank": 117,
-        "vlr_abbr": "M'PA"
+        "vlr_abbr": "BAND"
     },
     "MH": {
         "full": "Mental Hospital",
@@ -3556,21 +2797,29 @@
         "regional_rank": 119,
         "vlr_abbr": "CFG"
     },
-    "LAND": {
-        "full": "Landodgers",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 40,
-        "vlr_abbr": "LAND"
-    },
     "ARIS": {
         "full": "Arise",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 121,
+        "regional_rank": 120,
         "vlr_abbr": "ARIS"
+    },
+    "KPI": {
+        "full": "Kpi Gaming",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 121,
+        "vlr_abbr": "KPI"
+    },
+    "LAND": {
+        "full": "Landodgers",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Asia-Pacific",
+        "regional_rank": 40,
+        "vlr_abbr": "LAND"
     },
     "TURK": {
         "full": "Turkey5",
@@ -3580,60 +2829,68 @@
         "regional_rank": 123,
         "vlr_abbr": "TURK"
     },
-    "AED": {
-        "full": "Aab Esport Denmark",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 124,
-        "vlr_abbr": "AED"
-    },
     "CA": {
         "full": "Crazy Academy",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 125,
+        "regional_rank": 124,
         "vlr_abbr": "CA"
     },
-    "7S": {
-        "full": "7Sensitive Eu",
+    "AED": {
+        "full": "Aab Esport Denmark",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 125,
+        "vlr_abbr": "AED"
+    },
+    "FU1": {
+        "full": "Frg Uk",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
         "regional_rank": 126,
-        "vlr_abbr": "7S"
-    },
-    "TL1": {
-        "full": "The Labruzzbus",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 127,
-        "vlr_abbr": "TL"
-    },
-    "ROKA": {
-        "full": "Rokaheat",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 128,
-        "vlr_abbr": "ROKA"
+        "vlr_abbr": "FU"
     },
     "KE": {
         "full": "Kroown Esport",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 129,
+        "regional_rank": 127,
         "vlr_abbr": "KE"
+    },
+    "7S": {
+        "full": "7Sensitive Eu",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 128,
+        "vlr_abbr": "7S"
+    },
+    "ROKA": {
+        "full": "Rokaheat",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 129,
+        "vlr_abbr": "ROKA"
+    },
+    "TL1": {
+        "full": "The Labruzzbus",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 130,
+        "vlr_abbr": "TL"
     },
     "VENN": {
         "full": "Vennegjengen",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 130,
+        "regional_rank": 131,
         "vlr_abbr": "VENN"
     },
     "IM": {
@@ -3641,7 +2898,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 131,
+        "regional_rank": 132,
         "vlr_abbr": "IM"
     },
     "BR1": {
@@ -3649,7 +2906,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 132,
+        "regional_rank": 133,
         "vlr_abbr": "BR"
     },
     "RI": {
@@ -3657,48 +2914,40 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 133,
-        "vlr_abbr": "RI"
-    },
-    "FU1": {
-        "full": "Frg Uk",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
         "regional_rank": 134,
-        "vlr_abbr": "FU"
-    },
-    "HE": {
-        "full": "Hook Esport",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 246,
-        "vlr_abbr": "HE"
+        "vlr_abbr": "RI"
     },
     "DG": {
         "full": "Team Divergentes Gc",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 136,
+        "regional_rank": 135,
         "vlr_abbr": "DG"
     },
-    "ROUN": {
-        "full": "Rounds",
+    "HE": {
+        "full": "Hook Esport",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 137,
-        "vlr_abbr": "ROUN"
+        "regional_rank": 136,
+        "vlr_abbr": "HE"
     },
     "AX": {
         "full": "Axsor",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 138,
+        "regional_rank": 137,
         "vlr_abbr": "AX"
+    },
+    "ROUN": {
+        "full": "Rounds",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 138,
+        "vlr_abbr": "ROUN"
     },
     "RBT": {
         "full": "Ramboot Club",
@@ -3756,21 +3005,21 @@
         "regional_rank": 145,
         "vlr_abbr": "GL"
     },
-    "O2G": {
-        "full": "Oxygen Gaming",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 146,
-        "vlr_abbr": "O2G"
-    },
     "MP1": {
         "full": "Mhh Paella",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 147,
+        "regional_rank": 146,
         "vlr_abbr": "MP"
+    },
+    "O2G": {
+        "full": "Oxygen Gaming",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 147,
+        "vlr_abbr": "O2G"
     },
     "OEG": {
         "full": "Ora Esport Gc",
@@ -3796,44 +3045,28 @@
         "regional_rank": 150,
         "vlr_abbr": "KEG"
     },
-    "XXLV": {
-        "full": "Xxlv2",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 151,
-        "vlr_abbr": "XXLV"
-    },
     "ZP": {
         "full": "Zywoo Prime",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 152,
+        "regional_rank": 151,
         "vlr_abbr": "ZP"
     },
-    "BS": {
-        "full": "Boiled S.R.L",
+    "XXLV": {
+        "full": "Xxlv2",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 153,
-        "vlr_abbr": "BS"
-    },
-    "KP": {
-        "full": "Kz Players",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 154,
-        "vlr_abbr": "KP"
+        "regional_rank": 152,
+        "vlr_abbr": "XXLV"
     },
     "BLUE1": {
         "full": "Bluejays",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 155,
+        "regional_rank": 153,
         "vlr_abbr": "BLUE"
     },
     "TITA": {
@@ -3841,16 +3074,32 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 156,
+        "regional_rank": 154,
         "vlr_abbr": "TITA"
+    },
+    "BS": {
+        "full": "Boiled S.R.L",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 155,
+        "vlr_abbr": "BS"
     },
     "REGH": {
         "full": "Reghium Esports",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 157,
+        "regional_rank": 156,
         "vlr_abbr": "REGH"
+    },
+    "KP": {
+        "full": "Kz Players",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 157,
+        "vlr_abbr": "KP"
     },
     "LLS": {
         "full": "Lundqvist Lightside",
@@ -3884,21 +3133,21 @@
         "regional_rank": 161,
         "vlr_abbr": "LCA"
     },
-    "SG4": {
-        "full": "Sneaky Golem",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 162,
-        "vlr_abbr": "SG"
-    },
     "MAN": {
         "full": "Mania Esports",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 163,
+        "regional_rank": 162,
         "vlr_abbr": "MAN"
+    },
+    "SG1": {
+        "full": "Sneaky Golem",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 163,
+        "vlr_abbr": "SG"
     },
     "OR1": {
         "full": "Olympus Reborn",
@@ -3924,28 +3173,12 @@
         "regional_rank": 166,
         "vlr_abbr": "NU"
     },
-    "KOKU": {
-        "full": "Kokus",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 167,
-        "vlr_abbr": "KOKU"
-    },
-    "AS2": {
-        "full": "Aab Esports Sweden",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 168,
-        "vlr_abbr": "AS"
-    },
     "ROTA": {
         "full": "Rotaryon",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 169,
+        "regional_rank": 167,
         "vlr_abbr": "ROTA"
     },
     "M4LIK": {
@@ -3953,88 +3186,120 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 170,
+        "regional_rank": 168,
         "vlr_abbr": "M4LIK"
     },
-    "LE": {
-        "full": "Last Echo",
+    "KOKU": {
+        "full": "Kokus",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 171,
-        "vlr_abbr": "LE"
+        "regional_rank": 169,
+        "vlr_abbr": "KOKU"
     },
-    "MIRS": {
-        "full": "Mirsfits",
+    "AS1": {
+        "full": "Aab Esports Sweden",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 172,
-        "vlr_abbr": "MIRS"
-    },
-    "BR2": {
-        "full": "Blaze Red",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 173,
-        "vlr_abbr": "BR"
-    },
-    "SS1": {
-        "full": "Su Samurlari",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 174,
-        "vlr_abbr": "SS"
-    },
-    "PXL1": {
-        "full": "Pixel Lumina Academy",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 175,
-        "vlr_abbr": "PXL"
+        "regional_rank": 170,
+        "vlr_abbr": "AS"
     },
     "BNP": {
         "full": "Bad News Pigs",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 177,
+        "regional_rank": 171,
         "vlr_abbr": "BNP"
     },
-    "AEST": {
-        "full": "Aestralis",
+    "BR2": {
+        "full": "Blaze Red",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 178,
-        "vlr_abbr": "AEST"
+        "regional_rank": 172,
+        "vlr_abbr": "BR"
     },
     "M\u00d6RK": {
         "full": "M\u00f6rk\u00f6st\u00e4ck",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 179,
+        "regional_rank": 173,
         "vlr_abbr": "M\u00d6RK"
     },
-    "ATNR": {
-        "full": "Alternate Attax Ruby",
+    "PXL1": {
+        "full": "Pixel Lumina Academy",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 180,
-        "vlr_abbr": "ATNR"
+        "regional_rank": 174,
+        "vlr_abbr": "PXL"
+    },
+    "KC": {
+        "full": "Karmine Corp",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 175,
+        "vlr_abbr": "KC"
+    },
+    "SS1": {
+        "full": "Su Samurlari",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 176,
+        "vlr_abbr": "SS"
+    },
+    "AEST": {
+        "full": "Aestralis",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 177,
+        "vlr_abbr": "AEST"
+    },
+    "MIRS": {
+        "full": "Mirsfits",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 178,
+        "vlr_abbr": "MIRS"
+    },
+    "LE": {
+        "full": "Last Echo",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 179,
+        "vlr_abbr": "LE"
     },
     "EVER": {
         "full": "Eversowavygang",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 181,
+        "regional_rank": 180,
         "vlr_abbr": "EVER"
+    },
+    "ATNR": {
+        "full": "Alternate Attax Ruby",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 181,
+        "vlr_abbr": "ATNR"
+    },
+    "FF": {
+        "full": "Fire Flux Esports",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 182,
+        "vlr_abbr": "FF"
     },
     "EK": {
         "full": "Elite Klan",
@@ -4044,36 +3309,44 @@
         "regional_rank": 183,
         "vlr_abbr": "EK"
     },
+    "SAMU": {
+        "full": "Team Samuraj",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 184,
+        "vlr_abbr": "SAMU"
+    },
+    "REDG": {
+        "full": "Team Redgar",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 185,
+        "vlr_abbr": "REDG"
+    },
+    "ASUK": {
+        "full": "Team Asukaska",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 186,
+        "vlr_abbr": "ASUK"
+    },
     "SJ": {
         "full": "Samo Jeni",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 184,
+        "regional_rank": 187,
         "vlr_abbr": "SJ"
-    },
-    "PPLL": {
-        "full": "Peek Pas Les L\u00e9gendes",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 185,
-        "vlr_abbr": "PPLL"
-    },
-    "NXT": {
-        "full": "Nxt",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 186,
-        "vlr_abbr": "NXT"
     },
     "AKAS": {
         "full": "Team Akash1Vl",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 187,
+        "regional_rank": 188,
         "vlr_abbr": "AKAS"
     },
     "MRN": {
@@ -4081,32 +3354,24 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 188,
+        "regional_rank": 189,
         "vlr_abbr": "MRN"
     },
-    "ASUK": {
-        "full": "Team Asukaska",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 189,
-        "vlr_abbr": "ASUK"
-    },
-    "REDG": {
-        "full": "Team Redgar",
+    "PPLL": {
+        "full": "Peek Pas Les L\u00e9gendes",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
         "regional_rank": 190,
-        "vlr_abbr": "REDG"
+        "vlr_abbr": "PPLL"
     },
-    "SAMU": {
-        "full": "Team Samuraj",
+    "NXT": {
+        "full": "Nxt",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
         "regional_rank": 191,
-        "vlr_abbr": "SAMU"
+        "vlr_abbr": "NXT"
     },
     "DAH": {
         "full": "Al-Dahab Club",
@@ -4116,12 +3381,20 @@
         "regional_rank": 192,
         "vlr_abbr": "DAH"
     },
+    "IND": {
+        "full": "Indigo",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 193,
+        "vlr_abbr": "IND"
+    },
     "BV": {
         "full": "Bitfix Valiants",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 193,
+        "regional_rank": 194,
         "vlr_abbr": "BV"
     },
     "IG": {
@@ -4129,47 +3402,55 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 194,
-        "vlr_abbr": "IG"
-    },
-    "IND": {
-        "full": "Indigo",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
         "regional_rank": 195,
-        "vlr_abbr": "IND"
+        "vlr_abbr": "IG"
     },
     "TLR": {
         "full": "The Last Resort",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 178,
+        "regional_rank": 196,
         "vlr_abbr": "TLR"
-    },
-    "XTRA": {
-        "full": "Xtra",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 197,
-        "vlr_abbr": "XTRA"
     },
     "PD": {
         "full": "Playing Ducks",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 198,
+        "regional_rank": 197,
         "vlr_abbr": "PD"
+    },
+    "XTRA": {
+        "full": "Xtra",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 198,
+        "vlr_abbr": "XTRA"
+    },
+    "GL2": {
+        "full": "Gigantic Lynx",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 199,
+        "vlr_abbr": "GL"
+    },
+    "BMB": {
+        "full": "Banh Mi Bandits",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 200,
+        "vlr_abbr": "BMB"
     },
     "GK": {
         "full": "Get Kharavanned",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 199,
+        "regional_rank": 201,
         "vlr_abbr": "GK"
     },
     "SSP": {
@@ -4177,42 +3458,26 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 200,
-        "vlr_abbr": "SSP"
-    },
-    "BMB": {
-        "full": "Banh Mi Bandits",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 201,
-        "vlr_abbr": "BMB"
-    },
-    "GL2": {
-        "full": "Gigantic Lynx",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
         "regional_rank": 202,
-        "vlr_abbr": "GL"
-    },
-    "HI": {
-        "full": "Heavener Iqon",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 203,
-        "vlr_abbr": "HI"
+        "vlr_abbr": "SSP"
     },
     "BLOK": {
         "full": "Blok6",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 204,
+        "regional_rank": 203,
         "vlr_abbr": "BLOK"
     },
-    "TG3": {
+    "HI": {
+        "full": "Heavener Iqon",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 204,
+        "vlr_abbr": "HI"
+    },
+    "TG2": {
         "full": "Thunder Gaming",
         "rank": 250,
         "norm_rank": 288,
@@ -4228,12 +3493,20 @@
         "regional_rank": 206,
         "vlr_abbr": "RYE"
     },
+    "LEXI": {
+        "full": "Lexible",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 207,
+        "vlr_abbr": "LEXI"
+    },
     "EEA": {
         "full": "Esperg\u00e6rde Esport Academy",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 207,
+        "regional_rank": 208,
         "vlr_abbr": "EEA"
     },
     "XG": {
@@ -4241,31 +3514,15 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 208,
+        "regional_rank": 209,
         "vlr_abbr": "XG"
     },
-    "LEXI": {
-        "full": "Lexible",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 209,
-        "vlr_abbr": "LEXI"
-    },
-    "HDB": {
-        "full": "Haddinibilbao",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 210,
-        "vlr_abbr": "HDB"
-    },
-    "SK1": {
+    "SK": {
         "full": "Sportia Khore",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 279,
+        "regional_rank": 278,
         "vlr_abbr": "SK"
     },
     "ERAH": {
@@ -4273,7 +3530,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 212,
+        "regional_rank": 211,
         "vlr_abbr": "ERAH"
     },
     "OCM": {
@@ -4281,15 +3538,39 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 213,
+        "regional_rank": 212,
         "vlr_abbr": "OCM"
+    },
+    "HDB": {
+        "full": "Haddinibilbao",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 213,
+        "vlr_abbr": "HDB"
+    },
+    "VCE": {
+        "full": "Ventucorp Esports",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 214,
+        "vlr_abbr": "VCE"
+    },
+    "2R3W": {
+        "full": "2Ruchy3Wybuchy",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 215,
+        "vlr_abbr": "2R3W"
     },
     "NOF": {
         "full": "No Offense",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 214,
+        "regional_rank": 216,
         "vlr_abbr": "NOF"
     },
     "EXA": {
@@ -4297,24 +3578,8 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 215,
-        "vlr_abbr": "EXA"
-    },
-    "KV": {
-        "full": "K5 Valorant",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 216,
-        "vlr_abbr": "KV"
-    },
-    "2R3W": {
-        "full": "2Ruchy3Wybuchy",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
         "regional_rank": 217,
-        "vlr_abbr": "2R3W"
+        "vlr_abbr": "EXA"
     },
     "YOHE": {
         "full": "Yohestia",
@@ -4324,13 +3589,13 @@
         "regional_rank": 218,
         "vlr_abbr": "YOHE"
     },
-    "YK": {
-        "full": "Yokai Komadori",
+    "KV": {
+        "full": "K5 Valorant",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
         "regional_rank": 219,
-        "vlr_abbr": "YK"
+        "vlr_abbr": "KV"
     },
     "S4": {
         "full": "Sila4I",
@@ -4340,13 +3605,13 @@
         "regional_rank": 220,
         "vlr_abbr": "S4"
     },
-    "ABST": {
-        "full": "Abstract",
+    "YK": {
+        "full": "Yokai Komadori",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
         "regional_rank": 221,
-        "vlr_abbr": "ABST"
+        "vlr_abbr": "YK"
     },
     "PURE": {
         "full": "Pure Esports",
@@ -4356,12 +3621,20 @@
         "regional_rank": 222,
         "vlr_abbr": "PURE"
     },
+    "ABST": {
+        "full": "Abstract",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 223,
+        "vlr_abbr": "ABST"
+    },
     "ADIO": {
         "full": "Adios",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 223,
+        "regional_rank": 225,
         "vlr_abbr": "ADIO"
     },
     "AUCA": {
@@ -4369,23 +3642,15 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 224,
+        "regional_rank": 226,
         "vlr_abbr": "AUCA"
-    },
-    "MILL": {
-        "full": "Million Flowerz",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 225,
-        "vlr_abbr": "MILL"
     },
     "PTSD": {
         "full": "Part Time Sweat Department",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 226,
+        "regional_rank": 227,
         "vlr_abbr": "PTSD"
     },
     "ASX": {
@@ -4393,16 +3658,8 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 227,
-        "vlr_abbr": "ASX"
-    },
-    "VCE": {
-        "full": "Ventucorp Esports",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
         "regional_rank": 228,
-        "vlr_abbr": "VCE"
+        "vlr_abbr": "ASX"
     },
     "SOLU": {
         "full": "Solution",
@@ -4436,21 +3693,21 @@
         "regional_rank": 232,
         "vlr_abbr": "NXR"
     },
-    "ATN": {
-        "full": "Alternate Attax",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 233,
-        "vlr_abbr": "ATN"
-    },
     "NOTN": {
         "full": "Naga Of The North",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 234,
+        "regional_rank": 233,
         "vlr_abbr": "NOTN"
+    },
+    "ECO": {
+        "full": "Esports Cologne",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 234,
+        "vlr_abbr": "ECO"
     },
     "EVO": {
         "full": "Evoplay",
@@ -4460,13 +3717,13 @@
         "regional_rank": 235,
         "vlr_abbr": "EVO"
     },
-    "ECO": {
-        "full": "Esports Cologne",
+    "ATN": {
+        "full": "Alternate Attax",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
         "regional_rank": 236,
-        "vlr_abbr": "ECO"
+        "vlr_abbr": "ATN"
     },
     "TDB": {
         "full": "Todobew",
@@ -4476,12 +3733,20 @@
         "regional_rank": 237,
         "vlr_abbr": "TDB"
     },
+    "CTRL": {
+        "full": "Ctrl Esports",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 238,
+        "vlr_abbr": "CTRL"
+    },
     "ATN1": {
         "full": "Alternate Attax Evo",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 238,
+        "regional_rank": 239,
         "vlr_abbr": "ATN"
     },
     "PP1": {
@@ -4489,7 +3754,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 239,
+        "regional_rank": 240,
         "vlr_abbr": "PP"
     },
     "AXIO": {
@@ -4497,48 +3762,48 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 240,
-        "vlr_abbr": "AXIO"
-    },
-    "CTRL": {
-        "full": "Ctrl Esports",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
         "regional_rank": 241,
-        "vlr_abbr": "CTRL"
-    },
-    "NT": {
-        "full": "No Talent",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 242,
-        "vlr_abbr": "NT"
+        "vlr_abbr": "AXIO"
     },
     "WIPM": {
         "full": "Wipmix",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 243,
+        "regional_rank": 242,
         "vlr_abbr": "WIPM"
+    },
+    "HGE": {
+        "full": "Hge Esport",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 243,
+        "vlr_abbr": "HGE"
+    },
+    "SG2": {
+        "full": "Still Gamblers",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 244,
+        "vlr_abbr": "SG"
     },
     "EXG": {
         "full": "Exceptional Gaming",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 244,
+        "regional_rank": 245,
         "vlr_abbr": "EXG"
     },
-    "SG5": {
-        "full": "Still Gamblers",
+    "NT": {
+        "full": "No Talent",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 245,
-        "vlr_abbr": "SG"
+        "regional_rank": 246,
+        "vlr_abbr": "NT"
     },
     "FLOW": {
         "full": "Flow",
@@ -4572,45 +3837,45 @@
         "regional_rank": 250,
         "vlr_abbr": "INPU"
     },
-    "ZTA": {
-        "full": "Zeta Gaming",
+    "LEO": {
+        "full": "Leo Esports",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
         "regional_rank": 251,
-        "vlr_abbr": "ZTA"
-    },
-    "RG1": {
-        "full": "Reghium Esports Gc",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 252,
-        "vlr_abbr": "RG"
+        "vlr_abbr": "LEO"
     },
     "UNCS": {
         "full": "Uncsters",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 253,
+        "regional_rank": 252,
         "vlr_abbr": "UNCS"
+    },
+    "RG": {
+        "full": "Reghium Esports Gc",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 253,
+        "vlr_abbr": "RG"
+    },
+    "ZTA": {
+        "full": "Zeta Gaming",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 254,
+        "vlr_abbr": "ZTA"
     },
     "TK1": {
         "full": "To9'S Kittens",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 254,
-        "vlr_abbr": "TK"
-    },
-    "LEO": {
-        "full": "Leo Esports",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
         "regional_rank": 255,
-        "vlr_abbr": "LEO"
+        "vlr_abbr": "TK"
     },
     "FE": {
         "full": "Fungus Enjoyers",
@@ -4620,13 +3885,13 @@
         "regional_rank": 256,
         "vlr_abbr": "FE"
     },
-    "GOOD": {
-        "full": "Good Boys",
+    "JGB": {
+        "full": "Joga Bonito",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
         "regional_rank": 257,
-        "vlr_abbr": "GOOD"
+        "vlr_abbr": "JGB"
     },
     "WOLH": {
         "full": "Wolhaiksong",
@@ -4636,29 +3901,29 @@
         "regional_rank": 258,
         "vlr_abbr": "WOLH"
     },
-    "JGB": {
-        "full": "Joga Bonito",
+    "GOOD": {
+        "full": "Good Boys",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
         "regional_rank": 259,
-        "vlr_abbr": "JGB"
+        "vlr_abbr": "GOOD"
+    },
+    "REPU": {
+        "full": "Repuisparentless",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 260,
+        "vlr_abbr": "REPU"
     },
     "DNG": {
         "full": "Team Denight",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 260,
-        "vlr_abbr": "DNG"
-    },
-    "BERS": {
-        "full": "Berserk",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
         "regional_rank": 261,
-        "vlr_abbr": "BERS"
+        "vlr_abbr": "DNG"
     },
     "DH": {
         "full": "Die Highspeed-Schnecken",
@@ -4676,20 +3941,20 @@
         "regional_rank": 263,
         "vlr_abbr": "VSTG"
     },
-    "REPU": {
-        "full": "Repuisparentless",
+    "CG1": {
+        "full": "Cicadas Gaming",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
         "regional_rank": 264,
-        "vlr_abbr": "REPU"
+        "vlr_abbr": "CG"
     },
     "EJSG": {
         "full": "Ejsgir",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 266,
+        "regional_rank": 265,
         "vlr_abbr": "EJSG"
     },
     "SQUI": {
@@ -4697,7 +3962,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 267,
+        "regional_rank": 266,
         "vlr_abbr": "SQUI"
     },
     "1TEN": {
@@ -4705,7 +3970,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 268,
+        "regional_rank": 267,
         "vlr_abbr": "1TEN"
     },
     "DMNX1": {
@@ -4713,39 +3978,39 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 269,
+        "regional_rank": 268,
         "vlr_abbr": "DMNX"
-    },
-    "PARA": {
-        "full": "Parabellum1",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 270,
-        "vlr_abbr": "PARA"
-    },
-    "BN": {
-        "full": "Blaze Norge",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 271,
-        "vlr_abbr": "BN"
     },
     "YOGU": {
         "full": "Yogurciki",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 272,
+        "regional_rank": 269,
         "vlr_abbr": "YOGU"
+    },
+    "BN": {
+        "full": "Blaze Norge",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 270,
+        "vlr_abbr": "BN"
+    },
+    "PARA": {
+        "full": "Parabellum1",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 271,
+        "vlr_abbr": "PARA"
     },
     "XTRE": {
         "full": "Xtremedogs",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 273,
+        "regional_rank": 272,
         "vlr_abbr": "XTRE"
     },
     "DX1": {
@@ -4753,7 +4018,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 274,
+        "regional_rank": 273,
         "vlr_abbr": "DX"
     },
     "200": {
@@ -4761,7 +4026,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 275,
+        "regional_rank": 274,
         "vlr_abbr": "200"
     },
     "PRM": {
@@ -4769,7 +4034,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 276,
+        "regional_rank": 275,
         "vlr_abbr": "PRM"
     },
     "REJU": {
@@ -4777,7 +4042,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 277,
+        "regional_rank": 276,
         "vlr_abbr": "REJU"
     },
     "5GRA": {
@@ -4785,7 +4050,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 278,
+        "regional_rank": 277,
         "vlr_abbr": "5GRA"
     },
     "L1": {
@@ -4793,16 +4058,24 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 280,
+        "regional_rank": 279,
         "vlr_abbr": "L1"
     },
-    "CLS1": {
+    "CLS": {
         "full": "Coalesce",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 281,
+        "regional_rank": 280,
         "vlr_abbr": "CLS"
+    },
+    "XOXO": {
+        "full": "Xoxo Esports",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 281,
+        "vlr_abbr": "XOXO"
     },
     "RLB": {
         "full": "Rgx Legends B",
@@ -4820,20 +4093,12 @@
         "regional_rank": 283,
         "vlr_abbr": "FH"
     },
-    "XOXO": {
-        "full": "Xoxo Esports",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 284,
-        "vlr_abbr": "XOXO"
-    },
     "WYL": {
         "full": "Wylde",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 285,
+        "regional_rank": 284,
         "vlr_abbr": "WYL"
     },
     "GF": {
@@ -4841,7 +4106,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 286,
+        "regional_rank": 285,
         "vlr_abbr": "GF"
     },
     "PNM": {
@@ -4849,7 +4114,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 287,
+        "regional_rank": 286,
         "vlr_abbr": "PNM"
     },
     "WWGA": {
@@ -4857,8 +4122,16 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 288,
+        "regional_rank": 287,
         "vlr_abbr": "WWGA"
+    },
+    "DP": {
+        "full": "Dark Passage",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 288,
+        "vlr_abbr": "DP"
     },
     "6GPA": {
         "full": "6Gpa",
@@ -4868,13 +4141,13 @@
         "regional_rank": 289,
         "vlr_abbr": "6GPA"
     },
-    "DP": {
-        "full": "Dark Passage",
+    "CLA": {
+        "full": "Caldya Esport",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
         "regional_rank": 290,
-        "vlr_abbr": "DP"
+        "vlr_abbr": "CLA"
     },
     "G\u00c9NE": {
         "full": "G\u00e9nesis",
@@ -4884,60 +4157,68 @@
         "regional_rank": 291,
         "vlr_abbr": "G\u00c9NE"
     },
-    "CLA": {
-        "full": "Caldya Esport",
+    "EEK": {
+        "full": "Esperg\u00e6rde Esport K9X",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
         "regional_rank": 292,
-        "vlr_abbr": "CLA"
-    },
-    "BULD": {
-        "full": "Buldakenjoyers",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 293,
-        "vlr_abbr": "BULD"
+        "vlr_abbr": "EEK"
     },
     "MFG": {
         "full": "Million Flowerz Gc",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 294,
+        "regional_rank": 293,
         "vlr_abbr": "MFG"
-    },
-    "CE": {
-        "full": "Cavi Esport",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 295,
-        "vlr_abbr": "CE"
-    },
-    "EEK": {
-        "full": "Esperg\u00e6rde Esport K9X",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 296,
-        "vlr_abbr": "EEK"
     },
     "VLX": {
         "full": "Valox",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 298,
+        "regional_rank": 294,
         "vlr_abbr": "VLX"
     },
-    "RG2": {
+    "BULD": {
+        "full": "Buldakenjoyers",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 295,
+        "vlr_abbr": "BULD"
+    },
+    "CE": {
+        "full": "Cavi Esport",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 296,
+        "vlr_abbr": "CE"
+    },
+    "FX": {
+        "full": "Fate X",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 297,
+        "vlr_abbr": "FX"
+    },
+    "GG1": {
+        "full": "Team Galaga",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 298,
+        "vlr_abbr": "GG"
+    },
+    "RG1": {
         "full": "Reh Gaming",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 300,
+        "regional_rank": 299,
         "vlr_abbr": "RG"
     },
     "ORK": {
@@ -4945,7 +4226,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 301,
+        "regional_rank": 300,
         "vlr_abbr": "ORK"
     },
     "BAIG": {
@@ -4953,7 +4234,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 302,
+        "regional_rank": 301,
         "vlr_abbr": "BAIG"
     },
     "SIU": {
@@ -4961,7 +4242,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 303,
+        "regional_rank": 302,
         "vlr_abbr": "SIU"
     },
     "VIN": {
@@ -4969,7 +4250,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 304,
+        "regional_rank": 303,
         "vlr_abbr": "VIN"
     },
     "FISK": {
@@ -4977,7 +4258,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 305,
+        "regional_rank": 304,
         "vlr_abbr": "FISK"
     },
     "GLAD": {
@@ -4985,7 +4266,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 306,
+        "regional_rank": 305,
         "vlr_abbr": "GLAD"
     },
     "MT": {
@@ -4993,23 +4274,15 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 307,
+        "regional_rank": 306,
         "vlr_abbr": "MT"
-    },
-    "UBE": {
-        "full": "Ube",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 308,
-        "vlr_abbr": "UBE"
     },
     "THEG": {
         "full": "Thegiornalisti",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 309,
+        "regional_rank": 307,
         "vlr_abbr": "THEG"
     },
     "PCF": {
@@ -5017,15 +4290,23 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 310,
+        "regional_rank": 308,
         "vlr_abbr": "PCF"
+    },
+    "UBE": {
+        "full": "Ube",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 309,
+        "vlr_abbr": "UBE"
     },
     "RANG": {
         "full": "Ranglistenspieler",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 311,
+        "regional_rank": 310,
         "vlr_abbr": "RANG"
     },
     "FRAC": {
@@ -5033,7 +4314,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 312,
+        "regional_rank": 311,
         "vlr_abbr": "FRAC"
     },
     "TWEL": {
@@ -5041,7 +4322,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 313,
+        "regional_rank": 312,
         "vlr_abbr": "TWEL"
     },
     "OLIM": {
@@ -5049,7 +4330,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 314,
+        "regional_rank": 313,
         "vlr_abbr": "OLIM"
     },
     "VOLK": {
@@ -5057,8 +4338,16 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 315,
+        "regional_rank": 314,
         "vlr_abbr": "VOLK"
+    },
+    "TONT": {
+        "full": "Tontaubenschie\u00dfer",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 315,
+        "vlr_abbr": "TONT"
     },
     "TAN\u00b4": {
         "full": "Tan\u00b4I Esports",
@@ -5068,20 +4357,12 @@
         "regional_rank": 316,
         "vlr_abbr": "TAN\u00b4"
     },
-    "TONT": {
-        "full": "Tontaubenschie\u00dfer",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 317,
-        "vlr_abbr": "TONT"
-    },
     "NXT1": {
         "full": "Xperion Nxt",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 318,
+        "regional_rank": 317,
         "vlr_abbr": "NXT"
     },
     "LYO": {
@@ -5089,7 +4370,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 319,
+        "regional_rank": 318,
         "vlr_abbr": "LYO"
     },
     "WADE": {
@@ -5097,7 +4378,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 320,
+        "regional_rank": 319,
         "vlr_abbr": "WADE"
     },
     "BBG": {
@@ -5105,7 +4386,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 321,
+        "regional_rank": 320,
         "vlr_abbr": "BBG"
     },
     "BEE": {
@@ -5113,8 +4394,16 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 322,
+        "regional_rank": 321,
         "vlr_abbr": "BEE"
+    },
+    "NOVO.NI": {
+        "full": "Novo Nightingale",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 322,
+        "vlr_abbr": "NOVO.NI"
     },
     "UNI": {
         "full": "Uniway",
@@ -5124,20 +4413,12 @@
         "regional_rank": 323,
         "vlr_abbr": "UNI"
     },
-    "NOVO.NI": {
-        "full": "Novo Nightingale",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 324,
-        "vlr_abbr": "NOVO.NI"
-    },
     "COFF": {
         "full": "Coffeshop",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 325,
+        "regional_rank": 324,
         "vlr_abbr": "COFF"
     },
     "PA": {
@@ -5145,7 +4426,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 326,
+        "regional_rank": 325,
         "vlr_abbr": "PA"
     },
     "RVNT": {
@@ -5153,7 +4434,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 327,
+        "regional_rank": 326,
         "vlr_abbr": "RVNT"
     },
     "TO": {
@@ -5161,7 +4442,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 328,
+        "regional_rank": 327,
         "vlr_abbr": "TO"
     },
     "XPS": {
@@ -5169,8 +4450,16 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 329,
+        "regional_rank": 328,
         "vlr_abbr": "XPS"
+    },
+    "NS1": {
+        "full": "Ntnui Sigmars",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 329,
+        "vlr_abbr": "NS"
     },
     "MCK": {
         "full": "Macko Esports",
@@ -5180,28 +4469,20 @@
         "regional_rank": 330,
         "vlr_abbr": "MCK"
     },
-    "NS1": {
-        "full": "Ntnui Sigmars",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 331,
-        "vlr_abbr": "NS"
-    },
     "WYG": {
         "full": "Wygers",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 332,
+        "regional_rank": 331,
         "vlr_abbr": "WYG"
     },
-    "GA1": {
+    "GA": {
         "full": "Gli Asparagi",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 333,
+        "regional_rank": 332,
         "vlr_abbr": "GA"
     },
     "PRES": {
@@ -5209,7 +4490,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 334,
+        "regional_rank": 333,
         "vlr_abbr": "PRES"
     },
     "ECL": {
@@ -5217,7 +4498,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 336,
+        "regional_rank": 335,
         "vlr_abbr": "ECL"
     },
     "EYG": {
@@ -5225,15 +4506,23 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 337,
+        "regional_rank": 336,
         "vlr_abbr": "EYG"
+    },
+    "GAL": {
+        "full": "Galakticos",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 337,
+        "vlr_abbr": "GAL"
     },
     "FS1": {
         "full": "Frg Shaolins",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 339,
+        "regional_rank": 338,
         "vlr_abbr": "FS"
     },
     "FRG": {
@@ -5241,8 +4530,16 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 340,
+        "regional_rank": 339,
         "vlr_abbr": "FRG"
+    },
+    "COMB": {
+        "full": "Combined",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 340,
+        "vlr_abbr": "COMB"
     },
     "WEAR": {
         "full": "Wearesocool",
@@ -5252,20 +4549,12 @@
         "regional_rank": 341,
         "vlr_abbr": "WEAR"
     },
-    "COMB": {
-        "full": "Combined",
-        "rank": 250,
-        "norm_rank": 288,
-        "region": "Europe",
-        "regional_rank": 342,
-        "vlr_abbr": "COMB"
-    },
     "BW": {
         "full": "Bushido Wildcats",
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 343,
+        "regional_rank": 342,
         "vlr_abbr": "BW"
     },
     "UE": {
@@ -5273,7 +4562,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 344,
+        "regional_rank": 343,
         "vlr_abbr": "UE"
     },
     "X3M": {
@@ -5281,7 +4570,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 345,
+        "regional_rank": 344,
         "vlr_abbr": "X3M"
     },
     "KARA": {
@@ -5289,7 +4578,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 346,
+        "regional_rank": 345,
         "vlr_abbr": "KARA"
     },
     "VE": {
@@ -5297,7 +4586,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 347,
+        "regional_rank": 346,
         "vlr_abbr": "VE"
     },
     "USTU": {
@@ -5305,7 +4594,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 348,
+        "regional_rank": 347,
         "vlr_abbr": "USTU"
     },
     "KAMK": {
@@ -5313,7 +4602,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 349,
+        "regional_rank": 348,
         "vlr_abbr": "KAMK"
     },
     "DN": {
@@ -5321,7 +4610,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 350,
+        "regional_rank": 349,
         "vlr_abbr": "DN"
     },
     "SP": {
@@ -5332,13 +4621,13 @@
         "regional_rank": 2,
         "vlr_abbr": "SP"
     },
-    "FCY": {
-        "full": "Fancy United Esports",
+    "GE": {
+        "full": "Global Esports",
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 4,
-        "vlr_abbr": "FCY"
+        "regional_rank": 5,
+        "vlr_abbr": "GE"
     },
     "555": {
         "full": "555",
@@ -5348,14 +4637,6 @@
         "regional_rank": 8,
         "vlr_abbr": "555"
     },
-    "TRN": {
-        "full": "Trinity",
-        "rank": 250,
-        "norm_rank": 250,
-        "region": "Asia-Pacific",
-        "regional_rank": 12,
-        "vlr_abbr": "TRN"
-    },
     "LITL": {
         "full": "Lee-Ming Penguin Lit",
         "rank": 250,
@@ -5364,6 +4645,14 @@
         "regional_rank": 13,
         "vlr_abbr": "LITL"
     },
+    "S8UL": {
+        "full": "S8Ul Esports",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Asia-Pacific",
+        "regional_rank": 14,
+        "vlr_abbr": "S8UL"
+    },
     "AST": {
         "full": "Asterisk",
         "rank": 250,
@@ -5371,14 +4660,6 @@
         "region": "Asia-Pacific",
         "regional_rank": 16,
         "vlr_abbr": "AST"
-    },
-    "XLB": {
-        "full": "Xlb",
-        "rank": 250,
-        "norm_rank": 250,
-        "region": "Asia-Pacific",
-        "regional_rank": 17,
-        "vlr_abbr": "XLB"
     },
     "Z11": {
         "full": "Z11",
@@ -5396,13 +4677,21 @@
         "regional_rank": 19,
         "vlr_abbr": "KRTA"
     },
-    "JADE": {
-        "full": "Jade Lions",
+    "XIP": {
+        "full": "Xipto Esports",
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 22,
-        "vlr_abbr": "JADE"
+        "regional_rank": 20,
+        "vlr_abbr": "XIP"
+    },
+    "GDR": {
+        "full": "Gods Reign",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Asia-Pacific",
+        "regional_rank": 21,
+        "vlr_abbr": "GDR"
     },
     "XGOD": {
         "full": "Xgod",
@@ -5420,7 +4709,7 @@
         "regional_rank": 24,
         "vlr_abbr": "1TAP"
     },
-    "NVL": {
+    "NVL1": {
         "full": "Neverland713",
         "rank": 250,
         "norm_rank": 250,
@@ -5436,6 +4725,14 @@
         "regional_rank": 26,
         "vlr_abbr": "S2"
     },
+    "RGE": {
+        "full": "Reckoning Esports",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Asia-Pacific",
+        "regional_rank": 27,
+        "vlr_abbr": "RGE"
+    },
     "ZX": {
         "full": "Zorvex",
         "rank": 250,
@@ -5443,14 +4740,6 @@
         "region": "Asia-Pacific",
         "regional_rank": 28,
         "vlr_abbr": "ZX"
-    },
-    "OPY": {
-        "full": "Overpowered Youths",
-        "rank": 250,
-        "norm_rank": 250,
-        "region": "Asia-Pacific",
-        "regional_rank": 29,
-        "vlr_abbr": "OPY"
     },
     "ZIRC": {
         "full": "Zirca",
@@ -5468,14 +4757,6 @@
         "regional_rank": 32,
         "vlr_abbr": "XOXO"
     },
-    "ROY": {
-        "full": "Roy Esports",
-        "rank": 250,
-        "norm_rank": 250,
-        "region": "Asia-Pacific",
-        "regional_rank": 33,
-        "vlr_abbr": "ROY"
-    },
     "GC": {
         "full": "God Chosen",
         "rank": 250,
@@ -5483,6 +4764,14 @@
         "region": "Asia-Pacific",
         "regional_rank": 34,
         "vlr_abbr": "GC"
+    },
+    "NAOS1": {
+        "full": "Naos",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Asia-Pacific",
+        "regional_rank": 35,
+        "vlr_abbr": "NAOS"
     },
     "DAG": {
         "full": "Da Nang Grandstand",
@@ -5532,7 +4821,7 @@
         "regional_rank": 42,
         "vlr_abbr": "HLG"
     },
-    "AG1": {
+    "AG": {
         "full": "Armory Gaming",
         "rank": 250,
         "norm_rank": 250,
@@ -5556,13 +4845,13 @@
         "regional_rank": 45,
         "vlr_abbr": "MIVN"
     },
-    "EG2": {
+    "EG1": {
         "full": "Esmonde Gaming",
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
         "regional_rank": 46,
-        "vlr_abbr": "EG"
+        "vlr_abbr": "EG1"
     },
     "U5": {
         "full": "Unsigned5",
@@ -5612,7 +4901,7 @@
         "regional_rank": 52,
         "vlr_abbr": "RVL"
     },
-    "OF2": {
+    "OF1": {
         "full": "Onfire",
         "rank": 250,
         "norm_rank": 250,
@@ -5620,7 +4909,7 @@
         "regional_rank": 53,
         "vlr_abbr": "OF"
     },
-    "AT1": {
+    "AT": {
         "full": "Ano Tara?",
         "rank": 250,
         "norm_rank": 250,
@@ -5820,7 +5109,7 @@
         "regional_rank": 78,
         "vlr_abbr": "BLES"
     },
-    "OG2": {
+    "OG1": {
         "full": "Original Gaming",
         "rank": 250,
         "norm_rank": 250,
@@ -6036,7 +5325,7 @@
         "regional_rank": 105,
         "vlr_abbr": "SANK"
     },
-    "YG1": {
+    "YG": {
         "full": "Young",
         "rank": 250,
         "norm_rank": 250,
@@ -6140,6 +5429,14 @@
         "regional_rank": 118,
         "vlr_abbr": "CA"
     },
+    "GXR": {
+        "full": "Galaxy Reign",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Asia-Pacific",
+        "regional_rank": 119,
+        "vlr_abbr": "GXR"
+    },
     "ESAN": {
         "full": "Esan Gangster",
         "rank": 250,
@@ -6196,7 +5493,7 @@
         "regional_rank": 126,
         "vlr_abbr": "FLAW"
     },
-    "AS3": {
+    "AS2": {
         "full": "All Stars",
         "rank": 250,
         "norm_rank": 250,
@@ -6308,11 +5605,11 @@
         "regional_rank": 140,
         "vlr_abbr": "UNRI"
     },
-    "AA1": {
+    "AA": {
         "full": "Aura",
         "rank": 250,
         "norm_rank": 250,
-        "region": "Asia-Pacific",
+        "region": "Latin America South",
         "regional_rank": 14,
         "vlr_abbr": "AA"
     },
@@ -6340,7 +5637,7 @@
         "regional_rank": 144,
         "vlr_abbr": "LC"
     },
-    "FG2": {
+    "FG": {
         "full": "Future Greats",
         "rank": 250,
         "norm_rank": 250,
@@ -6404,7 +5701,7 @@
         "regional_rank": 152,
         "vlr_abbr": "BT"
     },
-    "GE2": {
+    "GE1": {
         "full": "Griffin Egoist",
         "rank": 250,
         "norm_rank": 250,
@@ -6548,6 +5845,14 @@
         "regional_rank": 170,
         "vlr_abbr": "DT"
     },
+    "TS2": {
+        "full": "Team Secret",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Asia-Pacific",
+        "regional_rank": 171,
+        "vlr_abbr": "TS"
+    },
     "KP1": {
         "full": "Kotatsu Prime",
         "rank": 250,
@@ -6595,6 +5900,14 @@
         "region": "Asia-Pacific",
         "regional_rank": 177,
         "vlr_abbr": "ST"
+    },
+    "TLR1": {
+        "full": "The Last Ronin",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Asia-Pacific",
+        "regional_rank": 178,
+        "vlr_abbr": "TLR"
     },
     "ARCH": {
         "full": "Archangel Esports",
@@ -6748,7 +6061,7 @@
         "regional_rank": 197,
         "vlr_abbr": "KP"
     },
-    "AA2": {
+    "AA1": {
         "full": "Akari Adamson",
         "rank": 250,
         "norm_rank": 250,
@@ -6924,6 +6237,38 @@
         "regional_rank": 219,
         "vlr_abbr": "DXE"
     },
+    "XLG1": {
+        "full": "Xi Lai Gaming",
+        "rank": 250,
+        "norm_rank": 312,
+        "region": "China",
+        "regional_rank": 1,
+        "vlr_abbr": "XLG"
+    },
+    "AG1": {
+        "full": "All Gamers",
+        "rank": 250,
+        "norm_rank": 312,
+        "region": "China",
+        "regional_rank": 3,
+        "vlr_abbr": "AG"
+    },
+    "BLG": {
+        "full": "Bilibili Gaming",
+        "rank": 250,
+        "norm_rank": 312,
+        "region": "China",
+        "regional_rank": 4,
+        "vlr_abbr": "BLG"
+    },
+    "DRG": {
+        "full": "Dragon Ranger Gaming",
+        "rank": 250,
+        "norm_rank": 312,
+        "region": "China",
+        "regional_rank": 5,
+        "vlr_abbr": "DRG"
+    },
     "TYL": {
         "full": "Tyloo",
         "rank": 250,
@@ -6931,6 +6276,14 @@
         "region": "China",
         "regional_rank": 6,
         "vlr_abbr": "TYL"
+    },
+    "RA1": {
+        "full": "Rare Atom",
+        "rank": 250,
+        "norm_rank": 312,
+        "region": "China",
+        "regional_rank": 7,
+        "vlr_abbr": "RA"
     },
     "JDG": {
         "full": "Jdg Esports",
@@ -6956,7 +6309,15 @@
         "regional_rank": 10,
         "vlr_abbr": "KBG"
     },
-    "AQ": {
+    "FPX": {
+        "full": "Funplus Phoenix",
+        "rank": 250,
+        "norm_rank": 312,
+        "region": "China",
+        "regional_rank": 11,
+        "vlr_abbr": "FPX"
+    },
+    "AQ1": {
         "full": "Any Questions Gaming",
         "rank": 250,
         "norm_rank": 312,
@@ -6971,6 +6332,14 @@
         "region": "China",
         "regional_rank": 13,
         "vlr_abbr": "WBG"
+    },
+    "TE": {
+        "full": "Trace Esports",
+        "rank": 250,
+        "norm_rank": 312,
+        "region": "China",
+        "regional_rank": 14,
+        "vlr_abbr": "TE"
     },
     "ALG": {
         "full": "Ambitious Legend Gaming",
@@ -6988,13 +6357,69 @@
         "regional_rank": 16,
         "vlr_abbr": "ODG"
     },
+    "TEC": {
+        "full": "Titan Esports Club",
+        "rank": 250,
+        "norm_rank": 312,
+        "region": "China",
+        "regional_rank": 17,
+        "vlr_abbr": "TEC"
+    },
     "NOVA": {
         "full": "Nova Esports",
         "rank": 250,
         "norm_rank": 312,
-        "region": "China",
+        "region": "MENA",
         "regional_rank": 34,
         "vlr_abbr": "NOVA"
+    },
+    "WOL": {
+        "full": "Wolves Esports",
+        "rank": 250,
+        "norm_rank": 312,
+        "region": "China",
+        "regional_rank": 19,
+        "vlr_abbr": "WOL"
+    },
+    "T11": {
+        "full": "T1",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "South Korea",
+        "regional_rank": 2,
+        "vlr_abbr": "T1"
+    },
+    "SLT": {
+        "full": "Slt Seongnam",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "South Korea",
+        "regional_rank": 3,
+        "vlr_abbr": "SLT"
+    },
+    "GEN": {
+        "full": "Gen.G",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "South Korea",
+        "regional_rank": 5,
+        "vlr_abbr": "GEN"
+    },
+    "IAM": {
+        "full": "Team Iam",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "South Korea",
+        "regional_rank": 7,
+        "vlr_abbr": "IAM"
+    },
+    "DK": {
+        "full": "Dplus Esports",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "South Korea",
+        "regional_rank": 8,
+        "vlr_abbr": "DK"
     },
     "GGA": {
         "full": "Gen.G Global Academy",
@@ -7011,14 +6436,6 @@
         "region": "South Korea",
         "regional_rank": 10,
         "vlr_abbr": "SR"
-    },
-    "T1A": {
-        "full": "T1 Academy",
-        "rank": 250,
-        "norm_rank": 250,
-        "region": "South Korea",
-        "regional_rank": 11,
-        "vlr_abbr": "T1A"
     },
     "E(": {
         "full": "Egennam (\uc5d0\uac90\ub0a8)",
@@ -7100,6 +6517,14 @@
         "regional_rank": 21,
         "vlr_abbr": "MIR"
     },
+    "BFX": {
+        "full": "Fearx",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "South Korea",
+        "regional_rank": 22,
+        "vlr_abbr": "BFX"
+    },
     "FN": {
         "full": "Fn Pocheon",
         "rank": 250,
@@ -7115,142 +6540,6 @@
         "region": "South Korea",
         "regional_rank": 24,
         "vlr_abbr": "\ub371\uc2a4\ucd1d\ub300"
-    },
-    "RID": {
-        "full": "Riddle Order",
-        "rank": 250,
-        "norm_rank": 250,
-        "region": "Japan",
-        "regional_rank": 3,
-        "vlr_abbr": "RID"
-    },
-    "QTD": {
-        "full": "Qt Dig\u221e",
-        "rank": 250,
-        "norm_rank": 250,
-        "region": "Japan",
-        "regional_rank": 4,
-        "vlr_abbr": "QTD"
-    },
-    "VL": {
-        "full": "Varrel",
-        "rank": 250,
-        "norm_rank": 250,
-        "region": "Japan",
-        "regional_rank": 5,
-        "vlr_abbr": "VL"
-    },
-    "IGZ": {
-        "full": "Igzist",
-        "rank": 250,
-        "norm_rank": 250,
-        "region": "Japan",
-        "regional_rank": 9,
-        "vlr_abbr": "IGZ"
-    },
-    "DLT": {
-        "full": "Delight",
-        "rank": 250,
-        "norm_rank": 250,
-        "region": "Japan",
-        "regional_rank": 10,
-        "vlr_abbr": "DLT"
-    },
-    "RIGX": {
-        "full": "Reignite Foxx",
-        "rank": 250,
-        "norm_rank": 250,
-        "region": "Japan",
-        "regional_rank": 12,
-        "vlr_abbr": "RIGX"
-    },
-    "MRG": {
-        "full": "Murash Gaming",
-        "rank": 250,
-        "norm_rank": 250,
-        "region": "Japan",
-        "regional_rank": 14,
-        "vlr_abbr": "MRG"
-    },
-    "GYOS": {
-        "full": "Gyoson Gaming",
-        "rank": 250,
-        "norm_rank": 250,
-        "region": "Japan",
-        "regional_rank": 15,
-        "vlr_abbr": "GYOS"
-    },
-    "AGL": {
-        "full": "Agelite",
-        "rank": 250,
-        "norm_rank": 250,
-        "region": "Japan",
-        "regional_rank": 16,
-        "vlr_abbr": "AGL"
-    },
-    "ZETA.AC": {
-        "full": "Zeta Division Academy",
-        "rank": 250,
-        "norm_rank": 250,
-        "region": "Japan",
-        "regional_rank": 17,
-        "vlr_abbr": "ZETA.AC"
-    },
-    "BCS": {
-        "full": "Bc Swell",
-        "rank": 250,
-        "norm_rank": 250,
-        "region": "Japan",
-        "regional_rank": 18,
-        "vlr_abbr": "BCS"
-    },
-    "BB2": {
-        "full": "Blue Bees.Esp",
-        "rank": 250,
-        "norm_rank": 250,
-        "region": "Japan",
-        "regional_rank": 19,
-        "vlr_abbr": "BB"
-    },
-    "SIB": {
-        "full": "Team Seibi",
-        "rank": 250,
-        "norm_rank": 250,
-        "region": "Japan",
-        "regional_rank": 20,
-        "vlr_abbr": "SIB"
-    },
-    "NTHY": {
-        "full": "Northeption Youth",
-        "rank": 250,
-        "norm_rank": 250,
-        "region": "Japan",
-        "regional_rank": 21,
-        "vlr_abbr": "NTHY"
-    },
-    "WECC": {
-        "full": "Wec C",
-        "rank": 250,
-        "norm_rank": 250,
-        "region": "Japan",
-        "regional_rank": 22,
-        "vlr_abbr": "WECC"
-    },
-    "FAV.YO": {
-        "full": "Fav Gaming Youth",
-        "rank": 250,
-        "norm_rank": 250,
-        "region": "Japan",
-        "regional_rank": 23,
-        "vlr_abbr": "FAV.YO"
-    },
-    "DFMA": {
-        "full": "Dfm Academy",
-        "rank": 250,
-        "norm_rank": 250,
-        "region": "Japan",
-        "regional_rank": 24,
-        "vlr_abbr": "DFMA"
     },
     "FUR": {
         "full": "Furia",
@@ -7268,6 +6557,14 @@
         "regional_rank": 3,
         "vlr_abbr": "INTZ"
     },
+    "2G": {
+        "full": "2Game Esports",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "Brazil",
+        "regional_rank": 5,
+        "vlr_abbr": "2G"
+    },
     "MIBR.AC": {
         "full": "Mibr Academy",
         "rank": 250,
@@ -7276,6 +6573,38 @@
         "regional_rank": 6,
         "vlr_abbr": "MIBR.AC"
     },
+    "TBK": {
+        "full": "Tbk Esports",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "Brazil",
+        "regional_rank": 7,
+        "vlr_abbr": "TBK"
+    },
+    "ELV": {
+        "full": "Elevate",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "Oceania",
+        "regional_rank": 13,
+        "vlr_abbr": "ELV"
+    },
+    "LOUD": {
+        "full": "Loud",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "Brazil",
+        "regional_rank": 9,
+        "vlr_abbr": "LOUD"
+    },
+    "RED": {
+        "full": "Red Canids",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "Brazil",
+        "regional_rank": 10,
+        "vlr_abbr": "RED"
+    },
     "TOT": {
         "full": "Totalepro",
         "rank": 250,
@@ -7283,14 +6612,6 @@
         "region": "Brazil",
         "regional_rank": 11,
         "vlr_abbr": "TOT"
-    },
-    "TLV": {
-        "full": "Team Liquid Brazil",
-        "rank": 250,
-        "norm_rank": 262,
-        "region": "Brazil",
-        "regional_rank": 12,
-        "vlr_abbr": "TLV"
     },
     "ELVA": {
         "full": "Elevate Academy",
@@ -7500,7 +6821,7 @@
         "regional_rank": 38,
         "vlr_abbr": "CRW"
     },
-    "LP2": {
+    "LP1": {
         "full": "Lost Puppies Quackers",
         "rank": 250,
         "norm_rank": 262,
@@ -7540,7 +6861,7 @@
         "regional_rank": 43,
         "vlr_abbr": "MGK"
     },
-    "AA3": {
+    "AA2": {
         "full": "Atlanta Academy",
         "rank": 250,
         "norm_rank": 262,
@@ -7595,6 +6916,14 @@
         "region": "Brazil",
         "regional_rank": 50,
         "vlr_abbr": "MHUB"
+    },
+    "KR\u00dc": {
+        "full": "Kr\u00fc Esports",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "Latin America South",
+        "regional_rank": 1,
+        "vlr_abbr": "KR\u00dc"
     },
     "BEST": {
         "full": "Bestia",
@@ -7660,6 +6989,14 @@
         "regional_rank": 10,
         "vlr_abbr": "QV"
     },
+    "OXEN": {
+        "full": "Oxen",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "Latin America South",
+        "regional_rank": 11,
+        "vlr_abbr": "OXEN"
+    },
     "SDUF": {
         "full": "Sdufen Esports",
         "rank": 250,
@@ -7668,14 +7005,6 @@
         "regional_rank": 12,
         "vlr_abbr": "SDUF"
     },
-    "KRUB": {
-        "full": "Kr\u00fc Blaze",
-        "rank": 250,
-        "norm_rank": 262,
-        "region": "Latin America South",
-        "regional_rank": 13,
-        "vlr_abbr": "KRUB"
-    },
     "GOAT": {
         "full": "Las Cabras",
         "rank": 250,
@@ -7683,6 +7012,14 @@
         "region": "Latin America South",
         "regional_rank": 15,
         "vlr_abbr": "GOAT"
+    },
+    "BBB1": {
+        "full": "Contra",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "Latin America North",
+        "regional_rank": 2,
+        "vlr_abbr": "BBB"
     },
     "TZC": {
         "full": "Tezcat Gaming",
@@ -7707,6 +7044,14 @@
         "region": "Latin America North",
         "regional_rank": 5,
         "vlr_abbr": "DCT"
+    },
+    "FUE": {
+        "full": "Fuego",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "Latin America North",
+        "regional_rank": 6,
+        "vlr_abbr": "FUE"
     },
     "CHV": {
         "full": "Chivas Esports",
@@ -7740,12 +7085,220 @@
         "regional_rank": 10,
         "vlr_abbr": "KTN"
     },
+    "FSN": {
+        "full": "Fusion",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "Latin America North",
+        "regional_rank": 11,
+        "vlr_abbr": "FSN"
+    },
+    "DFM": {
+        "full": "Detonation Focusme",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Japan",
+        "regional_rank": 1,
+        "vlr_abbr": "DFM"
+    },
+    "CGZ": {
+        "full": "Crest Gaming Zst",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Japan",
+        "regional_rank": 2,
+        "vlr_abbr": "CGZ"
+    },
+    "RID": {
+        "full": "Riddle Order",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Japan",
+        "regional_rank": 3,
+        "vlr_abbr": "RID"
+    },
+    "QTD": {
+        "full": "Qt Dig\u221e",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Japan",
+        "regional_rank": 4,
+        "vlr_abbr": "QTD"
+    },
+    "VL": {
+        "full": "Varrel",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Japan",
+        "regional_rank": 5,
+        "vlr_abbr": "VL"
+    },
+    "INS": {
+        "full": "Insomnia",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Japan",
+        "regional_rank": 7,
+        "vlr_abbr": "INS"
+    },
+    "SZ": {
+        "full": "Scarz",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Japan",
+        "regional_rank": 8,
+        "vlr_abbr": "SZ"
+    },
+    "IGZ": {
+        "full": "Igzist",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Japan",
+        "regional_rank": 9,
+        "vlr_abbr": "IGZ"
+    },
+    "DLT": {
+        "full": "Delight",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Japan",
+        "regional_rank": 10,
+        "vlr_abbr": "DLT"
+    },
+    "ZETA": {
+        "full": "Zeta Division",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Japan",
+        "regional_rank": 11,
+        "vlr_abbr": "ZETA"
+    },
+    "RIGX": {
+        "full": "Reignite Foxx",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Japan",
+        "regional_rank": 12,
+        "vlr_abbr": "RIGX"
+    },
+    "RC1": {
+        "full": "Reject",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Japan",
+        "regional_rank": 13,
+        "vlr_abbr": "RC"
+    },
+    "MRG": {
+        "full": "Murash Gaming",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Japan",
+        "regional_rank": 14,
+        "vlr_abbr": "MRG"
+    },
+    "GG2": {
+        "full": "Gyoson Gaming",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Japan",
+        "regional_rank": 15,
+        "vlr_abbr": "GG"
+    },
+    "AGL": {
+        "full": "Agelite",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Japan",
+        "regional_rank": 16,
+        "vlr_abbr": "AGL"
+    },
+    "ZETA.AC": {
+        "full": "Zeta Division Academy",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Japan",
+        "regional_rank": 17,
+        "vlr_abbr": "ZETA.AC"
+    },
+    "BCS": {
+        "full": "Bc Swell",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Japan",
+        "regional_rank": 18,
+        "vlr_abbr": "BCS"
+    },
+    "BB1": {
+        "full": "Blue Bees.Esp",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Japan",
+        "regional_rank": 19,
+        "vlr_abbr": "BB"
+    },
+    "SIB": {
+        "full": "Team Seibi",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Japan",
+        "regional_rank": 20,
+        "vlr_abbr": "SIB"
+    },
+    "NTHY": {
+        "full": "Northeption Youth",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Japan",
+        "regional_rank": 21,
+        "vlr_abbr": "NTHY"
+    },
+    "WECC": {
+        "full": "Wec C",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Japan",
+        "regional_rank": 22,
+        "vlr_abbr": "WECC"
+    },
+    "FAV.YO": {
+        "full": "Fav Gaming Youth",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Japan",
+        "regional_rank": 23,
+        "vlr_abbr": "FAV.YO"
+    },
+    "DFMA": {
+        "full": "Dfm Academy",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Japan",
+        "regional_rank": 24,
+        "vlr_abbr": "DFMA"
+    },
+    "BONK": {
+        "full": "Bonkers",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Oceania",
+        "regional_rank": 1,
+        "vlr_abbr": "BONK"
+    },
+    "KING": {
+        "full": "E-King",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Oceania",
+        "regional_rank": 2,
+        "vlr_abbr": "KING"
+    },
     "SC": {
         "full": "Squishy Cheeks",
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 2,
+        "regional_rank": 3,
         "vlr_abbr": "SC"
     },
     "GGL": {
@@ -7753,15 +7306,15 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 3,
+        "regional_rank": 4,
         "vlr_abbr": "GGL"
     },
-    "RG3": {
+    "RG2": {
         "full": "Rabbit Gang",
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 4,
+        "regional_rank": 5,
         "vlr_abbr": "RG"
     },
     "TROO": {
@@ -7769,7 +7322,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 5,
+        "regional_rank": 6,
         "vlr_abbr": "TROO"
     },
     "3C": {
@@ -7777,15 +7330,23 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 6,
+        "regional_rank": 7,
         "vlr_abbr": "3C"
+    },
+    "MEAT": {
+        "full": "Meatzn",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Oceania",
+        "regional_rank": 8,
+        "vlr_abbr": "MEAT"
     },
     "EDGE": {
         "full": "Edge",
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 7,
+        "regional_rank": 9,
         "vlr_abbr": "EDGE"
     },
     "XYZ": {
@@ -7793,15 +7354,23 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 8,
+        "regional_rank": 10,
         "vlr_abbr": "XYZ"
+    },
+    "BURG1": {
+        "full": "Team Burger",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Oceania",
+        "regional_rank": 11,
+        "vlr_abbr": "BURG"
     },
     "NX": {
         "full": "Nx",
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 10,
+        "regional_rank": 12,
         "vlr_abbr": "NX"
     },
     "DK1": {
@@ -7809,15 +7378,23 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 12,
+        "regional_rank": 14,
         "vlr_abbr": "DK"
+    },
+    "SLEE": {
+        "full": "Sleepcallkittys",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Oceania",
+        "regional_rank": 15,
+        "vlr_abbr": "SLEE"
     },
     "WP": {
         "full": "Wolf Pack",
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 13,
+        "regional_rank": 16,
         "vlr_abbr": "WP"
     },
     "ECBP": {
@@ -7825,39 +7402,55 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 14,
+        "regional_rank": 17,
         "vlr_abbr": "ECBP"
-    },
-    "PP2": {
-        "full": "Please Peg",
-        "rank": 250,
-        "norm_rank": 250,
-        "region": "Oceania",
-        "regional_rank": 15,
-        "vlr_abbr": "PP"
-    },
-    "NOOB": {
-        "full": "Noob Esports",
-        "rank": 250,
-        "norm_rank": 250,
-        "region": "Oceania",
-        "regional_rank": 16,
-        "vlr_abbr": "NOOB"
     },
     "PERF": {
         "full": "Performative",
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 17,
+        "regional_rank": 18,
         "vlr_abbr": "PERF"
+    },
+    "BETT": {
+        "full": "Bettr2",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Oceania",
+        "regional_rank": 19,
+        "vlr_abbr": "BETT"
+    },
+    "DXA": {
+        "full": "Dxa Esports",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Oceania",
+        "regional_rank": 20,
+        "vlr_abbr": "DXA"
+    },
+    "NOOB": {
+        "full": "Noob Esports",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Oceania",
+        "regional_rank": 21,
+        "vlr_abbr": "NOOB"
+    },
+    "PP2": {
+        "full": "Please Peg",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Oceania",
+        "regional_rank": 22,
+        "vlr_abbr": "PP"
     },
     "KOR": {
         "full": "Forever",
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 18,
+        "regional_rank": 23,
         "vlr_abbr": "KOR"
     },
     "CNX": {
@@ -7865,15 +7458,23 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 19,
+        "regional_rank": 24,
         "vlr_abbr": "CNX"
+    },
+    "ANGE": {
+        "full": "Angelo",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Oceania",
+        "regional_rank": 25,
+        "vlr_abbr": "ANGE"
     },
     "XG1": {
         "full": "Xilly Geese",
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 20,
+        "regional_rank": 26,
         "vlr_abbr": "XG"
     },
     "HZN": {
@@ -7881,7 +7482,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 21,
+        "regional_rank": 27,
         "vlr_abbr": "HZN"
     },
     "TC": {
@@ -7889,23 +7490,15 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 22,
+        "regional_rank": 28,
         "vlr_abbr": "TC"
-    },
-    "CELE": {
-        "full": "Celestial",
-        "rank": 250,
-        "norm_rank": 250,
-        "region": "Oceania",
-        "regional_rank": 23,
-        "vlr_abbr": "CELE"
     },
     "MOMM": {
         "full": "Mommysgoodboy",
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 24,
+        "regional_rank": 29,
         "vlr_abbr": "MOMM"
     },
     "CC2": {
@@ -7913,7 +7506,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 25,
+        "regional_rank": 30,
         "vlr_abbr": "CC"
     },
     "ARTI": {
@@ -7921,47 +7514,47 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 26,
+        "regional_rank": 31,
         "vlr_abbr": "ARTI"
     },
-    "BB3": {
+    "BB2": {
         "full": "Bali Boys",
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 27,
+        "regional_rank": 32,
         "vlr_abbr": "BB"
+    },
+    "UW1": {
+        "full": "Unsw Woof",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Oceania",
+        "regional_rank": 33,
+        "vlr_abbr": "UW"
     },
     "PAND": {
         "full": "Pandemonium",
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 28,
+        "regional_rank": 34,
         "vlr_abbr": "PAND"
     },
-    "UW": {
-        "full": "Unsw Woof",
+    "CELE": {
+        "full": "Celestial",
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 29,
-        "vlr_abbr": "UW"
-    },
-    "E4": {
-        "full": "Error 404",
-        "rank": 250,
-        "norm_rank": 250,
-        "region": "Oceania",
-        "regional_rank": 30,
-        "vlr_abbr": "E4"
+        "regional_rank": 35,
+        "vlr_abbr": "CELE"
     },
     "LSL": {
         "full": "Lemon Scented Lawns",
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 31,
+        "regional_rank": 36,
         "vlr_abbr": "LSL"
     },
     "FH1": {
@@ -7969,7 +7562,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 32,
+        "regional_rank": 37,
         "vlr_abbr": "FH"
     },
     "DISO": {
@@ -7977,23 +7570,23 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 33,
+        "regional_rank": 38,
         "vlr_abbr": "DISO"
     },
-    "SOL1": {
-        "full": "Solarex",
+    "E4": {
+        "full": "Error 404",
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 34,
-        "vlr_abbr": "SOL"
+        "regional_rank": 39,
+        "vlr_abbr": "E4"
     },
     "GD1": {
         "full": "Goal Diggers",
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 35,
+        "regional_rank": 40,
         "vlr_abbr": "GD"
     },
     "MONA": {
@@ -8001,7 +7594,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 36,
+        "regional_rank": 41,
         "vlr_abbr": "MONA"
     },
     "TXG": {
@@ -8009,15 +7602,23 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 37,
+        "regional_rank": 42,
         "vlr_abbr": "TXG"
+    },
+    "SOL1": {
+        "full": "Solarex",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Oceania",
+        "regional_rank": 43,
+        "vlr_abbr": "SOL"
     },
     "SYN": {
         "full": "Synthesia",
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 38,
+        "regional_rank": 44,
         "vlr_abbr": "SYN"
     },
     "MEOW1": {
@@ -8025,15 +7626,15 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 39,
+        "regional_rank": 45,
         "vlr_abbr": "MEOW"
     },
-    "MC1": {
+    "MC": {
         "full": "Mue Challengers",
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 40,
+        "regional_rank": 46,
         "vlr_abbr": "MC"
     },
     "AM": {
@@ -8041,23 +7642,23 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 41,
+        "regional_rank": 47,
         "vlr_abbr": "AM"
     },
-    "CP1": {
+    "CPN": {
         "full": "Club Penguin",
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 42,
-        "vlr_abbr": "CP"
+        "regional_rank": 48,
+        "vlr_abbr": "CPN"
     },
     "BT1": {
         "full": "Bubble Tour",
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 43,
+        "regional_rank": 49,
         "vlr_abbr": "BT"
     },
     "QR": {
@@ -8065,31 +7666,31 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 44,
+        "regional_rank": 50,
         "vlr_abbr": "QR"
-    },
-    "SHOG": {
-        "full": "Shogungg",
-        "rank": 250,
-        "norm_rank": 250,
-        "region": "Oceania",
-        "regional_rank": 45,
-        "vlr_abbr": "SHOG"
     },
     "SJ1": {
         "full": "Sentinels Jr",
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 46,
+        "regional_rank": 51,
         "vlr_abbr": "SJ"
+    },
+    "SHOG": {
+        "full": "Shogungg",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Oceania",
+        "regional_rank": 52,
+        "vlr_abbr": "SHOG"
     },
     "3G": {
         "full": "333 Ghouls",
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 47,
+        "regional_rank": 53,
         "vlr_abbr": "3G"
     },
     "FURY": {
@@ -8097,16 +7698,16 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Oceania",
-        "regional_rank": 48,
+        "regional_rank": 54,
         "vlr_abbr": "FURY"
     },
-    "QAD": {
-        "full": "Alqadsiah Esports",
+    "TU1": {
+        "full": "The Ultimates",
         "rank": 250,
         "norm_rank": 288,
         "region": "MENA",
-        "regional_rank": 1,
-        "vlr_abbr": "QAD"
+        "regional_rank": 3,
+        "vlr_abbr": "TU"
     },
     "GLS": {
         "full": "Ghools Esports",
@@ -8236,7 +7837,7 @@
         "regional_rank": 20,
         "vlr_abbr": "JSK"
     },
-    "FF2": {
+    "FF1": {
         "full": "Fearless Faction",
         "rank": 250,
         "norm_rank": 288,
@@ -8268,15 +7869,15 @@
         "regional_rank": 24,
         "vlr_abbr": "JU"
     },
-    "CE1": {
+    "CS": {
         "full": "Cinyps E-Sports",
         "rank": 250,
         "norm_rank": 288,
         "region": "MENA",
         "regional_rank": 25,
-        "vlr_abbr": "CE"
+        "vlr_abbr": "CS"
     },
-    "SE1": {
+    "SE": {
         "full": "Saudi Elite Team",
         "rank": 250,
         "norm_rank": 288,
