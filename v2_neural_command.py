@@ -9,6 +9,67 @@ import requests
 from itertools import combinations
 from groq import Groq
 from tavily import TavilyClient
+from datetime import datetime, timedelta
+
+def generate_ledger_stats(df):
+    # Check if necessary columns exist
+    if df.empty or 'Date' not in df.columns or 'Kill Result' not in df.columns:
+        return None
+    
+    # 1. Clean Dates
+    df['Date'] = pd.to_datetime(df['Date'], errors='coerce')
+    df = df.dropna(subset=['Date']) 
+    
+    # 2. Clean Results (Extract text regardless of emojis)
+    df['clean_result'] = df['Kill Result'].astype(str).str.upper()
+    
+    # 3. Filter out Voids and empty rows
+    df = df[df['clean_result'].str.contains('WIN|LOSS|PUSH', regex=True, na=False)]
+    
+    now = datetime.now()
+    
+    # 4. Slice into Timeframes
+    stats = {
+        "Daily (24h)": df[df['Date'].dt.date == now.date()],
+        "Weekly (7d)": df[df['Date'] >= (now - timedelta(days=7))],
+        "Monthly (30d)": df[df['Date'] >= (now - timedelta(days=30))],
+        "All-Time": df
+    }
+    
+    report = {}
+    for period, data in stats.items():
+        wins = len(data[data['clean_result'].str.contains('WIN')])
+        losses = len(data[data['clean_result'].str.contains('LOSS')])
+        pushes = len(data[data['clean_result'].str.contains('PUSH')])
+        
+        # Pushes do not count towards total Win/Loss decisions
+        decisions = wins + losses 
+        rate = (wins / decisions * 100) if decisions > 0 else 0
+        
+        # 5. S-Tier Grade Tracking
+        s_rate = 0
+        s_text = "0W - 0L"
+        if 'Kill Grade' in data.columns:
+            # Filter rows where Grade is exactly 'S'
+            s_data = data[data['Kill Grade'].astype(str).str.upper() == 'S']
+            s_wins = len(s_data[s_data['clean_result'].str.contains('WIN')])
+            s_losses = len(s_data[s_data['clean_result'].str.contains('LOSS')])
+            s_decisions = s_wins + s_losses
+            
+            s_rate = (s_wins / s_decisions * 100) if s_decisions > 0 else 0
+            s_text = f"{s_wins}W - {s_losses}L"
+
+        report[period] = {
+            "Total Props Graded": len(data),
+            "Wins": wins, 
+            "Losses": losses, 
+            "Pushes": pushes,
+            "Win %": f"{rate:.1f}%",
+            "S-Tier Win %": f"{s_rate:.1f}%",
+            "S-Tier Record": s_text
+        }
+        
+    return report
 
 # --- 1. CORE SETUP & MONOLITH V41.2 STYLING ---
 st.set_page_config(page_title="Iron Guard V42.2", layout="wide", page_icon="📡")
@@ -363,7 +424,7 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
         else:
             final_proj = master_raw # Fails the test. Revert to True Average.
             pick = "UNDER"
-            
+
     # 🧠 5. LOGARITHMIC GOVERNOR (STABILITY ANCHOR)
     if hist_kills:
         baseline_kills = (sum(hist_kills)/len(hist_kills) + u_line)/2.0 if theater == "CS2" else sum(hist_kills)/len(hist_kills)
@@ -809,59 +870,108 @@ execute_sweep = False
 
 with st.sidebar:
     st.header("📡 COMMAND CENTER")
-    cmd_mode = st.radio("Command Mode", ["Single Target (Manual)", "Syndicate Sweep (API)"])
+    
+    # --- DASHBOARD NAVIGATION ---
+    view_mode = st.radio("Navigation", ["🎯 Live Grader", "📊 Val Archive Ledger"])
     st.divider()
 
-    if cmd_mode == "Single Target (Manual)":
-        theater_sel = st.radio("Theater", ["VALORANT", "CS2", "DOTA 2"])
-        prop_type = "Kills" if theater_sel in ["VALORANT", "DOTA 2"] else st.radio("Prop Type", ["Kills", "Headshots"])
-        
-        with st.expander("👤 PLAYER TACTICAL", expanded=True):
-            label = "Agent" if theater_sel == "VALORANT" else "Role" if theater_sel == "DOTA 2" else "Map"
-            stat_lbl = "ADR" if theater_sel == "VALORANT" else "Avg Kills" if theater_sel == "DOTA 2" else "KPR"
-            target_list = VAL_AGENTS if theater_sel == "VALORANT" else list(DOTA_GRAVITY.keys()) if theater_sel == "DOTA 2" else list(CS2_ARCHETYPES.keys())
-            
-            t1 = st.selectbox(f"{label} 1", target_list, key="t1_select")
-            t1_v = safe_float(st.text_input(f"{t1} {stat_lbl} (Override/Base)", "", key="t1_stat_input"))
-            t1_hs = safe_float(st.text_input(f"{t1} HS%", "50.0", key="t1_hs_input")) if (theater_sel == "CS2" and prop_type == "Headshots") else 0.0
-            
-            t2 = st.selectbox(f"{label} 2", target_list, key="t2_select")
-            t2_v = safe_float(st.text_input(f"{t2} {stat_lbl} (Override)", "", key="t2_stat_input"))
-            t2_hs = safe_float(st.text_input(f"{t2} HS%", "50.0", key="t2_hs_input")) if (theater_sel == "CS2" and prop_type == "Headshots") else 0.0
-            
-            st.write("---")
-            sync_ranks = st.checkbox("🛰️ Auto-Sync Ranks", value=True)
-            st.session_state['p_rank'] = st.number_input("Team Rank", 1, 300, value=st.session_state['p_rank'], disabled=sync_ranks)
-            
-            if theater_sel == "CS2":
-                sync_duel = st.checkbox("🛰️ Auto-Sync Open Duel", value=True)
-                st.session_state['auto_duel'] = st.slider("Open Duel (1-10)", 1.0, 10.0, value=st.session_state['auto_duel'], step=0.1, disabled=sync_duel, help="Player's opening duel win pct scaled to 1-10.")
-            
-            r_total_manual = safe_float(st.text_input("Total Rounds Expected", "40.0" if theater_sel == "VALORANT" else "44.0"))
-            
-            if theater_sel == "CS2": impact_stat_val = st.number_input("HLTV Round Swing (+/- %)", min_value=-20.0, max_value=20.0, value=0.0, step=1.0)
-            else: impact_stat_val = st.number_input("VLR KAST %", min_value=0.0, max_value=100.0, value=72.0, step=1.0)
-                
-            heat_manual = st.slider("Teammate Heat (Kill Steal %)", 0, 100, 0, help="Higher values reduce the player's projected volume due to teammates taking kills.")
-            
-        with st.expander("🛡️ OPPONENT TACTICAL", expanded=True):
-            opp_name_manual = st.text_input("Opponent (Abbr)", "PCF").upper().strip()
-            raw_dpr_manual = safe_float(st.text_input("Opponent DPR", "0.65"))
-            st.session_state['o_rank'] = st.number_input("Opponent Rank", 1, 300, value=st.session_state['o_rank'], disabled=sync_ranks)
+    cmd_mode = None
 
-    else:
-        st.subheader("📊 PropVault API Sync")
-        st.caption("Hardcoded direct connection via gspread.")
-        
-        r_total_v = safe_float(st.text_input("Total Rounds Est. (Global Default)", "40.0", help="Defaults to 40.0 for Valorant baseline."))
-        raw_dpr_api = safe_float(st.text_input("Global Opp DPR (Fallback)", "0.65"))
-        
-        heat_val = st.slider("Global Pacing Dampener / Heat (%)", 0, 100, 0)
-        rank_respect = st.slider("🎓 Rank Respect", 0.0, 1.0, 0.3)
-        
-        execute_sweep = st.button("🔥 EXECUTE SYNDICATE SWEEP", use_container_width=True, type="primary")
+    # Only show the Grader controls if we are in Grader mode
+    if view_mode == "🎯 Live Grader":
+        cmd_mode = st.radio("Command Mode", ["Single Target (Manual)", "Syndicate Sweep (API)"])
+        st.divider()
+
+        # 🟢 MANUAL TARGETING UI
+        if cmd_mode == "Single Target (Manual)":
+            theater_sel = st.radio("Theater", ["VALORANT", "CS2", "DOTA 2"])
+            prop_type = "Kills" if theater_sel in ["VALORANT", "DOTA 2"] else st.radio("Prop Type", ["Kills", "Headshots"])
+            
+            with st.expander("👤 PLAYER TACTICAL", expanded=True):
+                label = "Agent" if theater_sel == "VALORANT" else "Role" if theater_sel == "DOTA 2" else "Map"
+                stat_lbl = "ADR" if theater_sel == "VALORANT" else "Avg Kills" if theater_sel == "DOTA 2" else "KPR"
+                target_list = VAL_AGENTS if theater_sel == "VALORANT" else list(DOTA_GRAVITY.keys()) if theater_sel == "DOTA 2" else list(CS2_ARCHETYPES.keys())
+                
+                t1 = st.selectbox(f"{label} 1", target_list, key="t1_select")
+                t1_v = safe_float(st.text_input(f"{t1} {stat_lbl} (Override/Base)", "", key="t1_stat_input"))
+                t1_hs = safe_float(st.text_input(f"{t1} HS%", "50.0", key="t1_hs_input")) if (theater_sel == "CS2" and prop_type == "Headshots") else 0.0
+                
+                t2 = st.selectbox(f"{label} 2", target_list, key="t2_select")
+                t2_v = safe_float(st.text_input(f"{t2} {stat_lbl} (Override)", "", key="t2_stat_input"))
+                t2_hs = safe_float(st.text_input(f"{t2} HS%", "50.0", key="t2_hs_input")) if (theater_sel == "CS2" and prop_type == "Headshots") else 0.0
+                
+                st.write("---")
+                sync_ranks = st.checkbox("🛰️ Auto-Sync Ranks", value=True)
+                st.session_state['p_rank'] = st.number_input("Team Rank", 1, 300, value=st.session_state['p_rank'], disabled=sync_ranks)
+                
+                if theater_sel == "CS2":
+                    sync_duel = st.checkbox("🛰️ Auto-Sync Open Duel", value=True)
+                    st.session_state['auto_duel'] = st.slider("Open Duel (1-10)", 1.0, 10.0, value=st.session_state['auto_duel'], step=0.1, disabled=sync_duel, help="Player's opening duel win pct scaled to 1-10.")
+                
+                r_total_manual = safe_float(st.text_input("Total Rounds Expected", "40.0" if theater_sel == "VALORANT" else "44.0"))
+                
+                if theater_sel == "CS2": impact_stat_val = st.number_input("HLTV Round Swing (+/- %)", min_value=-20.0, max_value=20.0, value=0.0, step=1.0)
+                else: impact_stat_val = st.number_input("VLR KAST %", min_value=0.0, max_value=100.0, value=72.0, step=1.0)
+                    
+                heat_manual = st.slider("Teammate Heat (Kill Steal %)", 0, 100, 0, help="Higher values reduce the player's projected volume due to teammates taking kills.")
+                
+            with st.expander("🛡️ OPPONENT TACTICAL", expanded=True):
+                opp_name_manual = st.text_input("Opponent (Abbr)", "PCF").upper().strip()
+                raw_dpr_manual = safe_float(st.text_input("Opponent DPR", "0.65"))
+                st.session_state['o_rank'] = st.number_input("Opponent Rank", 1, 300, value=st.session_state['o_rank'], disabled=sync_ranks)
+
+        # 🔵 SYNDICATE SWEEP UI
+        elif cmd_mode == "Syndicate Sweep (API)":
+            st.subheader("📊 PropVault API Sync")
+            st.caption("Hardcoded direct connection via gspread.")
+            
+            r_total_v = safe_float(st.text_input("Total Rounds Est. (Global Default)", "40.0", help="Defaults to 40.0 for Valorant baseline."))
+            raw_dpr_api = safe_float(st.text_input("Global Opp DPR (Fallback)", "0.65"))
+            
+            heat_val = st.slider("Global Pacing Dampener / Heat (%)", 0, 100, 0)
+            rank_respect = st.slider("🎓 Rank Respect", 0.0, 1.0, 0.3)
+            
+            execute_sweep = st.button("🔥 EXECUTE SYNDICATE SWEEP", use_container_width=True, type="primary")
 
 # --- 4. EXECUTION LOOP ---
+if view_mode == "📊 Val Archive Ledger":
+    st.title("📊 Sovereign Performance Ledger (Valorant)")
+    
+    try:
+        with st.spinner("Fetching data from Val Archive..."):
+            google_creds = dict(st.secrets["gcp_service_account"])
+            gc = gspread.service_account_from_dict(google_creds) 
+            sh = gc.open_by_key("1xsxwRlnwF2MNkHwmSSRsOlKCV8H7W9iXemXyaTcIhlg")
+            archive_sheet = sh.worksheet("Val Data Archive")
+            data = archive_sheet.get_all_records()
+            df = pd.DataFrame(data)
+        
+        stats = generate_ledger_stats(df)
+        
+        if stats:
+            c1, c2, c3 = st.columns(3)
+            c1.metric("7-Day Hit Rate", stats['Weekly (7d)']['Win %'], f"{stats['Weekly (7d)']['Wins']}W - {stats['Weekly (7d)']['Losses']}L")
+            c2.metric("All-Time S-Tier Hit Rate", stats['All-Time']['S-Tier Win %'], stats['All-Time']['S-Tier Record'])
+            c3.metric("30-Day Volume", f"{stats['Monthly (30d)']['Total Props Graded']} Props Graded")
+
+            st.markdown("---")
+            st.subheader("Historical Hit Rate Breakdown")
+            st.dataframe(pd.DataFrame(stats).T, use_container_width=True)
+            
+            with st.expander("🔍 View Raw Val Archive Data"):
+                st.dataframe(df)
+        else:
+            st.warning("Archive is empty or missing 'Date', 'Kill Result', or 'Kill Grade' columns.")
+            
+    except Exception as e:
+        st.error(f"Could not load Val Archive: {e}")
+
+elif view_mode == "🎯 Live Grader":
+    if cmd_mode == "Single Target (Manual)":
+        if st.session_state['last_intel']:
+            render_grade_card(st.session_state['last_intel'], theater_sel, is_dual=False, key_prefix="manual")
+            st.markdown("<br><br><br><br>", unsafe_allow_html=True)
+
 if cmd_mode == "Single Target (Manual)":
     if st.session_state['last_intel']:
         render_grade_card(st.session_state['last_intel'], theater_sel, is_dual=False, key_prefix="manual")
