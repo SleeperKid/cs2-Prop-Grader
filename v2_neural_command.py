@@ -374,9 +374,9 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
     # 🧠 3. DUAL REALITY BRANCHES (Bo5 Sensitive)
     if theater == "VALORANT":
         pess_k, opt_k = raw_stat / 180.0, raw_stat / 150.0
-        # Bo5 uses higher round floors/ceilings
-        p_rounds = 52.0 if is_bo5 else (r_total * 0.85)
-        o_rounds = 60.0 if is_bo5 else r_total
+        # 🛡️ BO5 FIX: True round scaling for 3.5 to 4.5 expected maps
+        p_rounds = 72.0 if is_bo5 else (r_total * 0.85)
+        o_rounds = 88.0 if is_bo5 else r_total
     else:
         pess_k, opt_k = raw_stat / 1.10, raw_stat * 1.08
         p_rounds, o_rounds = (r_total * 0.88), (r_total * 1.15)
@@ -395,39 +395,46 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
         
         pess_map = p_m_kpr * r_mult * heat_nerf * (p_rounds / 2)
         opt_map = o_m_kpr * r_mult * heat_nerf * (o_rounds / 2)
-        
-        if prop_type == "Headshots" and hs_pcts[i] > 0:
-            pess_map *= (hs_pcts[i] / 100) * hs_mod 
-            opt_map *= (hs_pcts[i] / 100) * hs_mod 
             
         pess_maps.append(pess_map)
         opt_maps.append(opt_map)
 
-    # 🧠 4. THE PARADOX-FREE DUAL ENGINE
+   # 🧠 4. THE PARADOX-FREE DUAL ENGINE
     pess_sum = sum(pess_maps) * combined_mult * 0.96
     opt_sum = sum(opt_maps) * combined_mult
     master_raw = (pess_sum + opt_sum) / 2.0
     
+    # 🎯 NEW: CS2 HEADSHOT DERIVATIVE TRANSFORMATION
+    if theater == "CS2" and prop_type == "Headshots":
+        # Get their true HS% from the scraper, default to 50% if missing
+        true_hs_multiplier = (hs_pcts[0] / 100.0) if (len(hs_pcts) > 0 and hs_pcts[0] > 0) else 0.50
+        
+        pess_sum = pess_sum * true_hs_multiplier * hs_mod
+        opt_sum = opt_sum * true_hs_multiplier * hs_mod
+        master_raw = master_raw * true_hs_multiplier * hs_mod
+    
+    # --- The Stress Test ---
     if master_raw > u_line:
-        # Model leans OVER. Stress test against the pessimistic floor.
         if pess_sum > u_line:
-            final_proj = pess_sum  # Survives the floor test! Display the harsh floor.
+            final_proj = pess_sum  
             pick = "OVER"
         else:
-            final_proj = master_raw # Fails the test. Revert to True Average.
+            final_proj = master_raw 
             pick = "OVER"
     else:
-        # Model leans UNDER. Stress test against the optimistic ceiling.
         if opt_sum < u_line:
-            final_proj = opt_sum   # Survives the ceiling test! Display the high ceiling.
+            final_proj = opt_sum   
             pick = "UNDER"
         else:
-            final_proj = master_raw # Fails the test. Revert to True Average.
+            final_proj = master_raw 
             pick = "UNDER"
 
     # 🧠 5. LOGARITHMIC GOVERNOR (STABILITY ANCHOR)
     if hist_kills:
-        baseline_kills = (sum(hist_kills)/len(hist_kills) + u_line)/2.0 if theater == "CS2" else sum(hist_kills)/len(hist_kills)
+        historical_avg = sum(hist_kills) / len(hist_kills)
+        if is_bo5: historical_avg *= 1.85 
+        
+        baseline_kills = (historical_avg + u_line)/2.0 if theater == "CS2" else historical_avg
     else:
         baseline_kills = u_line
 
@@ -437,10 +444,15 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
     elif delta_pct < -cap: final_proj = baseline_kills * (1 - cap)
 
     delta = final_proj - u_line
+
+    delta = final_proj - u_line
     survived_edge = abs(delta)
 
     # 🧠 6. WIN PROBABILITY & GRADING
-    win_prob = (np.random.normal(final_proj, 5.5, 10000) > u_line).mean() * 100
+    # 🎯 NEW: Dynamic Variance. Headshots are highly stable (2.6), Kills are volatile (5.5).
+    std_dev = 2.6 if prop_type == "Headshots" else 5.5
+    
+    win_prob = (np.random.normal(final_proj, std_dev, 10000) > u_line).mean() * 100
     if delta < 0: win_prob = 100 - win_prob
     
     is_consistent = abs(impact_stat) <= 8.0 if theater == "CS2" else impact_stat >= 74.0
