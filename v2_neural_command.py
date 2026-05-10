@@ -448,28 +448,35 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
     delta = final_proj - u_line
     survived_edge = abs(delta)
 
-    # 🧠 6. WIN PROBABILITY & GRADING
-    # 🎯 NEW: Dynamic Variance. Headshots are highly stable (2.6), Kills are volatile (5.5).
-    std_dev = 2.6 if prop_type == "Headshots" else 5.5
+   # 🧠 6. WIN PROBABILITY & GRADING
+    # 🎯 NEW: CS2 Variance Squeeze for MR12
+    if prop_type == "Headshots": std_dev = 2.6
+    elif theater == "CS2": std_dev = 4.2 
+    else: std_dev = 5.5
     
     win_prob = (np.random.normal(final_proj, std_dev, 10000) > u_line).mean() * 100
     if delta < 0: win_prob = 100 - win_prob
     
-    is_consistent = abs(impact_stat) <= 8.0 if theater == "CS2" else impact_stat >= 74.0
+    # 🎯 NEW: Loosened consistency threshold for CS2 Round Swings
+    is_consistent = abs(impact_stat) <= 12.0 if theater == "CS2" else impact_stat >= 74.0
     raw_conf = ((min(100.0, abs(win_prob - 50.0) * 2.0)) * 0.7) + (hr_val * 0.3)
 
-    if survived_edge >= 7.5: 
-        grade, color, rec, rec_color = ("C", "#FFFFFF", "🛑 TRAP LINE", "#FF4444") if survived_edge >= 10.0 else ("C", "#A0A0A0", "🛑 EDGE TOO HIGH", "#FF8C00")
-        conf = min(raw_conf, 45.0 if survived_edge >= 10 else 55.0)
-    elif 3.0 <= survived_edge < 7.5:
+    # 🎯 NEW: CS2 Edge Scaling. A 2.5 Delta in CS2 is mathematically equivalent to a 3.2 in Valorant.
+    edge_mod = 1.25 if theater == "CS2" else 1.0
+    scaled_edge = survived_edge * edge_mod
+
+    if scaled_edge >= 7.5: 
+        grade, color, rec, rec_color = ("C", "#FFFFFF", "🛑 TRAP LINE", "#FF4444") if scaled_edge >= 10.0 else ("C", "#A0A0A0", "🛑 EDGE TOO HIGH", "#FF8C00")
+        conf = min(raw_conf, 45.0 if scaled_edge >= 10 else 55.0)
+    elif 3.0 <= scaled_edge < 7.5:
         if is_consistent:
-            grade, color = ("S+", "#FFD700") if survived_edge >= 4.0 else ("S", "#FFC125")
+            grade, color = ("S+", "#FFD700") if scaled_edge >= 4.0 else ("S", "#FFC125")
             rec, rec_color = "🟢 GREEN LIGHT (LOCK)", "#00FF7F"
         else:
-            grade, color = ("A+", "#00FF7F") if survived_edge >= 4.0 else ("A", "#00ccff")
+            grade, color = ("A+", "#00FF7F") if scaled_edge >= 4.0 else ("A", "#00ccff")
             rec, rec_color = "🟢 SOLID PLAY (STANDARD)", "#00ccff"
         conf = raw_conf 
-    elif 2.5 <= survived_edge < 3.0:
+    elif 2.5 <= scaled_edge < 3.0:
         grade, color, rec, rec_color = "A", "#00ccff", "🟡 NEUTRAL (SPRINKLE)", "#00ccff"
         conf = raw_conf 
     else: 
@@ -480,12 +487,12 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
         "player": p_name.upper(), "full_team": full_p, "full_opp": full_o,
         "grade": grade, "color": color, "rec": rec, "rec_color": rec_color, "prob": win_prob, 
         "stat_baseline": m_vals[0] if m_vals[0] > 0 else raw_stat, 
-        "proj": final_proj, "delta": delta, "is_nuke": (6.0 <= survived_edge <= 8.5 and win_prob >= 85 and is_consistent), 
+        "proj": final_proj, "delta": delta, "is_nuke": (6.0 <= scaled_edge <= 8.5 and win_prob >= 85 and is_consistent), 
         "hr": f"{hr_val:.0f}%", "hr_raw": hr_val, "gap": rank_gap, "trace": f"M1: {targets[0]} | M2: {targets[1]}",
         "confidence": round(min(99.9, max(1.0, conf)), 1), "source": data.get("source", "UNKNOWN"), "line": u_line, 
         "prop_type": prop_type, "open_duel": safe_float(data.get('opening_win_pct', 50.0)), "impact_stat": impact_stat,
         "t_rank": data.get('p_rank', 'UNK'), "o_rank": data.get('o_rank', 'UNK'), 
-        "dampened": data.get("dampened", False) or (survived_edge >= 10.0),
+        "dampened": data.get("dampened", False) or (scaled_edge >= 10.0),
         "pick": pick, "rounds": r_total
     }
 
@@ -887,18 +894,27 @@ with st.sidebar:
     view_mode = st.radio("Navigation", ["🎯 Live Grader", "📊 Val Archive Ledger"])
     st.divider()
 
-    cmd_mode = None
+    # 🛡️ BULLETPROOF DEFAULTS
+    cmd_mode = None  
+    theater_sel = "VALORANT" 
+    prop_type = "Kills"
 
     # Only show the Grader controls if we are in Grader mode
     if view_mode == "🎯 Live Grader":
+        # 1. Choose Theater & Prop Type FIRST (Applies to both Manual and Sweep)
+        theater_sel = st.radio("Theater", ["VALORANT", "CS2", "DOTA 2"])
+        prop_type = "Kills" if theater_sel in ["VALORANT", "DOTA 2"] else st.radio("Prop Type", ["Kills", "Headshots"])
+        st.divider()
+        
+        # 2. Choose Execution Method SECOND
         cmd_mode = st.radio("Command Mode", ["Single Target (Manual)", "Syndicate Sweep (API)"])
         st.divider()
 
         # 🟢 MANUAL TARGETING UI
         if cmd_mode == "Single Target (Manual)":
-            theater_sel = st.radio("Theater", ["VALORANT", "CS2", "DOTA 2"])
-            prop_type = "Kills" if theater_sel in ["VALORANT", "DOTA 2"] else st.radio("Prop Type", ["Kills", "Headshots"])
-            
+            with st.expander("👤 PLAYER TACTICAL", expanded=True):
+                label = "Agent" if theater_sel == "VALORANT" else "Role" if theater_sel == "DOTA 2" else "Map"
+
             with st.expander("👤 PLAYER TACTICAL", expanded=True):
                 label = "Agent" if theater_sel == "VALORANT" else "Role" if theater_sel == "DOTA 2" else "Map"
                 stat_lbl = "ADR" if theater_sel == "VALORANT" else "Avg Kills" if theater_sel == "DOTA 2" else "KPR"
@@ -937,7 +953,13 @@ with st.sidebar:
             st.subheader("📊 PropVault API Sync")
             st.caption("Hardcoded direct connection via gspread.")
             
-            r_total_v = safe_float(st.text_input("Total Rounds Est. (Global Default)", "40.0", help="Defaults to 40.0 for Valorant baseline."))
+            # 🛡️ THE FIX: Split defaults for Val and CS2
+            col_r1, col_r2 = st.columns(2)
+            with col_r1:
+                r_total_v = safe_float(st.text_input("VAL Total Rounds", "40.0"))
+            with col_r2:
+                r_total_cs2 = safe_float(st.text_input("CS2 Total Rounds", "44.0"))
+            
             raw_dpr_api = safe_float(st.text_input("Global Opp DPR (Fallback)", "0.65"))
             
             heat_val = st.slider("Global Pacing Dampener / Heat (%)", 0, 100, 0)
@@ -1273,12 +1295,35 @@ elif cmd_mode == "Syndicate Sweep (API)" and execute_sweep:
                     "role": role 
                 }
 
-                active_opp_dpr = (raw_dpr_api / 100) if raw_dpr_api > 2.0 else raw_dpr_api
+               # 🛡️ SOVEREIGN DYNAMIC DPR AUTO-SCALER (100% Deterministic)
+                sheet_dpr = safe_float(r_get('OPPONENT DPR', 'OPP DPR', 'DPR', default=0))
+                
+                if sheet_dpr > 0:
+                    # 1. Manual Override: Always respect what you typed in the sheet first
+                    active_opp_dpr = sheet_dpr 
+                else:
+                    # 2. Algorithmic Scaling: No manual input? Auto-calculate it.
+                    base_dpr = (raw_dpr_api / 100) if raw_dpr_api > 2.0 else raw_dpr_api # Usually 0.65
+                    
+                    # Ensure ranks are valid numbers, default to 40 (average) if missing
+                    safe_t_rank = t_rank if isinstance(t_rank, int) and t_rank > 0 else 40
+                    safe_o_rank = o_rank if isinstance(o_rank, int) and o_rank > 0 else 40
+                    
+                    # Mod 1: Opponent Quality (Top 10 team = harder to kill = lower DPR)
+                    opp_quality_mod = (safe_o_rank - 30) * 0.0008  
+                    
+                    # Mod 2: Skill Gap (If my team is much worse, we get fewer kills)
+                    rank_differential = safe_t_rank - safe_o_rank
+                    gap_mod = rank_differential * 0.0005
+                    
+                    # Calculate final DPR and cap it between 0.55 (Brick Wall) and 0.75 (Free Farm)
+                    auto_dpr = base_dpr + opp_quality_mod - gap_mod
+                    active_opp_dpr = max(0.55, min(0.75, auto_dpr))
                 sheet_heat = safe_float(r_get('PLAYER HEAT', 'HEAT', default=0))
                 player_heat = sheet_heat if sheet_heat > 0 else heat_val
                 
                 sheet_rounds = safe_float(r_get('TOTAL ROUNDS', 'ROUNDS', default=0))
-                active_rounds = sheet_rounds if sheet_rounds > 0 else r_total_v
+                active_rounds = sheet_rounds if sheet_rounds > 0 else r_total_cs2
 
                 is_locked = str(r_get('LOCKED', default='FALSE')).upper() == 'TRUE'
 
