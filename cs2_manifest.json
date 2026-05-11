@@ -56,11 +56,11 @@
         "tier": 1
     },
     "AST": {
-        "full": "ASTRAL",
-        "rank": 90,
-        "norm_rank": 90,
+        "full": "ASTRALIS",
+        "rank": 9,
+        "norm_rank": 9,
         "region": "EU",
-        "tier": 3
+        "tier": 1
     },
     "FUT": {
         "full": "FUT",
@@ -154,11 +154,11 @@
         "tier": 2
     },
     "BB": {
-        "full": "Basement Bobs",
-        "rank": 197,
-        "norm_rank": 197,
+        "full": "BetBoom",
+        "rank": 23,
+        "norm_rank": 23,
         "region": "EU",
-        "tier": 3
+        "tier": 2
     },
     "HERO": {
         "full": "HEROIC",
@@ -215,6 +215,13 @@
         "norm_rank": 245,
         "region": "EU",
         "tier": 3
+    },
+    "SINNERS": {
+        "full": "SINNERS",
+        "rank": 31,
+        "norm_rank": 31,
+        "region": "EU",
+        "tier": 2
     },
     "PAI": {
         "full": "paiN",
