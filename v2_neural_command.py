@@ -234,7 +234,7 @@ def lock_match_in_sheet(match_key):
             st.error(f"Failed to lock: {e}")
 
 # --- 2. THE SOVEREIGN ENGINE ---
-def apply_kill_economy_dampener(sweep_cards, r_total, theater="CS2"):
+def apply_kill_economy_dampener(sweep_cards, fallback_r_total, theater="CS2"):
     team_groups = {}
     for card in sweep_cards:
         if card.get('prop_type', '').upper() == 'KILLS':
@@ -252,9 +252,11 @@ def apply_kill_economy_dampener(sweep_cards, r_total, theater="CS2"):
         base_rounds = 44.0
         ot_threshold = 50.0
 
-    ceiling = 999.0 if r_total >= ot_threshold else (base_ceiling * (r_total / base_rounds))
-    
     for team, players in team_groups.items():
+        # 🧠 DYNAMIC CEILING: Use the specific match rounds for this team, or fallback if missing
+        r_total = players[0].get('rounds', fallback_r_total)
+        ceiling = 999.0 if r_total >= ot_threshold else (base_ceiling * (r_total / base_rounds))
+        
         team_total = sum(p.get('proj', 0) for p in players)
         if team_total > ceiling:
             multiplier = ceiling / team_total
@@ -265,6 +267,9 @@ def apply_kill_economy_dampener(sweep_cards, r_total, theater="CS2"):
                 p['delta'] = round(p['proj'] - p['line'], 1)
         else:
             for p in players: p['vol_tax'] = 0.0
+
+    team_overs = {}
+    # ... (Keep the rest of the team_overs loop exactly as you had it)
 
     team_overs = {}
     for card in sweep_cards:
@@ -288,38 +293,47 @@ def apply_kill_economy_dampener(sweep_cards, r_total, theater="CS2"):
 
     for p in sweep_cards:
         abs_d = abs(p['delta'])
-        is_consistent = abs(p.get('impact_stat', 0)) <= 8.0 if theater == "CS2" else p.get('impact_stat', 0) >= 74.0
+        is_consistent = abs(p.get('impact_stat', 0)) <= 12.0 if theater == "CS2" else p.get('impact_stat', 0) >= 74.0
         
-        # 🛡️ THE FIX: Enforce the exact same Trap Line logic so the Dampener doesn't resurrect them
-        if abs_d >= 10.0: 
-            p['grade'], p['color'] = "C", "#FFFFFF" 
-            p['rec'], p['rec_color'] = "🛑 TRAP LINE (DO NOT BET)", "#FF4444"
-            p['confidence'] = min(p.get('confidence', 50), 45.0)
-        elif 7.5 < abs_d < 10.0:
-            p['grade'], p['color'] = "C", "#A0A0A0"
-            p['rec'], p['rec_color'] = "🛑 NO BET (EDGE TOO HIGH)", "#FF8C00"
-            p['confidence'] = min(p.get('confidence', 50), 55.0)
-        elif 3.5 <= abs_d <= 7.5:
-            if is_consistent:
-                p['grade'], p['color'] = ("S+", "#FFD700") if abs_d >= 5.0 else ("S", "#FFC125")
-                p['rec'], p['rec_color'] = "🟢 GREEN LIGHT (LOCK)", "#00FF7F"
+        # --- 🧠 SPLIT-BRAIN DAMPENER ---
+        if theater == "CS2":
+            if abs_d >= 8.5: 
+                p['grade'], p['color'] = ("C", "#FFFFFF") if abs_d >= 10.0 else ("C", "#A0A0A0")
+                p['rec'], p['rec_color'] = ("🛑 TRAP LINE (DO NOT BET)", "#FF4444") if abs_d >= 10.0 else ("🛑 NO BET (EDGE TOO HIGH)", "#FF8C00")
+                p['confidence'] = min(p.get('confidence', 50), 45.0 if abs_d >= 10.0 else 55.0)
+            elif abs_d >= 5.5:
+                if is_consistent: p['grade'], p['color'], p['rec'], p['rec_color'] = "S+", "#FFD700", "🌟 GOD TIER (75%+ WR)", "#FFD700"
+                else: p['grade'], p['color'], p['rec'], p['rec_color'] = "S", "#00FF7F", "🟢 HIGH EDGE (VOLATILE)", "#00FF7F"
+            elif abs_d >= 4.0:
+                if is_consistent: p['grade'], p['color'], p['rec'], p['rec_color'] = "S", "#9932CC", "☢️ NUKE PLAY (70% WR)", "#9932CC"
+                else: p['grade'], p['color'], p['rec'], p['rec_color'] = "A+", "#00FF7F", "🟢 SOLID PLAY (VOLATILE)", "#00FF7F"
+            elif abs_d >= 2.5:
+                if is_consistent: p['grade'], p['color'], p['rec'], p['rec_color'] = "A", "#00FF7F", "🟢 SOLID PLAY (64% WR)", "#00FF7F"
+                else: p['grade'], p['color'], p['rec'], p['rec_color'] = "B", "#00ccff", "🟡 NEUTRAL (SPRINKLE)", "#00ccff"
+            else: 
+                p['grade'], p['color'], p['rec'], p['rec_color'] = "C", "#555555", "🛑 PASS (LOW EDGE)", "#555555"
+                p['confidence'] = min(p.get('confidence', 50), 52.0)
+        else:
+            # VALORANT THRESHOLDS
+            if abs_d >= 4.0: 
+                p['grade'], p['color'], p['rec'], p['rec_color'] = "C", "#FF4444", "🛑 BLOWOUT TRAP (50% WR)", "#FF4444"
+                p['confidence'] = 45.0
+            elif abs_d >= 3.0:
+                if is_consistent: p['grade'], p['color'], p['rec'], p['rec_color'] = "S", "#9932CC", "☢️ PEAK EDGE (56.5% WR)", "#9932CC"
+                else: p['grade'], p['color'], p['rec'], p['rec_color'] = "A+", "#00FF7F", "🟢 SOLID (VOLATILE)", "#00FF7F"
+            elif abs_d >= 2.5:
+                if is_consistent: p['grade'], p['color'], p['rec'], p['rec_color'] = "A", "#00FF7F", "🟢 SWEET SPOT (56% WR)", "#00FF7F"
+                else: p['grade'], p['color'], p['rec'], p['rec_color'] = "B", "#00ccff", "🟡 NEUTRAL (SPRINKLE)", "#00ccff"
             else:
-                p['grade'], p['color'] = ("A+", "#00FF7F") if abs_d >= 5.0 else ("A", "#00ccff")
-                p['rec'], p['rec_color'] = "🟡 NEUTRAL (SPRINKLE)", "#00ccff"
-        elif 2.0 <= abs_d < 3.5:
-            p['grade'], p['color'] = "A", "#00ccff"
-            p['rec'], p['rec_color'] = "🟡 NEUTRAL (SPRINKLE)", "#00ccff"
-        else: 
-            p['grade'], p['color'] = "C", "#A0A0A0"
-            p['rec'], p['rec_color'] = "🛑 NO BET (COIN FLIP)", "#A0A0A0"
-            p['confidence'] = min(p.get('confidence', 50), 52.0)
-
+                p['grade'], p['color'], p['rec'], p['rec_color'] = "C", "#555555", "🛑 PASS (LOW EDGE)", "#555555"
+                p['confidence'] = min(p.get('confidence', 50), 52.0)
+            
         if p.get('dampened'):
-            if p['grade'] in ['A+', 'A']: p['color'] = "#00CCFF"
+            if p['grade'] in ['A+', 'A', 'S', 'S+']: p['color'] = "#00CCFF"
             elif p['grade'] == 'C' and p['rec_color'] != "#FF4444": p['color'] = "#FFFFFF"
             
         p['pick'] = "OVER" if p['delta'] > 0 else "UNDER"
-        p['is_nuke'] = (6.0 <= abs_d <= 8.5 and p.get('prob', 50) >= 85 and is_consistent)
+        p['is_nuke'] = (p['grade'] in ["S+", "S"] and is_consistent)
 
     return sweep_cards
 
@@ -327,8 +341,11 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
     raw_stat = safe_float(data.get('base_stat'), 150.0 if theater == "VALORANT" else 0.70)
     if theater == "CS2" and raw_stat > 3.0: raw_stat = (raw_stat / 100) if raw_stat < 150 else 0.72
     
-    # 🧠 STRICT BO5 DETECTION (Fed directly from the Architect)
-    is_bo5 = theater == "VALORANT" and is_bo5_flag
+   # 🧠 STRICT BO5 DETECTION (Fed directly from the Architect)
+    auto_bo5 = r_total >= 50.0  
+    
+    # 🛡️ THE FIX: The engine must respect EITHER the sheet's checkbox OR the math
+    is_bo5 = theater == "VALORANT" and (is_bo5_flag or auto_bo5)
     
     rank_gap = safe_float(data.get('o_rank', st.session_state['o_rank'])) - safe_float(data.get('p_rank', st.session_state['p_rank']))
     
@@ -385,16 +402,37 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
     for i in range(2):
         raw_m = m_vals[i]
         if theater == "CS2" and raw_m > 3.0: raw_m = raw_m / 100
-        p_m_kpr, o_m_kpr = (raw_m/180.0, raw_m/150.0) if raw_m > 0 and theater == "VALORANT" else (raw_m/1.10, raw_m*1.08) if raw_m > 0 else (pess_k, opt_k)
         
-        t_map = str(targets[i]).strip().title()
-        spec_mult = (VAL_GRAVITY.get(AGENT_ROLES.get(t_map, "Initiator"), 1.0) if theater == "VALORANT" else CS2_ARCHETYPES.get(t_map, 1.0))
-        
-        r_mult = spec_mult * (opp_dpr / 0.65)
-        heat_nerf = (1 - (heat / 100) * 0.25)
-        
-        pess_map = p_m_kpr * r_mult * heat_nerf * (p_rounds / 2)
-        opt_map = o_m_kpr * r_mult * heat_nerf * (o_rounds / 2)
+        # 🗺️ --- THE MAP SPECIALIST UPGRADE --- 🗺️
+        if theater == "CS2":
+            # 1. Grab the specific sniped KPR (i == 0 is Map 1, i == 1 is Map 2)
+            specific_kpr = data.get("m1_kpr", 0.0) if i == 0 else data.get("m2_kpr", 0.0)
+            
+            # 2. Fallback: If it's a ghost town (0.0), use their baseline global KPR
+            active_kpr = specific_kpr if specific_kpr > 0.0 else raw_stat
+            
+            # 3. Establish the floor and ceiling per round for this specific map
+            p_m_kpr, o_m_kpr = active_kpr * 0.90, active_kpr * 1.10
+            
+            # 4. Standard Sovereign modifiers
+            r_mult = 1.0 * (opp_dpr / 0.65) # Map archetype handled inherently by exact KPR
+            heat_nerf = (1 - (heat / 100) * 0.25)
+            
+            # 5. Project final volume
+            pess_map = p_m_kpr * r_mult * heat_nerf * (p_rounds / 2)
+            opt_map = o_m_kpr * r_mult * heat_nerf * (o_rounds / 2)
+            
+        else:
+            # (Standard VALORANT Logic remains untouched)
+            p_m_kpr, o_m_kpr = (raw_m/180.0, raw_m/150.0) if raw_m > 0 and theater == "VALORANT" else (raw_m/1.10, raw_m*1.08) if raw_m > 0 else (pess_k, opt_k)
+            t_map = str(targets[i]).strip().title()
+            spec_mult = VAL_GRAVITY.get(AGENT_ROLES.get(t_map, "Initiator"), 1.0)
+            
+            r_mult = spec_mult * (opp_dpr / 0.65)
+            heat_nerf = (1 - (heat / 100) * 0.25)
+            
+            pess_map = p_m_kpr * r_mult * heat_nerf * (p_rounds / 2)
+            opt_map = o_m_kpr * r_mult * heat_nerf * (o_rounds / 2)
             
         pess_maps.append(pess_map)
         opt_maps.append(opt_map)
@@ -465,29 +503,49 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
     edge_mod = 1.25 if theater == "CS2" else 1.0
     scaled_edge = survived_edge * edge_mod
 
-    if scaled_edge >= 7.5: 
-        grade, color, rec, rec_color = ("C", "#FFFFFF", "🛑 TRAP LINE", "#FF4444") if scaled_edge >= 10.0 else ("C", "#A0A0A0", "🛑 EDGE TOO HIGH", "#FF8C00")
-        conf = min(raw_conf, 45.0 if scaled_edge >= 10 else 55.0)
-    elif 3.0 <= scaled_edge < 7.5:
-        if is_consistent:
-            grade, color = ("S+", "#FFD700") if scaled_edge >= 4.0 else ("S", "#FFC125")
-            rec, rec_color = "🟢 GREEN LIGHT (LOCK)", "#00FF7F"
+    # --- 🧠 SPLIT-BRAIN THRESHOLDS ---
+    if theater == "CS2":
+        if scaled_edge >= 8.5: 
+            grade, color, rec, rec_color = ("C", "#FFFFFF", "🛑 TRAP LINE", "#FF4444") if scaled_edge >= 10.0 else ("C", "#A0A0A0", "🛑 EDGE TOO HIGH", "#FF8C00")
+            conf = min(raw_conf, 45.0 if scaled_edge >= 10 else 55.0)
+        elif scaled_edge >= 5.5:
+            if is_consistent: grade, color, rec, rec_color = "S+", "#FFD700", "🌟 GOD TIER (75%+ WR)", "#FFD700"
+            else: grade, color, rec, rec_color = "S", "#00FF7F", "🟢 HIGH EDGE (VOLATILE)", "#00FF7F"
+            conf = raw_conf 
+        elif scaled_edge >= 4.0:
+            if is_consistent: grade, color, rec, rec_color = "S", "#9932CC", "☢️ NUKE PLAY (70% WR)", "#9932CC"
+            else: grade, color, rec, rec_color = "A+", "#00FF7F", "🟢 SOLID PLAY (VOLATILE)", "#00FF7F"
+            conf = raw_conf 
+        elif scaled_edge >= 2.5:
+            if is_consistent: grade, color, rec, rec_color = "A", "#00FF7F", "🟢 SOLID PLAY (64% WR)", "#00FF7F"
+            else: grade, color, rec, rec_color = "B", "#00ccff", "🟡 NEUTRAL (SPRINKLE)", "#00ccff"
+            conf = raw_conf 
+        else: 
+            grade, color, rec, rec_color = "C", "#555555", "🛑 PASS (LOW EDGE)", "#555555"
+            conf = min(raw_conf, 52.0) 
+    else:
+        # VALORANT THRESHOLDS (Peaks at 2.5 - 3.5, Traps at 4.0+)
+        if scaled_edge >= 4.0: 
+            grade, color, rec, rec_color = "C", "#FF4444", "🛑 BLOWOUT TRAP (50% WR)", "#FF4444"
+            conf = 45.0
+        elif scaled_edge >= 3.0:
+            if is_consistent: grade, color, rec, rec_color = "S", "#9932CC", "☢️ PEAK EDGE (56.5% WR)", "#9932CC"
+            else: grade, color, rec, rec_color = "A+", "#00FF7F", "🟢 SOLID (VOLATILE)", "#00FF7F"
+            conf = raw_conf
+        elif scaled_edge >= 2.5:
+            if is_consistent: grade, color, rec, rec_color = "A", "#00FF7F", "🟢 SWEET SPOT (56% WR)", "#00FF7F"
+            else: grade, color, rec, rec_color = "B", "#00ccff", "🟡 NEUTRAL (SPRINKLE)", "#00ccff"
+            conf = raw_conf
         else:
-            grade, color = ("A+", "#00FF7F") if scaled_edge >= 4.0 else ("A", "#00ccff")
-            rec, rec_color = "🟢 SOLID PLAY (STANDARD)", "#00ccff"
-        conf = raw_conf 
-    elif 2.5 <= scaled_edge < 3.0:
-        grade, color, rec, rec_color = "A", "#00ccff", "🟡 NEUTRAL (SPRINKLE)", "#00ccff"
-        conf = raw_conf 
-    else: 
-        grade, color, rec, rec_color = "C", "#A0A0A0", "🛑 NO BET (COIN FLIP)", "#A0A0A0"
-        conf = min(raw_conf, 52.0) 
+            grade, color, rec, rec_color = "C", "#555555", "🛑 PASS (LOW EDGE)", "#555555"
+            conf = min(raw_conf, 52.0)
 
     return {
         "player": p_name.upper(), "full_team": full_p, "full_opp": full_o,
         "grade": grade, "color": color, "rec": rec, "rec_color": rec_color, "prob": win_prob, 
         "stat_baseline": m_vals[0] if m_vals[0] > 0 else raw_stat, 
-        "proj": final_proj, "delta": delta, "is_nuke": (6.0 <= scaled_edge <= 8.5 and win_prob >= 85 and is_consistent), 
+        "proj": final_proj, "delta": delta, 
+        "is_nuke": (grade in ["S+", "S"] and is_consistent), 
         "hr": f"{hr_val:.0f}%", "hr_raw": hr_val, "gap": rank_gap, "trace": f"M1: {targets[0]} | M2: {targets[1]}",
         "confidence": round(min(99.9, max(1.0, conf)), 1), "source": data.get("source", "UNKNOWN"), "line": u_line, 
         "prop_type": prop_type, "open_duel": safe_float(data.get('opening_win_pct', 50.0)), "impact_stat": impact_stat,
@@ -1274,7 +1332,10 @@ elif cmd_mode == "Syndicate Sweep (API)" and execute_sweep:
                 o_abbr = str(r_get('OPPONENT', 'OPP', default='')).upper()
                 match_id = get_match_id(t_abbr, o_abbr)
                 
-                base_kpr = safe_float(cs2_codex.get(p_lower, {}).get('kpr', 0.0))
+               # 🛡️ THE FIX: Actually grab the KPR from the sheet, THEN fallback to Codex
+                sheet_kpr = safe_float(r_get('GLOBAL KPR', 'KPR', default=0))
+                base_kpr = sheet_kpr if sheet_kpr > 0 else safe_float(cs2_codex.get(p_lower, {}).get('kpr', 0.0))
+                
                 open_duel = safe_float(cs2_codex.get(p_lower, {}).get('opening', 50.0))
                 if 0 < open_duel <= 10.0: open_duel *= 10
                     
@@ -1288,13 +1349,18 @@ elif cmd_mode == "Syndicate Sweep (API)" and execute_sweep:
                 
                 role = str(r_get('ROLE', default=cs2_codex.get(p_lower, {}).get('role', 'Rifler')))
                 
+                # 🎯 EXTRACT THE SNIPER DATA
+                m1_kpr = safe_float(r_get('M1 KPR', default=0.0))
+                m2_kpr = safe_float(r_get('M2 KPR', default=0.0))
+                
                 p_data = {
                     "base_stat": base_kpr, "opening_win_pct": open_duel,
-                    "source": "SHEET" if safe_float(r_get('GLOBAL KPR', 'KPR', default=0)) > 0 else "CODEX AUTO", 
+                    "source": "SHEET" if sheet_kpr > 0 else "CODEX AUTO", 
                     "p_rank": t_rank, "o_rank": o_rank, "last_10_kills": cs2_codex.get(p_lower, {}).get('l10_maps_1_and_2_kills', []),
-                    "role": role 
+                    "role": role,
+                    "m1_kpr": m1_kpr, # <-- NEW: Passes Map 1 KPR to the math engine
+                    "m2_kpr": m2_kpr  # <-- NEW: Passes Map 2 KPR to the math engine
                 }
-
                # 🛡️ SOVEREIGN DYNAMIC DPR AUTO-SCALER (100% Deterministic)
                 sheet_dpr = safe_float(r_get('OPPONENT DPR', 'OPP DPR', 'DPR', default=0))
                 
@@ -1398,7 +1464,8 @@ elif cmd_mode == "Syndicate Sweep (API)" and execute_sweep:
 
                     cs2_slate_cards.append(h_res)
 
-            apply_kill_economy_dampener(cs2_slate_cards, r_total_v, "CS2")
+           # 🛡️ FIXED: Now correctly uses r_total_cs2
+            apply_kill_economy_dampener(cs2_slate_cards, r_total_cs2, "CS2")
             
             for res in cs2_slate_cards:
                 match_id = get_match_id(res['full_team'], res['full_opp'])
