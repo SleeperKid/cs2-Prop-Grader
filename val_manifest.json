@@ -15,10 +15,10 @@
     },
     "FNC": {
         "full": "Fnatic",
-        "rank": 4,
-        "norm_rank": 5,
+        "rank": 5,
+        "norm_rank": 6,
         "region": "Europe",
-        "regional_rank": 2
+        "regional_rank": 3
     },
     "T1": {
         "full": "T",
@@ -35,8 +35,8 @@
     },
     "G2": {
         "full": "G2 Esports",
-        "rank": 5,
-        "norm_rank": 5,
+        "rank": 4,
+        "norm_rank": 4,
         "region": "North America",
         "regional_rank": 1
     },
@@ -52,28 +52,28 @@
         "rank": 8,
         "norm_rank": 8,
         "region": "Asia-Pacific",
-        "regional_rank": 3
+        "regional_rank": 2
     },
     "TL.BR": {
         "full": "Team Liquid Brazil",
         "rank": 9,
         "norm_rank": 9,
         "region": "Brazil",
-        "regional_rank": 12
+        "regional_rank": 13
     },
     "RRQ": {
         "full": "Rex Regum Qeon",
-        "rank": 12,
-        "norm_rank": 12,
+        "rank": 13,
+        "norm_rank": 13,
         "region": "Asia-Pacific",
-        "regional_rank": 5
+        "regional_rank": 4
     },
     "LEVIAT\u00c1N": {
         "full": "Leviat\u00e1n",
-        "rank": 16,
-        "norm_rank": 17,
+        "rank": 12,
+        "norm_rank": 13,
         "region": "North America",
-        "regional_rank": 6
+        "regional_rank": 4
     },
     "EP": {
         "full": "Enterprise Esports",
@@ -84,8 +84,8 @@
     },
     "100T": {
         "full": "Thieves",
-        "rank": 13,
-        "norm_rank": 17,
+        "rank": 19,
+        "norm_rank": 25,
         "region": "Unknown"
     },
     "TH": {
@@ -93,14 +93,14 @@
         "rank": 10,
         "norm_rank": 12,
         "region": "Europe",
-        "regional_rank": 3
+        "regional_rank": 2
     },
     "GE": {
         "full": "Global Esports",
         "rank": 15,
         "norm_rank": 15,
         "region": "Asia-Pacific",
-        "regional_rank": 4
+        "regional_rank": 5
     },
     "TL": {
         "full": "Team Liquid",
@@ -111,8 +111,8 @@
     },
     "KR\u00dc BLAZE": {
         "full": "KR\u00dc Blaze",
-        "rank": 19,
-        "norm_rank": 20,
+        "rank": 17,
+        "norm_rank": 18,
         "region": "Latin America South",
         "regional_rank": 13
     },
@@ -128,12 +128,12 @@
         "rank": 14,
         "norm_rank": 16,
         "region": "Europe",
-        "regional_rank": 4
+        "regional_rank": 5
     },
     "SEN": {
         "full": "Sentinels",
-        "rank": 24,
-        "norm_rank": 24,
+        "rank": 23,
+        "norm_rank": 23,
         "region": "Oceania",
         "regional_rank": 54
     },
@@ -142,14 +142,14 @@
         "rank": 20,
         "norm_rank": 23,
         "region": "Europe",
-        "regional_rank": 5
+        "regional_rank": 4
     },
     "MIBR GC": {
         "full": "MIBR GC",
         "rank": 21,
         "norm_rank": 22,
         "region": "Brazil",
-        "regional_rank": 5
+        "regional_rank": 7
     },
     "MTV": {
         "full": "Motiv Esports",
@@ -160,14 +160,14 @@
     },
     "MIBR": {
         "full": "MIBR",
-        "rank": 32,
-        "norm_rank": 42,
+        "rank": 33,
+        "norm_rank": 43,
         "region": "Unknown"
     },
     "EDG": {
         "full": "EDward Gaming",
-        "rank": 17,
-        "norm_rank": 21,
+        "rank": 16,
+        "norm_rank": 20,
         "region": "China",
         "regional_rank": 1
     },
@@ -179,10 +179,10 @@
     },
     "CGN": {
         "full": "CGN Esports",
-        "rank": 23,
-        "norm_rank": 26,
+        "rank": 24,
+        "norm_rank": 28,
         "region": "Europe",
-        "regional_rank": 7
+        "regional_rank": 6
     },
     "FCY": {
         "full": "Fancy United Esports",
@@ -206,31 +206,31 @@
     },
     "BBL": {
         "full": "BBL Esports",
-        "rank": 38,
-        "norm_rank": 44,
+        "rank": 39,
+        "norm_rank": 45,
         "region": "Europe",
-        "regional_rank": 9
+        "regional_rank": 8
     },
     "FUT": {
         "full": "FUT Esports",
         "rank": 28,
         "norm_rank": 32,
         "region": "Europe",
-        "regional_rank": 6
+        "regional_rank": 9
     },
     "LYON": {
         "full": "LYON",
-        "rank": 31,
-        "norm_rank": 33,
+        "rank": 32,
+        "norm_rank": 34,
         "region": "Latin America North",
         "regional_rank": 1
     },
     "C9": {
         "full": "Cloud",
-        "rank": 40,
-        "norm_rank": 42,
+        "rank": 41,
+        "norm_rank": 43,
         "region": "Brazil",
-        "regional_rank": 8
+        "regional_rank": 9
     },
     "SGE": {
         "full": "Eintracht Frankfurt",
@@ -241,8 +241,8 @@
     },
     "M8.GC": {
         "full": "Gentle Mates GC",
-        "rank": 33,
-        "norm_rank": 38,
+        "rank": 31,
+        "norm_rank": 36,
         "region": "Europe",
         "regional_rank": 13
     },
@@ -251,7 +251,7 @@
         "rank": 34,
         "norm_rank": 39,
         "region": "Europe",
-        "regional_rank": 8
+        "regional_rank": 7
     },
     "SPE": {
         "full": "Sharper Esport",
@@ -261,8 +261,8 @@
     },
     "G2.G": {
         "full": "G2 Gozen",
-        "rank": 39,
-        "norm_rank": 45,
+        "rank": 38,
+        "norm_rank": 44,
         "region": "Europe",
         "regional_rank": 54
     },
@@ -275,8 +275,8 @@
     },
     "TS": {
         "full": "Team Solid",
-        "rank": 41,
-        "norm_rank": 43,
+        "rank": 40,
+        "norm_rank": 42,
         "region": "Brazil",
         "regional_rank": 1
     },
@@ -316,48 +316,48 @@
     },
     "NAVIJUNIOR": {
         "full": "Natus Vincere Junior",
-        "rank": 54,
-        "norm_rank": 62,
+        "rank": 66,
+        "norm_rank": 76,
         "region": "Europe",
         "regional_rank": 20
     },
     "FLC.V": {
         "full": "Falcons Vega",
-        "rank": 48,
-        "norm_rank": 62,
+        "rank": 49,
+        "norm_rank": 64,
         "region": "Unknown"
     },
     "REBORN": {
         "full": "REBORN",
-        "rank": 49,
-        "norm_rank": 56,
+        "rank": 42,
+        "norm_rank": 48,
         "region": "Europe",
         "regional_rank": 10
     },
     "ULF": {
         "full": "ULF Esports",
-        "rank": 60,
-        "norm_rank": 78,
+        "rank": 64,
+        "norm_rank": 83,
         "region": "Unknown"
     },
     "SRB": {
         "full": "Shopify Rebellion Black",
-        "rank": 51,
-        "norm_rank": 54,
+        "rank": 52,
+        "norm_rank": 55,
         "region": "North America",
         "regional_rank": 9
     },
     "DSY": {
         "full": "DNSTY",
-        "rank": 52,
-        "norm_rank": 60,
+        "rank": 53,
+        "norm_rank": 61,
         "region": "Europe",
         "regional_rank": 24
     },
     "AQ": {
         "full": "Any Questions",
-        "rank": 53,
-        "norm_rank": 66,
+        "rank": 55,
+        "norm_rank": 69,
         "region": "China",
         "regional_rank": 11
     },
@@ -370,22 +370,22 @@
     },
     "BAR": {
         "full": "Bar\u00e7a eSports",
-        "rank": 59,
-        "norm_rank": 68,
+        "rank": 60,
+        "norm_rank": 69,
         "region": "Europe",
-        "regional_rank": 99
+        "regional_rank": 100
     },
     "SK NEBULA": {
         "full": "SK Nebula",
-        "rank": 56,
-        "norm_rank": 64,
+        "rank": 51,
+        "norm_rank": 59,
         "region": "Europe",
         "regional_rank": 44
     },
     "OAS": {
         "full": "Oasis Gaming",
-        "rank": 55,
-        "norm_rank": 55,
+        "rank": 56,
+        "norm_rank": 56,
         "region": "Asia-Pacific",
         "regional_rank": 9
     },
@@ -432,14 +432,14 @@
     },
     "UW": {
         "full": "University War",
-        "rank": 66,
-        "norm_rank": 86,
+        "rank": 67,
+        "norm_rank": 87,
         "region": "Unknown"
     },
     "SRG": {
         "full": "Shopify Rebellion Gold",
-        "rank": 95,
-        "norm_rank": 100,
+        "rank": 94,
+        "norm_rank": 99,
         "region": "North America",
         "regional_rank": 180
     },
@@ -452,10 +452,10 @@
     },
     "FLY RED": {
         "full": "FlyQuest Red",
-        "rank": 67,
-        "norm_rank": 70,
+        "rank": 80,
+        "norm_rank": 84,
         "region": "North America",
-        "regional_rank": 139
+        "regional_rank": 140
     },
     "KISS": {
         "full": "Kiss",
@@ -468,72 +468,72 @@
         "rank": 57,
         "norm_rank": 57,
         "region": "Asia-Pacific",
-        "regional_rank": 12
+        "regional_rank": 13
     },
     "RVXS": {
         "full": "Revenant XSpark",
-        "rank": 72,
-        "norm_rank": 72,
+        "rank": 74,
+        "norm_rank": 74,
         "region": "Asia-Pacific",
         "regional_rank": 16
     },
     "SHN": {
         "full": "ShindeN",
-        "rank": 73,
-        "norm_rank": 77,
+        "rank": 75,
+        "norm_rank": 79,
         "region": "Latin America South",
         "regional_rank": 3
     },
     "SLEEPERS": {
         "full": "sleepers",
-        "rank": 74,
-        "norm_rank": 96,
+        "rank": 76,
+        "norm_rank": 99,
         "region": "Unknown"
     },
     "JL1": {
         "full": "Jade Lions",
-        "rank": 75,
-        "norm_rank": 75,
+        "rank": 77,
+        "norm_rank": 77,
         "region": "Asia-Pacific",
-        "regional_rank": 21
+        "regional_rank": 20
     },
     "FL FE": {
         "full": "FENNEL Female",
-        "rank": 77,
-        "norm_rank": 100,
+        "rank": 79,
+        "norm_rank": 103,
         "region": "Unknown"
     },
     "GE1": {
         "full": "Ghools Esports",
-        "rank": 78,
-        "norm_rank": 90,
+        "rank": 59,
+        "norm_rank": 68,
         "region": "MENA",
         "regional_rank": 4
     },
     "VF PANTHER": {
         "full": "VF: Panther",
-        "rank": 79,
-        "norm_rank": 103,
+        "rank": 81,
+        "norm_rank": 105,
         "region": "Unknown"
     },
     "QAD": {
         "full": "AlQadsiah Esports",
-        "rank": 64,
-        "norm_rank": 74,
+        "rank": 54,
+        "norm_rank": 62,
         "region": "MENA",
         "regional_rank": 1
     },
     "OY": {
         "full": "OverPowered Youths",
-        "rank": 80,
-        "norm_rank": 80,
+        "rank": 82,
+        "norm_rank": 82,
         "region": "Asia-Pacific",
-        "regional_rank": 29
+        "regional_rank": 30
     },
     "MISA": {
         "full": "Misa Esports",
-        "rank": 81,
-        "norm_rank": 93,
+        "rank": 83,
+        "norm_rank": 95,
         "region": "Europe",
         "regional_rank": 16
     },
@@ -545,40 +545,40 @@
     },
     "PH REJECTS": {
         "full": "PH Rejects",
-        "rank": 82,
-        "norm_rank": 107,
-        "region": "Unknown"
-    },
-    "VYRES": {
-        "full": "VYRES Esports",
-        "rank": 83,
-        "norm_rank": 108,
-        "region": "Unknown"
-    },
-    "GDB": {
-        "full": "G\u00eanias do Bem",
         "rank": 84,
         "norm_rank": 109,
         "region": "Unknown"
     },
+    "VYRES": {
+        "full": "VYRES Esports",
+        "rank": 85,
+        "norm_rank": 110,
+        "region": "Unknown"
+    },
+    "GDB": {
+        "full": "G\u00eanias do Bem",
+        "rank": 86,
+        "norm_rank": 112,
+        "region": "Unknown"
+    },
     "FLYQUEST": {
         "full": "FlyQuest",
-        "rank": 85,
-        "norm_rank": 89,
+        "rank": 87,
+        "norm_rank": 91,
         "region": "North America",
-        "regional_rank": 4
+        "regional_rank": 5
     },
     "FLOWERZ": {
         "full": "Million Flowerz",
-        "rank": 86,
-        "norm_rank": 99,
+        "rank": 88,
+        "norm_rank": 101,
         "region": "Europe",
         "regional_rank": 298
     },
     "STB": {
         "full": "SwimTrek Blue",
-        "rank": 87,
-        "norm_rank": 113,
+        "rank": 72,
+        "norm_rank": 94,
         "region": "Unknown"
     },
     "SAD GC": {
@@ -590,27 +590,27 @@
     },
     "WOOF": {
         "full": "Puppy Thieves",
-        "rank": 89,
-        "norm_rank": 116,
+        "rank": 73,
+        "norm_rank": 95,
         "region": "Unknown"
     },
     "HABOSBABOS": {
         "full": "Habos Babos",
-        "rank": 90,
-        "norm_rank": 117,
+        "rank": 89,
+        "norm_rank": 116,
         "region": "Unknown"
     },
     "ROY ESPORT": {
         "full": "ROY Esports",
-        "rank": 91,
-        "norm_rank": 91,
+        "rank": 90,
+        "norm_rank": 90,
         "region": "Asia-Pacific",
-        "regional_rank": 32
+        "regional_rank": 35
     },
     "AE": {
         "full": "Alter Ego",
-        "rank": 76,
-        "norm_rank": 76,
+        "rank": 78,
+        "norm_rank": 78,
         "region": "Asia-Pacific",
         "regional_rank": 25
     },
@@ -623,8 +623,8 @@
     },
     "T1.A": {
         "full": "T1 Academy",
-        "rank": 94,
-        "norm_rank": 94,
+        "rank": 93,
+        "norm_rank": 93,
         "region": "South Korea",
         "regional_rank": 9
     },
@@ -633,26 +633,26 @@
         "rank": 95,
         "norm_rank": 95,
         "region": "Asia-Pacific",
-        "regional_rank": 39
+        "regional_rank": 41
     },
     "QOR": {
         "full": "QoR",
-        "rank": 96,
-        "norm_rank": 101,
+        "rank": 95,
+        "norm_rank": 100,
         "region": "North America",
         "regional_rank": 14
     },
     "COLORS": {
         "full": "Colors Esport",
-        "rank": 97,
-        "norm_rank": 112,
+        "rank": 96,
+        "norm_rank": 110,
         "region": "Europe",
         "regional_rank": 102
     },
     "TT": {
         "full": "Terraria Terrors",
-        "rank": 98,
-        "norm_rank": 127,
+        "rank": 97,
+        "norm_rank": 126,
         "region": "Unknown"
     },
     "CDM": {
@@ -671,10 +671,10 @@
     },
     "ENVY": {
         "full": "ENVY",
-        "rank": 42,
-        "norm_rank": 44,
+        "rank": 48,
+        "norm_rank": 50,
         "region": "North America",
-        "regional_rank": 5
+        "regional_rank": 6
     },
     "M801": {
         "full": "M80",
@@ -777,7 +777,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 25,
+        "regional_rank": 26,
         "vlr_abbr": "HTTA"
     },
     "FOG": {
@@ -785,7 +785,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 26,
+        "regional_rank": 25,
         "vlr_abbr": "FOG"
     },
     "DYNA": {
@@ -793,7 +793,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 27,
+        "regional_rank": 28,
         "vlr_abbr": "DYNA"
     },
     "WADA": {
@@ -801,7 +801,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 28,
+        "regional_rank": 27,
         "vlr_abbr": "WADA"
     },
     "ADG": {
@@ -809,7 +809,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 29,
+        "regional_rank": 30,
         "vlr_abbr": "ADG"
     },
     "HYDR": {
@@ -841,7 +841,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 51,
+        "regional_rank": 47,
         "vlr_abbr": "RU"
     },
     "PG": {
@@ -873,7 +873,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 37,
+        "regional_rank": 38,
         "vlr_abbr": "DIGI"
     },
     "CT": {
@@ -881,7 +881,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 38,
+        "regional_rank": 37,
         "vlr_abbr": "CT"
     },
     "NW": {
@@ -889,7 +889,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 30,
+        "regional_rank": 29,
         "vlr_abbr": "NW"
     },
     "BABO": {
@@ -905,7 +905,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 39,
+        "regional_rank": 40,
         "vlr_abbr": "HU"
     },
     "AXS": {
@@ -913,7 +913,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 40,
+        "regional_rank": 41,
         "vlr_abbr": "AxS"
     },
     "EG": {
@@ -929,7 +929,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 41,
+        "regional_rank": 42,
         "vlr_abbr": "FREE"
     },
     "CCG": {
@@ -937,7 +937,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 42,
+        "regional_rank": 43,
         "vlr_abbr": "CCG"
     },
     "WG": {
@@ -945,7 +945,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 43,
+        "regional_rank": 44,
         "vlr_abbr": "WG"
     },
     "F5": {
@@ -953,7 +953,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 44,
+        "regional_rank": 45,
         "vlr_abbr": "F5"
     },
     "KIND": {
@@ -961,7 +961,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 46,
+        "regional_rank": 48,
         "vlr_abbr": "KIND"
     },
     "AXG": {
@@ -969,7 +969,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 47,
+        "regional_rank": 56,
         "vlr_abbr": "AXG"
     },
     "ATNA": {
@@ -985,7 +985,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 49,
+        "regional_rank": 51,
         "vlr_abbr": "NOCT"
     },
     "X8": {
@@ -1017,7 +1017,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 55,
+        "regional_rank": 69,
         "vlr_abbr": "XORA"
     },
     "UL": {
@@ -1025,7 +1025,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 56,
+        "regional_rank": 57,
         "vlr_abbr": "UL"
     },
     "HERO": {
@@ -1049,7 +1049,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 57,
+        "regional_rank": 60,
         "vlr_abbr": "MVSK"
     },
     "OCTO": {
@@ -1057,7 +1057,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 60,
+        "regional_rank": 55,
         "vlr_abbr": "OCTO"
     },
     "SOL": {
@@ -1081,7 +1081,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 64,
+        "regional_rank": 62,
         "vlr_abbr": "1C34"
     },
     "BZK": {
@@ -1089,7 +1089,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 65,
+        "regional_rank": 64,
         "vlr_abbr": "BZK"
     },
     "GP": {
@@ -1097,7 +1097,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 66,
+        "regional_rank": 65,
         "vlr_abbr": "GP"
     },
     "BURG": {
@@ -1105,7 +1105,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 67,
+        "regional_rank": 66,
         "vlr_abbr": "BURG"
     },
     "KRYP": {
@@ -1113,7 +1113,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 68,
+        "regional_rank": 67,
         "vlr_abbr": "KRYP"
     },
     "PNBC": {
@@ -1121,7 +1121,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 69,
+        "regional_rank": 68,
         "vlr_abbr": "PNBC"
     },
     "SNS": {
@@ -1129,7 +1129,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 70,
+        "regional_rank": 71,
         "vlr_abbr": "SNS"
     },
     "MADE": {
@@ -1137,7 +1137,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 71,
+        "regional_rank": 70,
         "vlr_abbr": "MADE"
     },
     "RC": {
@@ -1153,7 +1153,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 75,
+        "regional_rank": 73,
         "vlr_abbr": "MLV"
     },
     "PUG": {
@@ -1169,7 +1169,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 73,
+        "regional_rank": 75,
         "vlr_abbr": "PHX"
     },
     "FA": {
@@ -1185,7 +1185,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 78,
+        "regional_rank": 77,
         "vlr_abbr": "DD"
     },
     "EVXB": {
@@ -1193,7 +1193,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 77,
+        "regional_rank": 79,
         "vlr_abbr": "EVXB"
     },
     "OF": {
@@ -1201,7 +1201,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 80,
+        "regional_rank": 78,
         "vlr_abbr": "OF"
     },
     "GROK": {
@@ -1209,7 +1209,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 79,
+        "regional_rank": 80,
         "vlr_abbr": "GROK"
     },
     "ROSO": {
@@ -1217,7 +1217,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 82,
+        "regional_rank": 95,
         "vlr_abbr": "ROSO"
     },
     "ME": {
@@ -1233,7 +1233,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 48,
+        "regional_rank": 49,
         "vlr_abbr": "ROSE"
     },
     "TK": {
@@ -1241,7 +1241,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 85,
+        "regional_rank": 82,
         "vlr_abbr": "TK"
     },
     "CRWN": {
@@ -1265,7 +1265,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 86,
+        "regional_rank": 85,
         "vlr_abbr": "TEMP"
     },
     "ORA": {
@@ -1273,7 +1273,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 87,
+        "regional_rank": 39,
         "vlr_abbr": "ORA"
     },
     "TAPI": {
@@ -1281,7 +1281,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 88,
+        "regional_rank": 86,
         "vlr_abbr": "TAPI"
     },
     "TCOU": {
@@ -1289,7 +1289,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 89,
+        "regional_rank": 90,
         "vlr_abbr": "TCOU"
     },
     "CJ": {
@@ -1297,7 +1297,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 90,
+        "regional_rank": 88,
         "vlr_abbr": "CJ"
     },
     "ERIN": {
@@ -1305,7 +1305,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 91,
+        "regional_rank": 89,
         "vlr_abbr": "ERIN"
     },
     "LI": {
@@ -1313,7 +1313,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 93,
+        "regional_rank": 92,
         "vlr_abbr": "LI"
     },
     "NG": {
@@ -1321,7 +1321,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 92,
+        "regional_rank": 91,
         "vlr_abbr": "NG"
     },
     "INSO": {
@@ -1337,7 +1337,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 95,
+        "regional_rank": 94,
         "vlr_abbr": "EXF"
     },
     "OVER1": {
@@ -1353,7 +1353,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 98,
+        "regional_rank": 97,
         "vlr_abbr": "KIRI"
     },
     "CVU": {
@@ -1361,7 +1361,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 97,
+        "regional_rank": 98,
         "vlr_abbr": "CVU"
     },
     "UCI": {
@@ -1377,7 +1377,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 100,
+        "regional_rank": 101,
         "vlr_abbr": "BBB"
     },
     "HEHE": {
@@ -1385,7 +1385,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 105,
+        "regional_rank": 122,
         "vlr_abbr": "HEHE"
     },
     "PG1": {
@@ -1393,7 +1393,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 101,
+        "regional_rank": 104,
         "vlr_abbr": "PG"
     },
     "CP": {
@@ -1409,7 +1409,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 62,
+        "regional_rank": 46,
         "vlr_abbr": "TEMP"
     },
     "WVU": {
@@ -1417,7 +1417,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 102,
+        "regional_rank": 100,
         "vlr_abbr": "WVU"
     },
     "FT": {
@@ -1425,7 +1425,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 104,
+        "regional_rank": 102,
         "vlr_abbr": "FT"
     },
     "YDZ": {
@@ -1433,7 +1433,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 107,
+        "regional_rank": 106,
         "vlr_abbr": "YDZ"
     },
     "ER": {
@@ -1441,7 +1441,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 106,
+        "regional_rank": 105,
         "vlr_abbr": "ER"
     },
     "SN": {
@@ -1457,7 +1457,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 109,
+        "regional_rank": 111,
         "vlr_abbr": "TU"
     },
     "SUPE": {
@@ -1465,7 +1465,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 113,
+        "regional_rank": 112,
         "vlr_abbr": "SUPE"
     },
     "AS": {
@@ -1473,7 +1473,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 112,
+        "regional_rank": 107,
         "vlr_abbr": "AS"
     },
     "SHU": {
@@ -1481,7 +1481,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 111,
+        "regional_rank": 109,
         "vlr_abbr": "SHU"
     },
     "MIBR1": {
@@ -1489,7 +1489,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 115,
+        "regional_rank": 114,
         "vlr_abbr": "MIBR"
     },
     "BB": {
@@ -1497,7 +1497,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 116,
+        "regional_rank": 135,
         "vlr_abbr": "BB"
     },
     "OR": {
@@ -1505,7 +1505,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 117,
+        "regional_rank": 115,
         "vlr_abbr": "OR"
     },
     "GLAC": {
@@ -1513,7 +1513,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 114,
+        "regional_rank": 113,
         "vlr_abbr": "GLAC"
     },
     "DELE": {
@@ -1521,7 +1521,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 118,
+        "regional_rank": 116,
         "vlr_abbr": "DELE"
     },
     "7VEN": {
@@ -1529,7 +1529,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 121,
+        "regional_rank": 117,
         "vlr_abbr": "7VEN"
     },
     "CG": {
@@ -1537,7 +1537,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 120,
+        "regional_rank": 118,
         "vlr_abbr": "CG"
     },
     "TAMU": {
@@ -1553,7 +1553,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 122,
+        "regional_rank": 120,
         "vlr_abbr": "RA"
     },
     "BR": {
@@ -1561,7 +1561,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 123,
+        "regional_rank": 121,
         "vlr_abbr": "BR"
     },
     "WU": {
@@ -1569,7 +1569,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 124,
+        "regional_rank": 123,
         "vlr_abbr": "WU"
     },
     "UG": {
@@ -1577,7 +1577,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 127,
+        "regional_rank": 126,
         "vlr_abbr": "UG"
     },
     "BENE": {
@@ -1585,7 +1585,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 125,
+        "regional_rank": 124,
         "vlr_abbr": "BENE"
     },
     "OA": {
@@ -1593,7 +1593,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 126,
+        "regional_rank": 125,
         "vlr_abbr": "OA"
     },
     "BSU": {
@@ -1601,7 +1601,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 129,
+        "regional_rank": 128,
         "vlr_abbr": "BSU"
     },
     "DX": {
@@ -1609,7 +1609,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 128,
+        "regional_rank": 127,
         "vlr_abbr": "DX"
     },
     "UI": {
@@ -1625,7 +1625,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 131,
+        "regional_rank": 129,
         "vlr_abbr": "DREA"
     },
     "BIOS": {
@@ -1633,7 +1633,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 133,
+        "regional_rank": 132,
         "vlr_abbr": "BIOS"
     },
     "REV": {
@@ -1641,7 +1641,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 132,
+        "regional_rank": 131,
         "vlr_abbr": "REV"
     },
     "YDZ.I": {
@@ -1649,7 +1649,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 134,
+        "regional_rank": 133,
         "vlr_abbr": "YDZ.I"
     },
     "UF": {
@@ -1657,7 +1657,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 135,
+        "regional_rank": 134,
         "vlr_abbr": "UF"
     },
     "ELYS": {
@@ -1689,7 +1689,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 140,
+        "regional_rank": 139,
         "vlr_abbr": "OA"
     },
     "MECH": {
@@ -1705,7 +1705,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 142,
+        "regional_rank": 148,
         "vlr_abbr": "NXG"
     },
     "FROG": {
@@ -1713,7 +1713,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 146,
+        "regional_rank": 144,
         "vlr_abbr": "FROG"
     },
     "MJ": {
@@ -1729,7 +1729,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 144,
+        "regional_rank": 142,
         "vlr_abbr": "UD"
     },
     "MP": {
@@ -1753,7 +1753,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 147,
+        "regional_rank": 146,
         "vlr_abbr": "CF"
     },
     "GS": {
@@ -1761,7 +1761,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 148,
+        "regional_rank": 147,
         "vlr_abbr": "GS"
     },
     "KSU1": {
@@ -1801,7 +1801,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 156,
+        "regional_rank": 154,
         "vlr_abbr": "MK"
     },
     "NUGG": {
@@ -1809,7 +1809,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 154,
+        "regional_rank": 156,
         "vlr_abbr": "NUGG"
     },
     "KU": {
@@ -1841,7 +1841,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 160,
+        "regional_rank": 170,
         "vlr_abbr": "INTE"
     },
     "TMU.B": {
@@ -1857,7 +1857,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 161,
+        "regional_rank": 165,
         "vlr_abbr": "EFN"
     },
     "SERA": {
@@ -1865,7 +1865,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 163,
+        "regional_rank": 161,
         "vlr_abbr": "SERA"
     },
     "FISH": {
@@ -1881,7 +1881,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 162,
+        "regional_rank": 160,
         "vlr_abbr": "MG"
     },
     "ELAT": {
@@ -1889,7 +1889,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 165,
+        "regional_rank": 163,
         "vlr_abbr": "ELAT"
     },
     "EF1": {
@@ -1897,7 +1897,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 166,
+        "regional_rank": 164,
         "vlr_abbr": "EF"
     },
     "TA": {
@@ -1905,7 +1905,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 167,
+        "regional_rank": 166,
         "vlr_abbr": "TA"
     },
     "RO": {
@@ -1913,7 +1913,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 168,
+        "regional_rank": 167,
         "vlr_abbr": "RO"
     },
     "AO": {
@@ -1921,7 +1921,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 170,
+        "regional_rank": 169,
         "vlr_abbr": "AO"
     },
     "ZG": {
@@ -1929,7 +1929,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 169,
+        "regional_rank": 168,
         "vlr_abbr": "ZG"
     },
     "GLXY": {
@@ -1969,7 +1969,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 175,
+        "regional_rank": 176,
         "vlr_abbr": "EM"
     },
     "EG1": {
@@ -1977,7 +1977,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 176,
+        "regional_rank": 175,
         "vlr_abbr": "EG"
     },
     "UCSD": {
@@ -1993,7 +1993,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 179,
+        "regional_rank": 178,
         "vlr_abbr": "ER"
     },
     "KUMA": {
@@ -2001,7 +2001,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "North America",
-        "regional_rank": 178,
+        "regional_rank": 179,
         "vlr_abbr": "KUMA"
     },
     "NEXT": {
@@ -2225,7 +2225,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 337,
+        "regional_rank": 338,
         "vlr_abbr": "DXG"
     },
     "GOFU": {
@@ -2233,7 +2233,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 52,
+        "regional_rank": 51,
         "vlr_abbr": "GOFU"
     },
     "BRRR": {
@@ -2281,7 +2281,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 62,
+        "regional_rank": 61,
         "vlr_abbr": "RLA"
     },
     "VCV": {
@@ -2289,7 +2289,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 60,
+        "regional_rank": 62,
         "vlr_abbr": "VCV"
     },
     "GL": {
@@ -2297,7 +2297,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 61,
+        "regional_rank": 60,
         "vlr_abbr": "GL"
     },
     "FLK": {
@@ -2313,7 +2313,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 64,
+        "regional_rank": 66,
         "vlr_abbr": "KX"
     },
     "SH": {
@@ -2321,7 +2321,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 65,
+        "regional_rank": 64,
         "vlr_abbr": "SH"
     },
     "GG": {
@@ -2329,7 +2329,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 66,
+        "regional_rank": 65,
         "vlr_abbr": "GG"
     },
     "HLT": {
@@ -2369,7 +2369,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 91,
+        "regional_rank": 90,
         "vlr_abbr": "OTK"
     },
     "WHYB": {
@@ -2377,7 +2377,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 72,
+        "regional_rank": 73,
         "vlr_abbr": "WHYB"
     },
     "NE": {
@@ -2385,7 +2385,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 71,
+        "regional_rank": 72,
         "vlr_abbr": "NE"
     },
     "SUP": {
@@ -2393,7 +2393,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 73,
+        "regional_rank": 71,
         "vlr_abbr": "SUP"
     },
     "SZK": {
@@ -2425,7 +2425,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 79,
+        "regional_rank": 77,
         "vlr_abbr": "BA"
     },
     "LB": {
@@ -2433,7 +2433,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 78,
+        "regional_rank": 79,
         "vlr_abbr": "LB"
     },
     "4PLA": {
@@ -2441,7 +2441,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 77,
+        "regional_rank": 78,
         "vlr_abbr": "4PLA"
     },
     "TG": {
@@ -2529,7 +2529,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 90,
+        "regional_rank": 91,
         "vlr_abbr": "NXR"
     },
     "MONK": {
@@ -2569,7 +2569,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 94,
+        "regional_rank": 96,
         "vlr_abbr": "LAG"
     },
     "WACK": {
@@ -2585,7 +2585,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 96,
+        "regional_rank": 99,
         "vlr_abbr": "LK"
     },
     "AV": {
@@ -2601,7 +2601,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 101,
+        "regional_rank": 103,
         "vlr_abbr": "GHOS"
     },
     "BLAZ": {
@@ -2609,7 +2609,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 100,
+        "regional_rank": 101,
         "vlr_abbr": "BLAZ"
     },
     "RGN": {
@@ -2617,7 +2617,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 103,
+        "regional_rank": 104,
         "vlr_abbr": "RGN"
     },
     "SG": {
@@ -2625,7 +2625,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 104,
+        "regional_rank": 105,
         "vlr_abbr": "SG"
     },
     "GASI": {
@@ -2633,7 +2633,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 106,
+        "regional_rank": 108,
         "vlr_abbr": "GASI"
     },
     "LIL": {
@@ -2641,7 +2641,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 105,
+        "regional_rank": 106,
         "vlr_abbr": "LIL"
     },
     "B0T1": {
@@ -2657,7 +2657,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 109,
+        "regional_rank": 110,
         "vlr_abbr": "VERT"
     },
     "DMNX": {
@@ -2665,7 +2665,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 108,
+        "regional_rank": 109,
         "vlr_abbr": "DMNX"
     },
     "MD": {
@@ -2673,7 +2673,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 110,
+        "regional_rank": 113,
         "vlr_abbr": "MD"
     },
     "ENIS": {
@@ -2681,7 +2681,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 111,
+        "regional_rank": 112,
         "vlr_abbr": "ENIS"
     },
     "ASTR": {
@@ -2689,7 +2689,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 112,
+        "regional_rank": 111,
         "vlr_abbr": "ASTR"
     },
     "JABB": {
@@ -2705,7 +2705,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 114,
+        "regional_rank": 115,
         "vlr_abbr": "FOCU"
     },
     "PLOP": {
@@ -2713,7 +2713,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 113,
+        "regional_rank": 114,
         "vlr_abbr": "PLOP"
     },
     "GR": {
@@ -2769,7 +2769,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 41,
+        "regional_rank": 43,
         "vlr_abbr": "LAND"
     },
     "KPI": {
@@ -2777,7 +2777,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 124,
+        "regional_rank": 125,
         "vlr_abbr": "KPI"
     },
     "ARIS": {
@@ -2817,7 +2817,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 131,
+        "regional_rank": 132,
         "vlr_abbr": "7S"
     },
     "ROKA": {
@@ -2833,7 +2833,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 132,
+        "regional_rank": 133,
         "vlr_abbr": "TL"
     },
     "KE": {
@@ -2841,7 +2841,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 152,
+        "regional_rank": 155,
         "vlr_abbr": "KE"
     },
     "VENN": {
@@ -2849,7 +2849,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 136,
+        "regional_rank": 134,
         "vlr_abbr": "VENN"
     },
     "BR1": {
@@ -2857,7 +2857,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 135,
+        "regional_rank": 136,
         "vlr_abbr": "BR"
     },
     "TKC": {
@@ -2865,7 +2865,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 115,
+        "regional_rank": 94,
         "vlr_abbr": "TKC"
     },
     "IM": {
@@ -2873,7 +2873,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 134,
+        "regional_rank": 135,
         "vlr_abbr": "IM"
     },
     "RI": {
@@ -2889,7 +2889,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 138,
+        "regional_rank": 139,
         "vlr_abbr": "DG"
     },
     "HE": {
@@ -2897,7 +2897,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 139,
+        "regional_rank": 138,
         "vlr_abbr": "HE"
     },
     "ROUN": {
@@ -2929,7 +2929,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 143,
+        "regional_rank": 144,
         "vlr_abbr": "VERD"
     },
     "FL": {
@@ -2937,7 +2937,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 145,
+        "regional_rank": 143,
         "vlr_abbr": "FL"
     },
     "AGT": {
@@ -2945,7 +2945,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 144,
+        "regional_rank": 145,
         "vlr_abbr": "AGT"
     },
     "95VI": {
@@ -2953,7 +2953,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 147,
+        "regional_rank": 146,
         "vlr_abbr": "95VI"
     },
     "LC": {
@@ -2961,7 +2961,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 150,
+        "regional_rank": 147,
         "vlr_abbr": "LC"
     },
     "O2G": {
@@ -2969,7 +2969,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 146,
+        "regional_rank": 149,
         "vlr_abbr": "O2G"
     },
     "GL1": {
@@ -2977,7 +2977,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 149,
+        "regional_rank": 150,
         "vlr_abbr": "GL"
     },
     "MP1": {
@@ -3001,7 +3001,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 154,
+        "regional_rank": 153,
         "vlr_abbr": "PBL"
     },
     "KEG": {
@@ -3017,7 +3017,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 155,
+        "regional_rank": 154,
         "vlr_abbr": "XXLV"
     },
     "ZP": {
@@ -3025,7 +3025,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 153,
+        "regional_rank": 152,
         "vlr_abbr": "ZP"
     },
     "NU": {
@@ -3033,7 +3033,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 133,
+        "regional_rank": 129,
         "vlr_abbr": "NU"
     },
     "REGH": {
@@ -3041,7 +3041,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 251,
+        "regional_rank": 249,
         "vlr_abbr": "REGH"
     },
     "TITA": {
@@ -3049,7 +3049,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 161,
+        "regional_rank": 159,
         "vlr_abbr": "TITA"
     },
     "BLUE1": {
@@ -3065,7 +3065,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 159,
+        "regional_rank": 161,
         "vlr_abbr": "KP"
     },
     "BS": {
@@ -3073,7 +3073,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 158,
+        "regional_rank": 156,
         "vlr_abbr": "BS"
     },
     "BABU": {
@@ -3097,7 +3097,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 164,
+        "regional_rank": 166,
         "vlr_abbr": "MIP"
     },
     "LCA": {
@@ -3105,7 +3105,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 165,
+        "regional_rank": 164,
         "vlr_abbr": "LCA"
     },
     "MAN": {
@@ -3113,7 +3113,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 167,
+        "regional_rank": 168,
         "vlr_abbr": "MAN"
     },
     "SG1": {
@@ -3121,7 +3121,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 168,
+        "regional_rank": 167,
         "vlr_abbr": "SG"
     },
     "OR1": {
@@ -3129,7 +3129,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 166,
+        "regional_rank": 169,
         "vlr_abbr": "OR"
     },
     "PPP": {
@@ -3137,7 +3137,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 169,
+        "regional_rank": 170,
         "vlr_abbr": "PPP"
     },
     "AS1": {
@@ -3145,7 +3145,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 173,
+        "regional_rank": 172,
         "vlr_abbr": "AS"
     },
     "KOKU": {
@@ -3161,7 +3161,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 170,
+        "regional_rank": 174,
         "vlr_abbr": "M4LIK"
     },
     "BR2": {
@@ -3177,7 +3177,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 178,
+        "regional_rank": 175,
         "vlr_abbr": "LE"
     },
     "SS1": {
@@ -3185,7 +3185,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 177,
+        "regional_rank": 182,
         "vlr_abbr": "SS"
     },
     "BNP": {
@@ -3193,7 +3193,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 175,
+        "regional_rank": 176,
         "vlr_abbr": "BNP"
     },
     "AEST": {
@@ -3201,7 +3201,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 180,
+        "regional_rank": 179,
         "vlr_abbr": "AEST"
     },
     "M\u00d6RK": {
@@ -3209,7 +3209,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 174,
+        "regional_rank": 177,
         "vlr_abbr": "M\u00d6RK"
     },
     "MIRS": {
@@ -3217,7 +3217,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 176,
+        "regional_rank": 180,
         "vlr_abbr": "MIRS"
     },
     "PXL1": {
@@ -3225,7 +3225,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 179,
+        "regional_rank": 178,
         "vlr_abbr": "PXL"
     },
     "KC": {
@@ -3241,7 +3241,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 182,
+        "regional_rank": 183,
         "vlr_abbr": "EVER"
     },
     "ATNR": {
@@ -3249,7 +3249,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 172,
+        "regional_rank": 173,
         "vlr_abbr": "ATNR"
     },
     "FF": {
@@ -3257,7 +3257,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 183,
+        "regional_rank": 184,
         "vlr_abbr": "FF"
     },
     "PP": {
@@ -3273,7 +3273,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 184,
+        "regional_rank": 185,
         "vlr_abbr": "EK"
     },
     "ASUK": {
@@ -3281,7 +3281,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 192,
+        "regional_rank": 191,
         "vlr_abbr": "ASUK"
     },
     "REDG": {
@@ -3289,7 +3289,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 189,
+        "regional_rank": 190,
         "vlr_abbr": "REDG"
     },
     "NXT": {
@@ -3297,7 +3297,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 191,
+        "regional_rank": 188,
         "vlr_abbr": "NXT"
     },
     "SAMU": {
@@ -3305,7 +3305,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 193,
+        "regional_rank": 189,
         "vlr_abbr": "SAMU"
     },
     "AKAS": {
@@ -3313,7 +3313,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 190,
+        "regional_rank": 187,
         "vlr_abbr": "AKAS"
     },
     "PPLL": {
@@ -3321,7 +3321,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 185,
+        "regional_rank": 186,
         "vlr_abbr": "PPLL"
     },
     "MRN": {
@@ -3329,7 +3329,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 188,
+        "regional_rank": 193,
         "vlr_abbr": "MRN"
     },
     "SJ": {
@@ -3337,7 +3337,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 186,
+        "regional_rank": 192,
         "vlr_abbr": "SJ"
     },
     "DAH": {
@@ -3345,7 +3345,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 187,
+        "regional_rank": 194,
         "vlr_abbr": "DAH"
     },
     "IG": {
@@ -3353,7 +3353,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 195,
+        "regional_rank": 196,
         "vlr_abbr": "IG"
     },
     "IND": {
@@ -3361,7 +3361,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 194,
+        "regional_rank": 195,
         "vlr_abbr": "IND"
     },
     "PD": {
@@ -3369,7 +3369,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 198,
+        "regional_rank": 197,
         "vlr_abbr": "PD"
     },
     "XTRA": {
@@ -3377,7 +3377,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 196,
+        "regional_rank": 198,
         "vlr_abbr": "XTRA"
     },
     "TLR": {
@@ -3385,7 +3385,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 197,
+        "regional_rank": 199,
         "vlr_abbr": "TLR"
     },
     "GK": {
@@ -3393,7 +3393,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 199,
+        "regional_rank": 202,
         "vlr_abbr": "GK"
     },
     "BMB": {
@@ -3401,7 +3401,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 200,
+        "regional_rank": 203,
         "vlr_abbr": "BMB"
     },
     "GL2": {
@@ -3409,7 +3409,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 202,
+        "regional_rank": 201,
         "vlr_abbr": "GL"
     },
     "SSP": {
@@ -3417,7 +3417,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 201,
+        "regional_rank": 200,
         "vlr_abbr": "SSP"
     },
     "BLOK": {
@@ -3425,7 +3425,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 203,
+        "regional_rank": 204,
         "vlr_abbr": "BLOK"
     },
     "RYE": {
@@ -3433,7 +3433,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 204,
+        "regional_rank": 205,
         "vlr_abbr": "RYE"
     },
     "HI": {
@@ -3441,7 +3441,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 206,
+        "regional_rank": 207,
         "vlr_abbr": "HI"
     },
     "TG1": {
@@ -3449,7 +3449,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 205,
+        "regional_rank": 206,
         "vlr_abbr": "TG"
     },
     "LEXI": {
@@ -3457,7 +3457,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 208,
+        "regional_rank": 209,
         "vlr_abbr": "LEXI"
     },
     "EEA": {
@@ -3465,7 +3465,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 209,
+        "regional_rank": 210,
         "vlr_abbr": "EEA"
     },
     "XG": {
@@ -3473,7 +3473,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 207,
+        "regional_rank": 208,
         "vlr_abbr": "XG"
     },
     "ERAH": {
@@ -3481,7 +3481,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 213,
+        "regional_rank": 214,
         "vlr_abbr": "ERAH"
     },
     "OCM": {
@@ -3489,7 +3489,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 212,
+        "regional_rank": 213,
         "vlr_abbr": "OCM"
     },
     "SK": {
@@ -3497,7 +3497,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 279,
+        "regional_rank": 278,
         "vlr_abbr": "SK"
     },
     "HDB": {
@@ -3505,7 +3505,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 210,
+        "regional_rank": 211,
         "vlr_abbr": "HDB"
     },
     "KV": {
@@ -3513,7 +3513,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 214,
+        "regional_rank": 215,
         "vlr_abbr": "KV"
     },
     "NOF": {
@@ -3521,7 +3521,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 215,
+        "regional_rank": 216,
         "vlr_abbr": "NOF"
     },
     "EXA": {
@@ -3529,7 +3529,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 216,
+        "regional_rank": 217,
         "vlr_abbr": "EXA"
     },
     "2R3W": {
@@ -3537,7 +3537,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 217,
+        "regional_rank": 218,
         "vlr_abbr": "2R3W"
     },
     "YOHE": {
@@ -3545,7 +3545,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 218,
+        "regional_rank": 219,
         "vlr_abbr": "YOHE"
     },
     "ABST": {
@@ -3561,7 +3561,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 219,
+        "regional_rank": 220,
         "vlr_abbr": "PURE"
     },
     "YK": {
@@ -3569,7 +3569,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 220,
+        "regional_rank": 221,
         "vlr_abbr": "YK"
     },
     "S4": {
@@ -3577,7 +3577,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 221,
+        "regional_rank": 222,
         "vlr_abbr": "S4"
     },
     "AUCA": {
@@ -3585,7 +3585,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 224,
+        "regional_rank": 225,
         "vlr_abbr": "AUCA"
     },
     "ADIO": {
@@ -3593,7 +3593,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 223,
+        "regional_rank": 224,
         "vlr_abbr": "ADIO"
     },
     "PTSD": {
@@ -3601,7 +3601,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 226,
+        "regional_rank": 227,
         "vlr_abbr": "PTSD"
     },
     "ASX": {
@@ -3609,7 +3609,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 227,
+        "regional_rank": 228,
         "vlr_abbr": "ASX"
     },
     "BV": {
@@ -3625,7 +3625,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 225,
+        "regional_rank": 226,
         "vlr_abbr": "SOLU"
     },
     "AIGH": {
@@ -3633,7 +3633,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 229,
+        "regional_rank": 230,
         "vlr_abbr": "AIGH"
     },
     "NXR1": {
@@ -3641,7 +3641,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 228,
+        "regional_rank": 229,
         "vlr_abbr": "NXR"
     },
     "SWEP": {
@@ -3649,7 +3649,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 230,
+        "regional_rank": 231,
         "vlr_abbr": "SWEP"
     },
     "ATN": {
@@ -3657,7 +3657,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 234,
+        "regional_rank": 232,
         "vlr_abbr": "ATN"
     },
     "ECO": {
@@ -3665,7 +3665,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 232,
+        "regional_rank": 235,
         "vlr_abbr": "ECO"
     },
     "EVO": {
@@ -3673,7 +3673,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 231,
+        "regional_rank": 234,
         "vlr_abbr": "EVO"
     },
     "NOTN": {
@@ -3689,7 +3689,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 235,
+        "regional_rank": 236,
         "vlr_abbr": "TDB"
     },
     "CTRL": {
@@ -3697,7 +3697,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 236,
+        "regional_rank": 239,
         "vlr_abbr": "CTRL"
     },
     "ATN1": {
@@ -3721,7 +3721,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 239,
+        "regional_rank": 243,
         "vlr_abbr": "WIPM"
     },
     "HGE": {
@@ -3737,7 +3737,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 241,
+        "regional_rank": 240,
         "vlr_abbr": "NT"
     },
     "SG2": {
@@ -3745,7 +3745,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 243,
+        "regional_rank": 241,
         "vlr_abbr": "SG"
     },
     "EXG": {
@@ -3753,7 +3753,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 240,
+        "regional_rank": 244,
         "vlr_abbr": "EXG"
     },
     "GOBL": {
@@ -3761,7 +3761,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 244,
+        "regional_rank": 247,
         "vlr_abbr": "GOBL"
     },
     "ES": {
@@ -3785,7 +3785,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 247,
+        "regional_rank": 248,
         "vlr_abbr": "INPU"
     },
     "UNCS": {
@@ -3793,7 +3793,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 253,
+        "regional_rank": 250,
         "vlr_abbr": "UNCS"
     },
     "LEO": {
@@ -3801,7 +3801,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 249,
+        "regional_rank": 254,
         "vlr_abbr": "LEO"
     },
     "TK1": {
@@ -3809,7 +3809,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 248,
+        "regional_rank": 253,
         "vlr_abbr": "TK"
     },
     "RG": {
@@ -3825,7 +3825,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 250,
+        "regional_rank": 251,
         "vlr_abbr": "ZTA"
     },
     "FE": {
@@ -3833,7 +3833,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 254,
+        "regional_rank": 255,
         "vlr_abbr": "FE"
     },
     "GOOD": {
@@ -3841,7 +3841,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 255,
+        "regional_rank": 259,
         "vlr_abbr": "GOOD"
     },
     "WOLH": {
@@ -3865,7 +3865,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 260,
+        "regional_rank": 263,
         "vlr_abbr": "REPU"
     },
     "DH": {
@@ -3873,7 +3873,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 262,
+        "regional_rank": 261,
         "vlr_abbr": "DH"
     },
     "VSTG": {
@@ -3881,7 +3881,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 261,
+        "regional_rank": 264,
         "vlr_abbr": "VSTG"
     },
     "VCE": {
@@ -3889,7 +3889,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 259,
+        "regional_rank": 260,
         "vlr_abbr": "VCE"
     },
     "DNG": {
@@ -3897,7 +3897,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 263,
+        "regional_rank": 262,
         "vlr_abbr": "DNG"
     },
     "EJSG": {
@@ -3905,7 +3905,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 264,
+        "regional_rank": 265,
         "vlr_abbr": "EJSG"
     },
     "CG1": {
@@ -3913,7 +3913,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 265,
+        "regional_rank": 266,
         "vlr_abbr": "CG"
     },
     "ROTA": {
@@ -3921,7 +3921,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 282,
+        "regional_rank": 286,
         "vlr_abbr": "ROTA"
     },
     "SQUI": {
@@ -3929,7 +3929,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 266,
+        "regional_rank": 267,
         "vlr_abbr": "SQUI"
     },
     "1TEN": {
@@ -3937,7 +3937,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 267,
+        "regional_rank": 268,
         "vlr_abbr": "1TEN"
     },
     "DMNX1": {
@@ -3945,7 +3945,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 270,
+        "regional_rank": 269,
         "vlr_abbr": "DMNX"
     },
     "YOGU": {
@@ -3953,7 +3953,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 268,
+        "regional_rank": 272,
         "vlr_abbr": "YOGU"
     },
     "PARA": {
@@ -3969,7 +3969,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 269,
+        "regional_rank": 270,
         "vlr_abbr": "BN"
     },
     "XTRE": {
@@ -3977,7 +3977,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 272,
+        "regional_rank": 273,
         "vlr_abbr": "XTRE"
     },
     "200": {
@@ -3985,7 +3985,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 273,
+        "regional_rank": 274,
         "vlr_abbr": "200"
     },
     "DX1": {
@@ -3993,7 +3993,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 274,
+        "regional_rank": 275,
         "vlr_abbr": "DX"
     },
     "PRM": {
@@ -4001,7 +4001,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 275,
+        "regional_rank": 277,
         "vlr_abbr": "PRM"
     },
     "REJU": {
@@ -4025,7 +4025,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 280,
+        "regional_rank": 281,
         "vlr_abbr": "L1"
     },
     "5GRA": {
@@ -4033,7 +4033,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 278,
+        "regional_rank": 279,
         "vlr_abbr": "5GRA"
     },
     "CLS": {
@@ -4041,7 +4041,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 277,
+        "regional_rank": 280,
         "vlr_abbr": "CLS"
     },
     "WYL": {
@@ -4049,7 +4049,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 283,
+        "regional_rank": 282,
         "vlr_abbr": "WYL"
     },
     "XOXO": {
@@ -4057,7 +4057,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 281,
+        "regional_rank": 283,
         "vlr_abbr": "XOXO"
     },
     "RLB": {
@@ -4081,7 +4081,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 287,
+        "regional_rank": 288,
         "vlr_abbr": "PNM"
     },
     "GF": {
@@ -4089,7 +4089,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 286,
+        "regional_rank": 287,
         "vlr_abbr": "GF"
     },
     "WWGA": {
@@ -4097,7 +4097,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 288,
+        "regional_rank": 289,
         "vlr_abbr": "WWGA"
     },
     "GE2": {
@@ -4105,7 +4105,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 305,
+        "regional_rank": 306,
         "vlr_abbr": "GE"
     },
     "6GPA": {
@@ -4113,7 +4113,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 289,
+        "regional_rank": 290,
         "vlr_abbr": "6GPA"
     },
     "DP": {
@@ -4121,7 +4121,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 290,
+        "regional_rank": 291,
         "vlr_abbr": "DP"
     },
     "CLA": {
@@ -4129,7 +4129,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 291,
+        "regional_rank": 292,
         "vlr_abbr": "CLA"
     },
     "G\u00c9NE": {
@@ -4137,7 +4137,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 292,
+        "regional_rank": 293,
         "vlr_abbr": "G\u00c9NE"
     },
     "EEK": {
@@ -4145,7 +4145,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 293,
+        "regional_rank": 299,
         "vlr_abbr": "EEK"
     },
     "GG1": {
@@ -4153,7 +4153,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 296,
+        "regional_rank": 295,
         "vlr_abbr": "GG"
     },
     "BULD": {
@@ -4161,7 +4161,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 297,
+        "regional_rank": 300,
         "vlr_abbr": "BULD"
     },
     "FX": {
@@ -4169,7 +4169,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 294,
+        "regional_rank": 296,
         "vlr_abbr": "FX"
     },
     "VLX": {
@@ -4177,7 +4177,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 295,
+        "regional_rank": 294,
         "vlr_abbr": "VLX"
     },
     "CE": {
@@ -4185,7 +4185,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 299,
+        "regional_rank": 297,
         "vlr_abbr": "CE"
     },
     "ORK": {
@@ -4201,7 +4201,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 300,
+        "regional_rank": 302,
         "vlr_abbr": "RG"
     },
     "BAIG": {
@@ -4209,7 +4209,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 302,
+        "regional_rank": 303,
         "vlr_abbr": "BAIG"
     },
     "SIU": {
@@ -4217,7 +4217,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 304,
+        "regional_rank": 305,
         "vlr_abbr": "SIU"
     },
     "VIN": {
@@ -4225,7 +4225,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 303,
+        "regional_rank": 304,
         "vlr_abbr": "VIN"
     },
     "FISK": {
@@ -4233,7 +4233,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 306,
+        "regional_rank": 307,
         "vlr_abbr": "FISK"
     },
     "GLAD": {
@@ -4241,7 +4241,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 307,
+        "regional_rank": 308,
         "vlr_abbr": "GLAD"
     },
     "MT": {
@@ -4249,7 +4249,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 308,
+        "regional_rank": 309,
         "vlr_abbr": "MT"
     },
     "PCF": {
@@ -4257,7 +4257,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 333,
+        "regional_rank": 334,
         "vlr_abbr": "PCF"
     },
     "UBE": {
@@ -4265,7 +4265,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 309,
+        "regional_rank": 311,
         "vlr_abbr": "UBE"
     },
     "THEG": {
@@ -4281,7 +4281,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 312,
+        "regional_rank": 313,
         "vlr_abbr": "FRAC"
     },
     "RANG": {
@@ -4289,7 +4289,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 311,
+        "regional_rank": 312,
         "vlr_abbr": "RANG"
     },
     "TWEL": {
@@ -4297,7 +4297,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 313,
+        "regional_rank": 314,
         "vlr_abbr": "TWEL"
     },
     "OLIM": {
@@ -4305,7 +4305,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 314,
+        "regional_rank": 316,
         "vlr_abbr": "OLIM"
     },
     "VV": {
@@ -4313,7 +4313,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 321,
+        "regional_rank": 328,
         "vlr_abbr": "VV"
     },
     "VOLK": {
@@ -4329,7 +4329,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 316,
+        "regional_rank": 318,
         "vlr_abbr": "TAN\u00b4"
     },
     "TONT": {
@@ -4345,7 +4345,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 318,
+        "regional_rank": 319,
         "vlr_abbr": "NXT"
     },
     "LYO": {
@@ -4353,7 +4353,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 319,
+        "regional_rank": 320,
         "vlr_abbr": "LYO"
     },
     "WADE": {
@@ -4361,7 +4361,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 320,
+        "regional_rank": 321,
         "vlr_abbr": "WADE"
     },
     "BBG": {
@@ -4417,7 +4417,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 328,
+        "regional_rank": 329,
         "vlr_abbr": "RVNT"
     },
     "TO": {
@@ -4425,7 +4425,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 329,
+        "regional_rank": 330,
         "vlr_abbr": "TO"
     },
     "XPS": {
@@ -4433,7 +4433,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 330,
+        "regional_rank": 331,
         "vlr_abbr": "XPS"
     },
     "MCK": {
@@ -4441,7 +4441,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 331,
+        "regional_rank": 332,
         "vlr_abbr": "MCK"
     },
     "NS1": {
@@ -4449,7 +4449,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 332,
+        "regional_rank": 333,
         "vlr_abbr": "NS"
     },
     "GA": {
@@ -4457,7 +4457,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 334,
+        "regional_rank": 336,
         "vlr_abbr": "GA"
     },
     "WYG": {
@@ -4473,7 +4473,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 336,
+        "regional_rank": 337,
         "vlr_abbr": "PRES"
     },
     "DOES": {
@@ -4489,7 +4489,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 338,
+        "regional_rank": 339,
         "vlr_abbr": "ECL"
     },
     "EYG": {
@@ -4497,7 +4497,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 339,
+        "regional_rank": 340,
         "vlr_abbr": "EYG"
     },
     "GAL": {
@@ -4505,7 +4505,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 340,
+        "regional_rank": 341,
         "vlr_abbr": "GAL"
     },
     "FS1": {
@@ -4513,7 +4513,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 341,
+        "regional_rank": 342,
         "vlr_abbr": "FS"
     },
     "FRG": {
@@ -4521,7 +4521,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 342,
+        "regional_rank": 343,
         "vlr_abbr": "FRG"
     },
     "COMB": {
@@ -4529,7 +4529,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 344,
+        "regional_rank": 345,
         "vlr_abbr": "COMB"
     },
     "WEAR": {
@@ -4537,7 +4537,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 343,
+        "regional_rank": 344,
         "vlr_abbr": "WEAR"
     },
     "UE": {
@@ -4545,7 +4545,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 346,
+        "regional_rank": 348,
         "vlr_abbr": "UE"
     },
     "BW": {
@@ -4553,7 +4553,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 347,
+        "regional_rank": 346,
         "vlr_abbr": "BW"
     },
     "X3M": {
@@ -4561,7 +4561,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 345,
+        "regional_rank": 347,
         "vlr_abbr": "X3M"
     },
     "KARA": {
@@ -4569,7 +4569,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 348,
+        "regional_rank": 349,
         "vlr_abbr": "KARA"
     },
     "VE": {
@@ -4577,7 +4577,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 349,
+        "regional_rank": 350,
         "vlr_abbr": "VE"
     },
     "USTU": {
@@ -4585,7 +4585,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 350,
+        "regional_rank": 351,
         "vlr_abbr": "USTU"
     },
     "DN": {
@@ -4593,7 +4593,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 351,
+        "regional_rank": 352,
         "vlr_abbr": "DN"
     },
     "KAMK": {
@@ -4601,7 +4601,7 @@
         "rank": 250,
         "norm_rank": 288,
         "region": "Europe",
-        "regional_rank": 352,
+        "regional_rank": 353,
         "vlr_abbr": "KAMK"
     },
     "SP": {
@@ -4609,7 +4609,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 2,
+        "regional_rank": 3,
         "vlr_abbr": "SP"
     },
     "555": {
@@ -4625,7 +4625,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 13,
+        "regional_rank": 12,
         "vlr_abbr": "LITL"
     },
     "S8UL": {
@@ -4665,7 +4665,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 20,
+        "regional_rank": 23,
         "vlr_abbr": "XIP"
     },
     "GDR": {
@@ -4673,7 +4673,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 22,
+        "regional_rank": 21,
         "vlr_abbr": "GDR"
     },
     "XGOD": {
@@ -4681,7 +4681,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 23,
+        "regional_rank": 22,
         "vlr_abbr": "XGOD"
     },
     "1TAP": {
@@ -4705,7 +4705,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 28,
+        "regional_rank": 29,
         "vlr_abbr": "ZX"
     },
     "RGE": {
@@ -4713,7 +4713,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 27,
+        "regional_rank": 28,
         "vlr_abbr": "RGE"
     },
     "ZIRC": {
@@ -4721,7 +4721,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 30,
+        "regional_rank": 31,
         "vlr_abbr": "ZIRC"
     },
     "XOXO1": {
@@ -4729,7 +4729,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 31,
+        "regional_rank": 32,
         "vlr_abbr": "XOXO"
     },
     "GC": {
@@ -4737,7 +4737,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 33,
+        "regional_rank": 34,
         "vlr_abbr": "GC"
     },
     "NVL": {
@@ -4745,7 +4745,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 34,
+        "regional_rank": 36,
         "vlr_abbr": "NVL"
     },
     "DAG": {
@@ -4753,7 +4753,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 35,
+        "regional_rank": 38,
         "vlr_abbr": "DAG"
     },
     "FGFM": {
@@ -4761,7 +4761,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 37,
+        "regional_rank": 39,
         "vlr_abbr": "FGFM"
     },
     "GO": {
@@ -4769,7 +4769,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 38,
+        "regional_rank": 40,
         "vlr_abbr": "GO"
     },
     "LAN": {
@@ -4785,7 +4785,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 40,
+        "regional_rank": 42,
         "vlr_abbr": "VNS"
     },
     "CHES": {
@@ -4801,7 +4801,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 43,
+        "regional_rank": 45,
         "vlr_abbr": "AG"
     },
     "HLG": {
@@ -4809,7 +4809,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 42,
+        "regional_rank": 93,
         "vlr_abbr": "HLG"
     },
     "TUMT": {
@@ -4817,7 +4817,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 45,
+        "regional_rank": 46,
         "vlr_abbr": "TUMT"
     },
     "MIVN": {
@@ -4825,7 +4825,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 46,
+        "regional_rank": 47,
         "vlr_abbr": "MIVN"
     },
     "EG2": {
@@ -4833,7 +4833,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 47,
+        "regional_rank": 48,
         "vlr_abbr": "EG"
     },
     "KDM": {
@@ -4841,7 +4841,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 48,
+        "regional_rank": 27,
         "vlr_abbr": "KDM"
     },
     "U5": {
@@ -4889,7 +4889,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 55,
+        "regional_rank": 58,
         "vlr_abbr": "OF"
     },
     "RVL": {
@@ -4897,7 +4897,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 56,
+        "regional_rank": 54,
         "vlr_abbr": "RVL"
     },
     "LFM": {
@@ -4913,7 +4913,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 59,
+        "regional_rank": 56,
         "vlr_abbr": "ECHO"
     },
     "AT": {
@@ -4921,7 +4921,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 58,
+        "regional_rank": 55,
         "vlr_abbr": "AT"
     },
     "1TAP1": {
@@ -4929,7 +4929,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 62,
+        "regional_rank": 61,
         "vlr_abbr": "1TAP"
     },
     "DLSU": {
@@ -4937,7 +4937,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 64,
+        "regional_rank": 62,
         "vlr_abbr": "DLSU"
     },
     "EVAR": {
@@ -4945,7 +4945,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 60,
+        "regional_rank": 63,
         "vlr_abbr": "EVAR"
     },
     "HARU": {
@@ -4953,7 +4953,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 61,
+        "regional_rank": 60,
         "vlr_abbr": "HARU"
     },
     "\u662f\u9019\u88e1\u55ce": {
@@ -4961,7 +4961,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 63,
+        "regional_rank": 59,
         "vlr_abbr": "\u662f\u9019\u88e1\u55ce"
     },
     "MEOW": {
@@ -4969,7 +4969,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 65,
+        "regional_rank": 64,
         "vlr_abbr": "MEOW"
     },
     "DREA1": {
@@ -4977,7 +4977,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 66,
+        "regional_rank": 65,
         "vlr_abbr": "DREA"
     },
     "RAD": {
@@ -4993,7 +4993,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 69,
+        "regional_rank": 67,
         "vlr_abbr": "PLUS"
     },
     "SF": {
@@ -5001,7 +5001,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 67,
+        "regional_rank": 66,
         "vlr_abbr": "SF"
     },
     "XOGG": {
@@ -5009,7 +5009,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 86,
+        "regional_rank": 82,
         "vlr_abbr": "XOGG"
     },
     "TS1": {
@@ -5033,7 +5033,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 70,
+        "regional_rank": 69,
         "vlr_abbr": "SUPL"
     },
     "MW1": {
@@ -5041,7 +5041,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 71,
+        "regional_rank": 70,
         "vlr_abbr": "MW"
     },
     "TT1": {
@@ -5057,7 +5057,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 75,
+        "regional_rank": 73,
         "vlr_abbr": "100W"
     },
     "JORA": {
@@ -5065,7 +5065,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 73,
+        "regional_rank": 72,
         "vlr_abbr": "JORA"
     },
     "FEER": {
@@ -5073,7 +5073,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 72,
+        "regional_rank": 71,
         "vlr_abbr": "FEER"
     },
     "SQ": {
@@ -5081,7 +5081,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 76,
+        "regional_rank": 75,
         "vlr_abbr": "SQ"
     },
     "BDBS": {
@@ -5089,7 +5089,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 77,
+        "regional_rank": 79,
         "vlr_abbr": "BDBS"
     },
     "NMD": {
@@ -5097,7 +5097,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 78,
+        "regional_rank": 77,
         "vlr_abbr": "NMD"
     },
     "BLES": {
@@ -5105,7 +5105,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 81,
+        "regional_rank": 78,
         "vlr_abbr": "BLES"
     },
     "OG1": {
@@ -5113,7 +5113,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 79,
+        "regional_rank": 76,
         "vlr_abbr": "OG"
     },
     "MKK": {
@@ -5121,7 +5121,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 80,
+        "regional_rank": 81,
         "vlr_abbr": "MKK"
     },
     "IM1": {
@@ -5129,7 +5129,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 82,
+        "regional_rank": 84,
         "vlr_abbr": "IM"
     },
     "YHG": {
@@ -5145,7 +5145,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 84,
+        "regional_rank": 85,
         "vlr_abbr": "KJ"
     },
     "BGE": {
@@ -5153,7 +5153,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 85,
+        "regional_rank": 86,
         "vlr_abbr": "BGE"
     },
     "VERI": {
@@ -5209,7 +5209,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 95,
+        "regional_rank": 96,
         "vlr_abbr": "NWA"
     },
     "HEYH": {
@@ -5217,7 +5217,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 96,
+        "regional_rank": 97,
         "vlr_abbr": "HEYH"
     },
     "HIVE": {
@@ -5225,7 +5225,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 93,
+        "regional_rank": 94,
         "vlr_abbr": "HIVE"
     },
     "ZBLU": {
@@ -5233,7 +5233,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 94,
+        "regional_rank": 95,
         "vlr_abbr": "ZBLU"
     },
     "ISE": {
@@ -5241,7 +5241,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 97,
+        "regional_rank": 98,
         "vlr_abbr": "ISE"
     },
     "SIGN": {
@@ -5249,7 +5249,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 36,
+        "regional_rank": 33,
         "vlr_abbr": "SIGN"
     },
     "LAKA": {
@@ -5257,7 +5257,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 100,
+        "regional_rank": 99,
         "vlr_abbr": "LAKA"
     },
     "LITP": {
@@ -5265,7 +5265,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 99,
+        "regional_rank": 100,
         "vlr_abbr": "LITP"
     },
     "AEEC": {
@@ -5281,7 +5281,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 98,
+        "regional_rank": 102,
         "vlr_abbr": "HHH"
     },
     "RAKE": {
@@ -5289,7 +5289,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 102,
+        "regional_rank": 103,
         "vlr_abbr": "RAKE"
     },
     "ILM": {
@@ -5305,7 +5305,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 103,
+        "regional_rank": 106,
         "vlr_abbr": "RT"
     },
     "WIWI": {
@@ -5313,7 +5313,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 106,
+        "regional_rank": 107,
         "vlr_abbr": "WIWI"
     },
     "YG": {
@@ -5321,7 +5321,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 110,
+        "regional_rank": 109,
         "vlr_abbr": "YG"
     },
     "SANK": {
@@ -5337,7 +5337,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 107,
+        "regional_rank": 110,
         "vlr_abbr": "SF"
     },
     "KINT": {
@@ -5345,7 +5345,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 109,
+        "regional_rank": 111,
         "vlr_abbr": "KINT"
     },
     "RDN": {
@@ -5353,7 +5353,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 111,
+        "regional_rank": 112,
         "vlr_abbr": "RDN"
     },
     "NN": {
@@ -5361,7 +5361,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 115,
+        "regional_rank": 116,
         "vlr_abbr": "NN"
     },
     "FY": {
@@ -5369,7 +5369,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 112,
+        "regional_rank": 115,
         "vlr_abbr": "FY"
     },
     "FE1": {
@@ -5377,7 +5377,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 116,
+        "regional_rank": 118,
         "vlr_abbr": "FE"
     },
     "HLS": {
@@ -5393,7 +5393,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 114,
+        "regional_rank": 117,
         "vlr_abbr": "KORP"
     },
     "CGT": {
@@ -5401,7 +5401,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 117,
+        "regional_rank": 114,
         "vlr_abbr": "CGT"
     },
     "RETI": {
@@ -5409,7 +5409,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 118,
+        "regional_rank": 120,
         "vlr_abbr": "RETI"
     },
     "NULL": {
@@ -5417,7 +5417,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 120,
+        "regional_rank": 123,
         "vlr_abbr": "NULL"
     },
     "CA1": {
@@ -5425,7 +5425,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 119,
+        "regional_rank": 121,
         "vlr_abbr": "CA"
     },
     "GXR": {
@@ -5433,7 +5433,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 121,
+        "regional_rank": 122,
         "vlr_abbr": "GXR"
     },
     "EG3": {
@@ -5441,7 +5441,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 122,
+        "regional_rank": 119,
         "vlr_abbr": "EG"
     },
     "VNU": {
@@ -5449,7 +5449,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 124,
+        "regional_rank": 126,
         "vlr_abbr": "VNU"
     },
     "P1NO": {
@@ -5457,7 +5457,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 126,
+        "regional_rank": 127,
         "vlr_abbr": "P1NO"
     },
     "MYST": {
@@ -5473,7 +5473,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 123,
+        "regional_rank": 124,
         "vlr_abbr": "WASH"
     },
     "THEO": {
@@ -5481,7 +5481,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 127,
+        "regional_rank": 128,
         "vlr_abbr": "THEO"
     },
     "FLAW": {
@@ -5489,7 +5489,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 128,
+        "regional_rank": 129,
         "vlr_abbr": "FLAW"
     },
     "TRH": {
@@ -5497,7 +5497,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 129,
+        "regional_rank": 131,
         "vlr_abbr": "TRH"
     },
     "FISH1": {
@@ -5505,7 +5505,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 131,
+        "regional_rank": 134,
         "vlr_abbr": "FISH"
     },
     "ODFA": {
@@ -5513,7 +5513,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 130,
+        "regional_rank": 132,
         "vlr_abbr": "ODFA"
     },
     "AB12": {
@@ -5521,7 +5521,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 132,
+        "regional_rank": 135,
         "vlr_abbr": "AB12"
     },
     "AS2": {
@@ -5529,7 +5529,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 134,
+        "regional_rank": 130,
         "vlr_abbr": "AS"
     },
     "VR1": {
@@ -5545,7 +5545,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 135,
+        "regional_rank": 136,
         "vlr_abbr": "ONEO"
     },
     "RP": {
@@ -5553,7 +5553,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 151,
+        "regional_rank": 153,
         "vlr_abbr": "RP"
     },
     "DITT": {
@@ -5561,7 +5561,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 136,
+        "regional_rank": 140,
         "vlr_abbr": "DITT"
     },
     "SHRI": {
@@ -5569,7 +5569,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 141,
+        "regional_rank": 139,
         "vlr_abbr": "SHRI"
     },
     "RH": {
@@ -5577,7 +5577,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 139,
+        "regional_rank": 138,
         "vlr_abbr": "RH"
     },
     "UNRI": {
@@ -5585,7 +5585,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 138,
+        "regional_rank": 137,
         "vlr_abbr": "UNRI"
     },
     "BNF": {
@@ -5593,7 +5593,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 137,
+        "regional_rank": 142,
         "vlr_abbr": "BNF"
     },
     "DHA": {
@@ -5601,7 +5601,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 140,
+        "regional_rank": 143,
         "vlr_abbr": "DHA"
     },
     "AURA": {
@@ -5617,7 +5617,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 143,
+        "regional_rank": 144,
         "vlr_abbr": "KA"
     },
     "ER2": {
@@ -5625,7 +5625,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 144,
+        "regional_rank": 145,
         "vlr_abbr": "ER"
     },
     "LC1": {
@@ -5633,7 +5633,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 145,
+        "regional_rank": 146,
         "vlr_abbr": "LC"
     },
     "A8": {
@@ -5649,7 +5649,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 146,
+        "regional_rank": 147,
         "vlr_abbr": "CC"
     },
     "FG": {
@@ -5657,7 +5657,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 147,
+        "regional_rank": 149,
         "vlr_abbr": "FG"
     },
     "WK": {
@@ -5665,7 +5665,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 150,
+        "regional_rank": 155,
         "vlr_abbr": "WK"
     },
     "DA": {
@@ -5673,7 +5673,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 149,
+        "regional_rank": 152,
         "vlr_abbr": "DA"
     },
     "LCR": {
@@ -5681,7 +5681,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 152,
+        "regional_rank": 154,
         "vlr_abbr": "LCR"
     },
     "BT": {
@@ -5689,7 +5689,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 154,
+        "regional_rank": 150,
         "vlr_abbr": "BT"
     },
     "UVW": {
@@ -5697,7 +5697,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 153,
+        "regional_rank": 151,
         "vlr_abbr": "UVW"
     },
     "UH": {
@@ -5705,7 +5705,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 156,
+        "regional_rank": 159,
         "vlr_abbr": "UH"
     },
     "GE3": {
@@ -5713,7 +5713,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 157,
+        "regional_rank": 158,
         "vlr_abbr": "GE"
     },
     "OCU": {
@@ -5721,7 +5721,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 155,
+        "regional_rank": 156,
         "vlr_abbr": "OCU"
     },
     "PWG": {
@@ -5729,7 +5729,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 158,
+        "regional_rank": 157,
         "vlr_abbr": "PWG"
     },
     "HT": {
@@ -5737,7 +5737,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 160,
+        "regional_rank": 161,
         "vlr_abbr": "HT"
     },
     "PRFS": {
@@ -5745,7 +5745,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 159,
+        "regional_rank": 160,
         "vlr_abbr": "PRFS"
     },
     "BM1": {
@@ -5753,7 +5753,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 162,
+        "regional_rank": 163,
         "vlr_abbr": "BM"
     },
     "SLK": {
@@ -5761,7 +5761,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 161,
+        "regional_rank": 162,
         "vlr_abbr": "SLK"
     },
     "TS2": {
@@ -5769,7 +5769,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 164,
+        "regional_rank": 168,
         "vlr_abbr": "TS"
     },
     "UFM": {
@@ -5777,7 +5777,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 167,
+        "regional_rank": 166,
         "vlr_abbr": "UFM"
     },
     "FULL1": {
@@ -5785,7 +5785,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 163,
+        "regional_rank": 169,
         "vlr_abbr": "FULL"
     },
     "XRE": {
@@ -5793,7 +5793,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 168,
+        "regional_rank": 165,
         "vlr_abbr": "XRE"
     },
     "FOT": {
@@ -5801,7 +5801,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 166,
+        "regional_rank": 167,
         "vlr_abbr": "FOT"
     },
     "ATC": {
@@ -5809,7 +5809,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 165,
+        "regional_rank": 164,
         "vlr_abbr": "ATC"
     },
     "AF": {
@@ -5817,7 +5817,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 170,
+        "regional_rank": 171,
         "vlr_abbr": "AF"
     },
     "SARA": {
@@ -5825,7 +5825,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 171,
+        "regional_rank": 170,
         "vlr_abbr": "SARA"
     },
     "REDP": {
@@ -5833,7 +5833,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 169,
+        "regional_rank": 172,
         "vlr_abbr": "REDP"
     },
     "KP1": {
@@ -5841,7 +5841,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 172,
+        "regional_rank": 174,
         "vlr_abbr": "KP"
     },
     "DT": {
@@ -5857,7 +5857,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 175,
+        "regional_rank": 177,
         "vlr_abbr": "HKUF"
     },
     "UT": {
@@ -5865,7 +5865,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 176,
+        "regional_rank": 175,
         "vlr_abbr": "UT"
     },
     "TS11": {
@@ -5873,7 +5873,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 174,
+        "regional_rank": 176,
         "vlr_abbr": "TS1"
     },
     "VE1": {
@@ -5881,7 +5881,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 180,
+        "regional_rank": 212,
         "vlr_abbr": "VE"
     },
     "ST": {
@@ -5889,7 +5889,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 179,
+        "regional_rank": 178,
         "vlr_abbr": "ST"
     },
     "ARCH": {
@@ -5897,7 +5897,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 177,
+        "regional_rank": 179,
         "vlr_abbr": "ARCH"
     },
     "FLOW1": {
@@ -5905,7 +5905,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 178,
+        "regional_rank": 180,
         "vlr_abbr": "FLOW"
     },
     "TLR1": {
@@ -5977,7 +5977,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 191,
+        "regional_rank": 190,
         "vlr_abbr": "SPF"
     },
     "UK": {
@@ -5985,7 +5985,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 189,
+        "regional_rank": 191,
         "vlr_abbr": "UK"
     },
     "IB": {
@@ -5993,7 +5993,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 190,
+        "regional_rank": 189,
         "vlr_abbr": "IB"
     },
     "LU": {
@@ -6033,7 +6033,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 196,
+        "regional_rank": 197,
         "vlr_abbr": "SORS"
     },
     "ABZ": {
@@ -6041,7 +6041,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 197,
+        "regional_rank": 196,
         "vlr_abbr": "ABZ"
     },
     "FLM": {
@@ -6049,7 +6049,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 199,
+        "regional_rank": 198,
         "vlr_abbr": "FLM"
     },
     "AA": {
@@ -6057,7 +6057,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 200,
+        "regional_rank": 199,
         "vlr_abbr": "AA"
     },
     "KP2": {
@@ -6065,7 +6065,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 198,
+        "regional_rank": 200,
         "vlr_abbr": "KP"
     },
     "GD": {
@@ -6089,7 +6089,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 204,
+        "regional_rank": 203,
         "vlr_abbr": "TERR"
     },
     "LSE": {
@@ -6097,7 +6097,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 203,
+        "regional_rank": 205,
         "vlr_abbr": "LSE"
     },
     "BAP": {
@@ -6105,7 +6105,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 205,
+        "regional_rank": 204,
         "vlr_abbr": "BAP"
     },
     "TEAR": {
@@ -6137,7 +6137,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 210,
+        "regional_rank": 209,
         "vlr_abbr": "BIBD"
     },
     "MONK1": {
@@ -6145,7 +6145,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 209,
+        "regional_rank": 210,
         "vlr_abbr": "MONK"
     },
     "KOYI": {
@@ -6161,7 +6161,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 212,
+        "regional_rank": 213,
         "vlr_abbr": "R5R5"
     },
     "RAWL": {
@@ -6169,7 +6169,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 213,
+        "regional_rank": 214,
         "vlr_abbr": "RAWL"
     },
     "WHAT": {
@@ -6177,7 +6177,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 214,
+        "regional_rank": 215,
         "vlr_abbr": "WHAT"
     },
     "YMG": {
@@ -6185,7 +6185,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 215,
+        "regional_rank": 216,
         "vlr_abbr": "YMG"
     },
     "6S": {
@@ -6193,7 +6193,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 216,
+        "regional_rank": 217,
         "vlr_abbr": "6S"
     },
     "RGLB": {
@@ -6201,7 +6201,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 217,
+        "regional_rank": 218,
         "vlr_abbr": "RGLB"
     },
     "ART": {
@@ -6209,7 +6209,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 218,
+        "regional_rank": 219,
         "vlr_abbr": "ART"
     },
     "101": {
@@ -6217,7 +6217,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 219,
+        "regional_rank": 220,
         "vlr_abbr": "101"
     },
     "DXE": {
@@ -6225,7 +6225,7 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 220,
+        "regional_rank": 221,
         "vlr_abbr": "DXE"
     },
     "XLG1": {
@@ -6573,12 +6573,11 @@
         "vlr_abbr": "DLT"
     },
     "RC1": {
-        "full": "Reject",
-        "rank": 250,
-        "norm_rank": 250,
+        "full": "REJECT",
+        "rank": 92,
+        "norm_rank": 92,
         "region": "Japan",
-        "regional_rank": 7,
-        "vlr_abbr": "RC"
+        "regional_rank": 7
     },
     "ZETA": {
         "full": "Zeta Division",
@@ -6713,7 +6712,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "Brazil",
-        "regional_rank": 6,
+        "regional_rank": 5,
         "vlr_abbr": "FUR"
     },
     "MIBR.AC": {
@@ -6729,7 +6728,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "Brazil",
-        "regional_rank": 7,
+        "regional_rank": 6,
         "vlr_abbr": "TBK"
     },
     "ELV": {
@@ -6753,7 +6752,7 @@
         "rank": 250,
         "norm_rank": 262,
         "region": "Brazil",
-        "regional_rank": 13,
+        "regional_rank": 12,
         "vlr_abbr": "ELVA"
     },
     "ABC": {
@@ -7980,8 +7979,8 @@
     },
     "AB3 GC": {
         "full": "AB3 Esports GC",
-        "rank": 92,
-        "norm_rank": 120,
+        "rank": 91,
+        "norm_rank": 118,
         "region": "Unknown"
     },
     "KRYO": {
@@ -7989,7 +7988,31 @@
         "rank": 250,
         "norm_rank": 250,
         "region": "Asia-Pacific",
-        "regional_rank": 54,
+        "regional_rank": 80,
         "vlr_abbr": "KRYO"
+    },
+    "FF2": {
+        "full": "Furious Five",
+        "rank": 250,
+        "norm_rank": 262,
+        "region": "North America",
+        "regional_rank": 87,
+        "vlr_abbr": "FF"
+    },
+    "\u0410\u041e\u0413\u0418": {
+        "full": "\u0410\u043e\u0433\u0438\u0440\u0438",
+        "rank": 250,
+        "norm_rank": 288,
+        "region": "Europe",
+        "regional_rank": 165,
+        "vlr_abbr": "\u0410\u041e\u0413\u0418"
+    },
+    "HS": {
+        "full": "Heaven Sent",
+        "rank": 250,
+        "norm_rank": 250,
+        "region": "Asia-Pacific",
+        "regional_rank": 37,
+        "vlr_abbr": "HS"
     }
 }
