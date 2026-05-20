@@ -13,8 +13,8 @@
         "region": "EU",
         "tier": 1
     },
-    "FURI": {
-        "full": "FURIA",
+    "SPIR": {
+        "full": "Spirit",
         "rank": 3,
         "norm_rank": 3,
         "region": "EU",
@@ -27,8 +27,8 @@
         "region": "EU",
         "tier": 1
     },
-    "SPIR": {
-        "full": "Spirit",
+    "FURI": {
+        "full": "FURIA",
         "rank": 5,
         "norm_rank": 5,
         "region": "EU",
@@ -55,26 +55,26 @@
         "region": "EU",
         "tier": 1
     },
-    "AST": {
-        "full": "Astralis",
+    "MOUZ": {
+        "full": "MOUZ",
         "rank": 9,
         "norm_rank": 9,
         "region": "EU",
         "tier": 1
     },
-    "FUT": {
-        "full": "FUT",
+    "AST": {
+        "full": "Astralis",
         "rank": 10,
         "norm_rank": 10,
         "region": "EU",
         "tier": 1
     },
-    "MOUZ": {
-        "full": "MOUZ",
-        "rank": 11,
-        "norm_rank": 11,
+    "GAME": {
+        "full": "GameHunters",
+        "rank": 156,
+        "norm_rank": 156,
         "region": "EU",
-        "tier": 2
+        "tier": 3
     },
     "G2": {
         "full": "G2",
@@ -83,106 +83,106 @@
         "region": "EU",
         "tier": 2
     },
-    "FAZE": {
-        "full": "FaZe",
+    "FUT": {
+        "full": "FUT",
         "rank": 13,
         "norm_rank": 13,
         "region": "EU",
         "tier": 2
     },
-    "GAME": {
-        "full": "GAMEHARMONY",
-        "rank": 174,
-        "norm_rank": 174,
+    "LEGA": {
+        "full": "Legacy",
+        "rank": 14,
+        "norm_rank": 14,
         "region": "EU",
-        "tier": 3
+        "tier": 2
     },
-    "3DMX": {
-        "full": "3DMAX",
+    "FAZE": {
+        "full": "FaZe",
         "rank": 15,
         "norm_rank": 15,
         "region": "EU",
         "tier": 2
     },
-    "9Z": {
-        "full": "9z",
+    "B8": {
+        "full": "B8",
         "rank": 16,
         "norm_rank": 16,
         "region": "EU",
         "tier": 2
     },
-    "B8": {
-        "full": "B8",
+    "BETB": {
+        "full": "BetBoom",
         "rank": 17,
         "norm_rank": 17,
         "region": "EU",
         "tier": 2
     },
-    "LEGA": {
-        "full": "Legacy",
+    "9Z": {
+        "full": "9z",
         "rank": 18,
         "norm_rank": 18,
         "region": "EU",
         "tier": 2
     },
-    "MONT": {
-        "full": "Monte",
+    "3DMX": {
+        "full": "3DMAX",
         "rank": 19,
         "norm_rank": 19,
         "region": "EU",
         "tier": 2
     },
-    "HERO": {
-        "full": "HEROIC",
+    "PAIN": {
+        "full": "paiN",
         "rank": 20,
         "norm_rank": 20,
         "region": "EU",
         "tier": 2
     },
-    "M80": {
-        "full": "M80",
+    "MAGI": {
+        "full": "magic",
         "rank": 21,
         "norm_rank": 21,
         "region": "EU",
         "tier": 2
     },
-    "BETB": {
-        "full": "BetBoom",
+    "MONT": {
+        "full": "Monte",
         "rank": 22,
         "norm_rank": 22,
         "region": "EU",
         "tier": 2
     },
-    "TYLO": {
-        "full": "TYLOO",
+    "HERO": {
+        "full": "HEROIC",
         "rank": 23,
         "norm_rank": 23,
         "region": "EU",
         "tier": 2
     },
-    "LIQU": {
-        "full": "Liquid",
+    "M80": {
+        "full": "M80",
         "rank": 24,
         "norm_rank": 24,
         "region": "EU",
         "tier": 2
     },
-    "ALLI": {
-        "full": "Alliance",
+    "LIQU": {
+        "full": "Liquid",
         "rank": 25,
         "norm_rank": 25,
         "region": "EU",
         "tier": 2
     },
-    "MIBR": {
-        "full": "MIBR",
+    "ALLI": {
+        "full": "Alliance",
         "rank": 26,
         "norm_rank": 26,
         "region": "EU",
         "tier": 2
     },
-    "NRG": {
-        "full": "NRG",
+    "SINN": {
+        "full": "SINNERS",
         "rank": 27,
         "norm_rank": 27,
         "region": "EU",
@@ -195,64 +195,64 @@
         "region": "EU",
         "tier": 2
     },
-    "EYEB": {
-        "full": "EYEBALLERS",
+    "MIBR": {
+        "full": "MIBR",
         "rank": 29,
         "norm_rank": 29,
         "region": "EU",
         "tier": 2
     },
-    "BIG": {
-        "full": "BIG",
+    "EYEB": {
+        "full": "EYEBALLERS",
         "rank": 30,
         "norm_rank": 30,
         "region": "EU",
         "tier": 2
     },
-    "SINN": {
-        "full": "SINNERS",
+    "TYLO": {
+        "full": "TYLOO",
         "rank": 31,
         "norm_rank": 31,
         "region": "EU",
         "tier": 3
     },
-    "PAIN": {
-        "full": "paiN",
+    "BIG": {
+        "full": "BIG",
         "rank": 32,
         "norm_rank": 32,
         "region": "EU",
         "tier": 3
     },
-    "HOTU": {
-        "full": "HOTU",
+    "PU": {
+        "full": "Passion UA",
         "rank": 33,
         "norm_rank": 33,
         "region": "EU",
         "tier": 3
     },
-    "NIP": {
-        "full": "Ninjas in Pyjamas",
+    "NRG": {
+        "full": "NRG",
         "rank": 34,
         "norm_rank": 34,
         "region": "EU",
         "tier": 3
     },
-    "PU": {
-        "full": "Passion UA",
+    "NIP": {
+        "full": "Ninjas in Pyjamas",
         "rank": 35,
         "norm_rank": 35,
         "region": "EU",
         "tier": 3
     },
-    "BEST": {
-        "full": "BESTIA",
+    "HOTU": {
+        "full": "HOTU",
         "rank": 36,
         "norm_rank": 36,
         "region": "EU",
         "tier": 3
     },
-    "FOKU": {
-        "full": "FOKUS",
+    "BEST": {
+        "full": "BESTIA",
         "rank": 37,
         "norm_rank": 37,
         "region": "EU",
@@ -272,8 +272,8 @@
         "region": "EU",
         "tier": 3
     },
-    "MAGI": {
-        "full": "magic",
+    "FOKU": {
+        "full": "FOKUS",
         "rank": 40,
         "norm_rank": 40,
         "region": "EU",
@@ -293,8 +293,8 @@
         "region": "EU",
         "tier": 3
     },
-    "GG": {
-        "full": "Gaimin Gladiators",
+    "TH": {
+        "full": "The Huns",
         "rank": 43,
         "norm_rank": 43,
         "region": "EU",
@@ -307,15 +307,15 @@
         "region": "EU",
         "tier": 3
     },
-    "BC.G": {
-        "full": "BC.Game",
+    "LV": {
+        "full": "Lynn Vision",
         "rank": 45,
         "norm_rank": 45,
         "region": "EU",
         "tier": 3
     },
-    "LV": {
-        "full": "Lynn Vision",
+    "GG": {
+        "full": "Gaimin Gladiators",
         "rank": 46,
         "norm_rank": 46,
         "region": "EU",
@@ -335,36 +335,36 @@
         "region": "EU",
         "tier": 3
     },
-    "SHIN": {
-        "full": "ShindeN",
+    "BC.G": {
+        "full": "BC.Game",
         "rank": 49,
         "norm_rank": 49,
         "region": "EU",
         "tier": 3
     },
-    "SHAR": {
-        "full": "Sharks",
+    "NEMI": {
+        "full": "Nemiga",
         "rank": 50,
         "norm_rank": 50,
         "region": "EU",
         "tier": 3
     },
-    "VOCA": {
-        "full": "Voca",
+    "SHAR": {
+        "full": "Sharks",
         "rank": 51,
         "norm_rank": 51,
         "region": "EU",
         "tier": 3
     },
-    "IMPE": {
-        "full": "Imperial",
+    "SHIN": {
+        "full": "ShindeN",
         "rank": 52,
         "norm_rank": 52,
         "region": "EU",
         "tier": 3
     },
-    "K27": {
-        "full": "K27",
+    "JIJI": {
+        "full": "JiJieHao",
         "rank": 53,
         "norm_rank": 53,
         "region": "EU",
@@ -377,92 +377,92 @@
         "region": "EU",
         "tier": 3
     },
-    "NEME": {
-        "full": "Nemesis",
+    "LAVK": {
+        "full": "Lavked",
         "rank": 55,
         "norm_rank": 55,
         "region": "EU",
         "tier": 3
     },
-    "NEMI": {
-        "full": "Nemiga",
+    "IMPE": {
+        "full": "Imperial",
         "rank": 56,
         "norm_rank": 56,
         "region": "EU",
         "tier": 3
     },
-    "FLYQ": {
-        "full": "FlyQuest",
+    "VOCA": {
+        "full": "Voca",
         "rank": 57,
         "norm_rank": 57,
         "region": "EU",
         "tier": 3
     },
-    "JS": {
-        "full": "Just Swing",
-        "rank": 131,
-        "norm_rank": 131,
+    "FLYQ": {
+        "full": "FlyQuest",
+        "rank": 58,
+        "norm_rank": 58,
         "region": "EU",
         "tier": 3
     },
-    "1T": {
-        "full": "100 Thieves",
+    "K27": {
+        "full": "K27",
         "rank": 59,
         "norm_rank": 59,
         "region": "EU",
         "tier": 3
     },
-    "ACEN": {
-        "full": "Acend",
+    "1T": {
+        "full": "100 Thieves",
         "rank": 60,
         "norm_rank": 60,
         "region": "EU",
         "tier": 3
     },
-    "LAVK": {
-        "full": "Lavked",
+    "ACEN": {
+        "full": "Acend",
         "rank": 61,
         "norm_rank": 61,
         "region": "EU",
         "tier": 3
     },
-    "OG": {
-        "full": "OG",
+    "NEME": {
+        "full": "Nemesis",
         "rank": 62,
         "norm_rank": 62,
         "region": "EU",
         "tier": 3
     },
-    "LC": {
-        "full": "Lazer Cats",
-        "rank": 63,
-        "norm_rank": 63,
+    "BB": {
+        "full": "Basement Bobs",
+        "rank": 180,
+        "norm_rank": 180,
         "region": "EU",
         "tier": 3
     },
-    "ID": {
-        "full": "INOX Division",
+    "EF": {
+        "full": "Eternal Fire",
         "rank": 64,
         "norm_rank": 64,
         "region": "EU",
         "tier": 3
     },
-    "LP": {
-        "full": "LP",
-        "rank": 65,
-        "norm_rank": 65,
+    "JS": {
+        "full": "Just Swing",
+        "rank": 138,
+        "norm_rank": 138,
         "region": "EU",
         "tier": 3
     },
-    "TH": {
-        "full": "The Huns",
+    "OG": {
+        "full": "OG",
         "rank": 66,
         "norm_rank": 66,
         "region": "EU",
         "tier": 3
     },
-    "1WIN": {
-        "full": "1win",
+    "ID": {
+        "full": "INOX Division",
         "rank": 67,
         "norm_rank": 67,
         "region": "EU",
@@ -475,29 +475,29 @@
         "region": "EU",
         "tier": 3
     },
-    "SANG": {
-        "full": "Sangal",
+    "1WIN": {
+        "full": "1win",
         "rank": 69,
         "norm_rank": 69,
         "region": "EU",
         "tier": 3
     },
-    "NT": {
-        "full": "Nuclear TigeRES",
+    "LP": {
+        "full": "LP",
         "rank": 70,
         "norm_rank": 70,
         "region": "EU",
         "tier": 3
     },
-    "KOLE": {
-        "full": "KOLESIE",
+    "LC": {
+        "full": "Lazer Cats",
         "rank": 71,
         "norm_rank": 71,
         "region": "EU",
         "tier": 3
     },
-    "EF": {
-        "full": "Eternal Fire",
+    "SANG": {
+        "full": "Sangal",
         "rank": 72,
         "norm_rank": 72,
         "region": "EU",
@@ -517,94 +517,94 @@
         "region": "EU",
         "tier": 3
     },
-    "CYBE": {
-        "full": "CYBERSHOKE",
+    "NT": {
+        "full": "Nuclear TigeRES",
         "rank": 75,
         "norm_rank": 75,
         "region": "EU",
         "tier": 3
     },
-    "AAB": {
-        "full": "AaB",
+    "EAC": {
+        "full": "EAC",
         "rank": 76,
         "norm_rank": 76,
         "region": "EU",
         "tier": 3
     },
-    "BET-": {
-        "full": "BET-M",
+    "CYBE": {
+        "full": "CYBERSHOKE",
         "rank": 77,
         "norm_rank": 77,
         "region": "EU",
         "tier": 3
     },
-    "JIJI": {
-        "full": "JiJieHao",
+    "GALO": {
+        "full": "Galorys",
         "rank": 78,
         "norm_rank": 78,
         "region": "EU",
         "tier": 3
     },
-    "GALO": {
-        "full": "Galorys",
+    "FDB": {
+        "full": "Fake do Biru",
         "rank": 79,
         "norm_rank": 79,
         "region": "EU",
         "tier": 3
     },
-    "URSA": {
-        "full": "Ursa",
+    "TD": {
+        "full": "THUNDER dOWNUNDER",
         "rank": 80,
         "norm_rank": 80,
         "region": "EU",
         "tier": 3
     },
-    "BB": {
-        "full": "Basement Bobs",
-        "rank": 189,
-        "norm_rank": 189,
-        "region": "EU",
-        "tier": 3
-    },
     "WW": {
         "full": "WW",
-        "rank": 82,
-        "norm_rank": 82,
-        "region": "EU",
-        "tier": 3
-    },
-    "HAVU": {
-        "full": "HAVU",
-        "rank": 83,
-        "norm_rank": 83,
-        "region": "EU",
-        "tier": 3
-    },
-    "PSYC": {
-        "full": "PsychoFace",
-        "rank": 84,
-        "norm_rank": 84,
-        "region": "EU",
-        "tier": 3
-    },
-    "FDB": {
-        "full": "Fake do Biru",
-        "rank": 85,
-        "norm_rank": 85,
+        "rank": 81,
+        "norm_rank": 81,
         "region": "EU",
         "tier": 3
     },
     "TDK": {
         "full": "TDK",
+        "rank": 82,
+        "norm_rank": 82,
+        "region": "EU",
+        "tier": 3
+    },
+    "KOLE": {
+        "full": "KOLESIE",
+        "rank": 83,
+        "norm_rank": 83,
+        "region": "EU",
+        "tier": 3
+    },
+    "HAVU": {
+        "full": "HAVU",
+        "rank": 84,
+        "norm_rank": 84,
+        "region": "EU",
+        "tier": 3
+    },
+    "BET-": {
+        "full": "BET-M",
+        "rank": 85,
+        "norm_rank": 85,
+        "region": "EU",
+        "tier": 3
+    },
+    "5STA": {
+        "full": "5star",
         "rank": 86,
         "norm_rank": 86,
         "region": "EU",
         "tier": 3
     },
-    "SEMP": {
-        "full": "SemperFi",
-        "rank": 87,
-        "norm_rank": 87,
+    "FF": {
+        "full": "FURIA fe",
+        "rank": 259,
+        "norm_rank": 259,
         "region": "EU",
         "tier": 3
     },
@@ -615,155 +615,155 @@
         "region": "EU",
         "tier": 3
     },
-    "LAG": {
-        "full": "LAG",
+    "FLUX": {
+        "full": "Fluxo",
         "rank": 89,
         "norm_rank": 89,
         "region": "EU",
         "tier": 3
     },
-    "FLUX": {
-        "full": "Fluxo",
+    "ASTR": {
+        "full": "ASTRAL",
         "rank": 90,
         "norm_rank": 90,
         "region": "EU",
         "tier": 3
     },
-    "ASTR": {
-        "full": "ASTRAL",
+    "SPAR": {
+        "full": "SPARTA",
         "rank": 91,
         "norm_rank": 91,
         "region": "EU",
         "tier": 3
     },
-    "CW": {
-        "full": "Chinggis Warriors",
+    "PSYC": {
+        "full": "PsychoFace",
         "rank": 92,
         "norm_rank": 92,
         "region": "EU",
         "tier": 3
     },
-    "AM": {
-        "full": "AM",
+    "SEMP": {
+        "full": "SemperFi",
         "rank": 93,
         "norm_rank": 93,
         "region": "EU",
         "tier": 3
     },
-    "FF": {
-        "full": "FURIA fe",
-        "rank": 262,
-        "norm_rank": 262,
-        "region": "EU",
-        "tier": 3
-    },
-    "METI": {
-        "full": "Metizport",
-        "rank": 95,
-        "norm_rank": 95,
-        "region": "EU",
-        "tier": 3
-    },
-    "BETC": {
-        "full": "Betclic",
-        "rank": 96,
-        "norm_rank": 96,
-        "region": "EU",
-        "tier": 3
-    },
-    "5STA": {
-        "full": "5star",
-        "rank": 97,
-        "norm_rank": 97,
-        "region": "EU",
-        "tier": 3
-    },
-    "RA": {
-        "full": "Reign Above",
-        "rank": 231,
-        "norm_rank": 231,
+    "AIMC": {
+        "full": "aimclub",
+        "rank": 94,
+        "norm_rank": 94,
         "region": "EU",
         "tier": 3
     },
     "WAZA": {
         "full": "WAZABI",
-        "rank": 99,
-        "norm_rank": 99,
+        "rank": 95,
+        "norm_rank": 95,
         "region": "EU",
         "tier": 3
     },
-    "YN": {
-        "full": "Young Ninjas",
+    "URSA": {
+        "full": "Ursa",
+        "rank": 96,
+        "norm_rank": 96,
+        "region": "EU",
+        "tier": 3
+    },
+    "AM": {
+        "full": "AM",
+        "rank": 97,
+        "norm_rank": 97,
+        "region": "EU",
+        "tier": 3
+    },
+    "LAG": {
+        "full": "LAG",
+        "rank": 98,
+        "norm_rank": 98,
+        "region": "EU",
+        "tier": 3
+    },
+    "RA": {
+        "full": "Reign Above",
+        "rank": 242,
+        "norm_rank": 242,
+        "region": "EU",
+        "tier": 3
+    },
+    "CW": {
+        "full": "Chinggis Warriors",
         "rank": 100,
         "norm_rank": 100,
         "region": "EU",
         "tier": 3
     },
-    "RUST": {
-        "full": "RUSTEC",
+    "HA": {
+        "full": "HEROIC Academy",
         "rank": 101,
         "norm_rank": 101,
         "region": "EU",
         "tier": 3
     },
-    "SPAR": {
-        "full": "SPARTA",
+    "RUST": {
+        "full": "RUSTEC",
         "rank": 102,
         "norm_rank": 102,
         "region": "EU",
         "tier": 3
     },
-    "REBE": {
-        "full": "Rebels",
+    "GENO": {
+        "full": "GenOne",
         "rank": 103,
         "norm_rank": 103,
         "region": "EU",
         "tier": 3
     },
-    "AIMC": {
-        "full": "aimclub",
+    "YN": {
+        "full": "Young Ninjas",
         "rank": 104,
         "norm_rank": 104,
         "region": "EU",
         "tier": 3
     },
-    "HA": {
-        "full": "HEROIC Academy",
+    "REBE": {
+        "full": "Rebels",
         "rank": 105,
         "norm_rank": 105,
         "region": "EU",
         "tier": 3
     },
-    "REGA": {
-        "full": "regain",
+    "ARCR": {
+        "full": "ARCRED",
         "rank": 106,
         "norm_rank": 106,
         "region": "EU",
         "tier": 3
     },
-    "NEXV": {
-        "full": "NEXVOID",
+    "REGA": {
+        "full": "regain",
         "rank": 107,
         "norm_rank": 107,
         "region": "EU",
         "tier": 3
     },
-    "ARCR": {
-        "full": "ARCRED",
+    "CC": {
+        "full": "Chicken Coop",
         "rank": 108,
         "norm_rank": 108,
         "region": "EU",
         "tier": 3
     },
-    "GENO": {
-        "full": "GenOne",
+    "BETC": {
+        "full": "Betclic",
         "rank": 109,
         "norm_rank": 109,
         "region": "EU",
         "tier": 3
     },
-    "CC": {
-        "full": "Chicken Coop",
+    "ISUR": {
+        "full": "Isurus",
         "rank": 110,
         "norm_rank": 110,
         "region": "EU",
@@ -776,274 +776,281 @@
         "region": "EU",
         "tier": 3
     },
-    "ISUR": {
-        "full": "Isurus",
+    "DEPO": {
+        "full": "DEPO",
         "rank": 112,
         "norm_rank": 112,
         "region": "EU",
         "tier": 3
     },
-    "STAT": {
-        "full": "STATE",
+    "EX-R": {
+        "full": "ex-RUBY",
         "rank": 113,
         "norm_rank": 113,
         "region": "EU",
         "tier": 3
     },
-    "DEPO": {
-        "full": "DEPO",
+    "METI": {
+        "full": "Metizport",
         "rank": 114,
         "norm_rank": 114,
         "region": "EU",
         "tier": 3
     },
-    "EX-R": {
-        "full": "ex-RUBY",
+    "UM": {
+        "full": "UNO MILLE",
         "rank": 115,
         "norm_rank": 115,
         "region": "EU",
         "tier": 3
     },
-    "UNIT": {
-        "full": "UNiTY",
+    "KS": {
+        "full": "Keyd Stars",
         "rank": 116,
         "norm_rank": 116,
         "region": "EU",
         "tier": 3
     },
-    "TLR": {
-        "full": "The Last Resort",
+    "KALE": {
+        "full": "Kaleido",
         "rank": 117,
         "norm_rank": 117,
         "region": "EU",
         "tier": 3
     },
-    "UM": {
-        "full": "UNO MILLE",
+    "STAT": {
+        "full": "STATE",
         "rank": 118,
         "norm_rank": 118,
         "region": "EU",
         "tier": 3
     },
-    "BA": {
-        "full": "B8 Academy",
-        "rank": 259,
-        "norm_rank": 259,
+    "CTG": {
+        "full": "Change The Game",
+        "rank": 119,
+        "norm_rank": 119,
         "region": "EU",
         "tier": 3
     },
-    "BEBO": {
-        "full": "Bebop",
+    "UNIT": {
+        "full": "UNiTY",
         "rank": 120,
         "norm_rank": 120,
         "region": "EU",
         "tier": 3
     },
-    "KS": {
-        "full": "Keyd Stars",
+    "CP": {
+        "full": "CYBERSHOKE Prospects",
         "rank": 121,
         "norm_rank": 121,
         "region": "EU",
         "tier": 3
     },
-    "MANA": {
-        "full": "MANA",
+    "HH": {
+        "full": "Haunted House",
         "rank": 122,
         "norm_rank": 122,
         "region": "EU",
         "tier": 3
     },
-    "CP": {
-        "full": "CYBERSHOKE Prospects",
+    "ICA": {
+        "full": "Inner Circle Academy",
         "rank": 123,
         "norm_rank": 123,
         "region": "EU",
         "tier": 3
     },
-    "EMPI": {
-        "full": "EMPIRE",
-        "rank": 125,
-        "norm_rank": 125,
-        "region": "EU",
-        "tier": 3
-    },
-    "TD": {
-        "full": "THUNDER dOWNUNDER",
-        "rank": 126,
-        "norm_rank": 126,
-        "region": "EU",
-        "tier": 3
-    },
-    "MW": {
-        "full": "METANOIA Wolves",
-        "rank": 127,
-        "norm_rank": 127,
-        "region": "EU",
-        "tier": 3
-    },
-    "FAVB": {
-        "full": "FAVBET",
-        "rank": 128,
-        "norm_rank": 128,
-        "region": "EU",
-        "tier": 3
-    },
-    "BMZ": {
-        "full": "BMZ",
-        "rank": 129,
-        "norm_rank": 129,
-        "region": "EU",
-        "tier": 3
-    },
-    "MA": {
-        "full": "MIBR Academy",
-        "rank": 130,
-        "norm_rank": 130,
-        "region": "EU",
-        "tier": 3
-    },
-    "MN": {
-        "full": "MOUZ NXT",
-        "rank": 132,
-        "norm_rank": 132,
-        "region": "EU",
-        "tier": 3
-    },
-    "VASC": {
-        "full": "Vasco",
-        "rank": 133,
-        "norm_rank": 133,
-        "region": "EU",
-        "tier": 3
-    },
-    "GA": {
-        "full": "G2 Ares",
-        "rank": 134,
-        "norm_rank": 134,
-        "region": "EU",
-        "tier": 3
-    },
-    "CTG": {
-        "full": "Change The Game",
-        "rank": 135,
-        "norm_rank": 135,
-        "region": "EU",
-        "tier": 3
-    },
-    "ALGO": {
-        "full": "ALGO",
-        "rank": 136,
-        "norm_rank": 136,
+    "BA": {
+        "full": "B8 Academy",
+        "rank": 255,
+        "norm_rank": 255,
         "region": "EU",
         "tier": 3
     },
     "LB": {
         "full": "Last Bullet",
-        "rank": 137,
-        "norm_rank": 137,
+        "rank": 125,
+        "norm_rank": 125,
+        "region": "EU",
+        "tier": 3
+    },
+    "GA": {
+        "full": "G2 Ares",
+        "rank": 126,
+        "norm_rank": 126,
+        "region": "EU",
+        "tier": 3
+    },
+    "NEXV": {
+        "full": "NEXVOID",
+        "rank": 127,
+        "norm_rank": 127,
+        "region": "EU",
+        "tier": 3
+    },
+    "OXUJ": {
+        "full": "Oxuji",
+        "rank": 128,
+        "norm_rank": 128,
+        "region": "EU",
+        "tier": 3
+    },
+    "MN": {
+        "full": "MOUZ NXT",
+        "rank": 129,
+        "norm_rank": 129,
+        "region": "EU",
+        "tier": 3
+    },
+    "GZ": {
+        "full": "Ground Zero",
+        "rank": 130,
+        "norm_rank": 130,
+        "region": "EU",
+        "tier": 3
+    },
+    "BEBO": {
+        "full": "Bebop",
+        "rank": 131,
+        "norm_rank": 131,
         "region": "EU",
         "tier": 3
     },
     "ENCE": {
         "full": "ENCE",
-        "rank": 138,
-        "norm_rank": 138,
-        "region": "EU",
-        "tier": 3
-    },
-    "TNC": {
-        "full": "TNC",
-        "rank": 139,
-        "norm_rank": 139,
-        "region": "EU",
-        "tier": 3
-    },
-    "AE": {
-        "full": "Alter Ego",
-        "rank": 140,
-        "norm_rank": 140,
-        "region": "EU",
-        "tier": 3
-    },
-    "ET": {
-        "full": "ex-Zero Tenacity",
-        "rank": 141,
-        "norm_rank": 141,
-        "region": "EU",
-        "tier": 3
-    },
-    "HYPE": {
-        "full": "HYPERSPIRIT",
-        "rank": 142,
-        "norm_rank": 142,
-        "region": "EU",
-        "tier": 3
-    },
-    "ROOS": {
-        "full": "Rooster",
-        "rank": 143,
-        "norm_rank": 143,
-        "region": "EU",
-        "tier": 3
-    },
-    "ATRE": {
-        "full": "Atreides",
-        "rank": 144,
-        "norm_rank": 144,
-        "region": "EU",
-        "tier": 3
-    },
-    "AAA": {
-        "full": "aAa",
-        "rank": 145,
-        "norm_rank": 145,
+        "rank": 132,
+        "norm_rank": 132,
         "region": "EU",
         "tier": 3
     },
     "F5": {
         "full": "F5",
-        "rank": 146,
-        "norm_rank": 146,
+        "rank": 133,
+        "norm_rank": 133,
         "region": "EU",
         "tier": 3
     },
-    "CLUT": {
-        "full": "Clutchain",
-        "rank": 147,
-        "norm_rank": 147,
+    "HYPE": {
+        "full": "HYPERSPIRIT",
+        "rank": 134,
+        "norm_rank": 134,
+        "region": "EU",
+        "tier": 3
+    },
+    "ROOS": {
+        "full": "Rooster",
+        "rank": 135,
+        "norm_rank": 135,
         "region": "EU",
         "tier": 3
     },
     "EX-K": {
         "full": "ex-KR\u00dc",
-        "rank": 148,
-        "norm_rank": 148,
+        "rank": 136,
+        "norm_rank": 136,
+        "region": "EU",
+        "tier": 3
+    },
+    "ATRE": {
+        "full": "Atreides",
+        "rank": 137,
+        "norm_rank": 137,
+        "region": "EU",
+        "tier": 3
+    },
+    "AE": {
+        "full": "Alter Ego",
+        "rank": 139,
+        "norm_rank": 139,
+        "region": "EU",
+        "tier": 3
+    },
+    "CLUT": {
+        "full": "Clutchain",
+        "rank": 140,
+        "norm_rank": 140,
+        "region": "EU",
+        "tier": 3
+    },
+    "MW": {
+        "full": "METANOIA Wolves",
+        "rank": 141,
+        "norm_rank": 141,
+        "region": "EU",
+        "tier": 3
+    },
+    "MA": {
+        "full": "MIBR Academy",
+        "rank": 142,
+        "norm_rank": 142,
+        "region": "EU",
+        "tier": 3
+    },
+    "BRUT": {
+        "full": "BRUTE",
+        "rank": 143,
+        "norm_rank": 143,
+        "region": "EU",
+        "tier": 3
+    },
+    "MANA": {
+        "full": "MANA",
+        "rank": 144,
+        "norm_rank": 144,
         "region": "EU",
         "tier": 3
     },
     "XDM": {
         "full": "XDM",
-        "rank": 149,
-        "norm_rank": 149,
+        "rank": 145,
+        "norm_rank": 145,
         "region": "EU",
         "tier": 3
     },
     "ZAJE": {
         "full": "zajezdzacze",
+        "rank": 146,
+        "norm_rank": 146,
+        "region": "EU",
+        "tier": 3
+    },
+    "ALGO": {
+        "full": "ALGO",
+        "rank": 147,
+        "norm_rank": 147,
+        "region": "EU",
+        "tier": 3
+    },
+    "VASC": {
+        "full": "Vasco",
+        "rank": 148,
+        "norm_rank": 148,
+        "region": "EU",
+        "tier": 3
+    },
+    "EMPI": {
+        "full": "EMPIRE",
+        "rank": 149,
+        "norm_rank": 149,
+        "region": "EU",
+        "tier": 3
+    },
+    "ET": {
+        "full": "ex-Zero Tenacity",
         "rank": 150,
         "norm_rank": 150,
         "region": "EU",
         "tier": 3
     },
-    "LEO": {
-        "full": "Leo",
+    "TNC": {
+        "full": "TNC",
         "rank": 151,
         "norm_rank": 151,
         "region": "EU",
         "tier": 3
     },
-    "HASH": {
-        "full": "Hashiras",
+    "TLR": {
+        "full": "The Last Resort",
         "rank": 152,
         "norm_rank": 152,
         "region": "EU",
@@ -1056,64 +1063,57 @@
         "region": "EU",
         "tier": 3
     },
-    "ICA": {
-        "full": "Inner Circle Academy",
+    "MASO": {
+        "full": "MASONIC",
         "rank": 154,
         "norm_rank": 154,
         "region": "EU",
         "tier": 3
     },
-    "GZ": {
-        "full": "Ground Zero",
+    "FAVB": {
+        "full": "FAVBET",
         "rank": 155,
         "norm_rank": 155,
         "region": "EU",
         "tier": 3
     },
-    "FARM": {
-        "full": "FarmVille",
-        "rank": 156,
-        "norm_rank": 156,
-        "region": "EU",
-        "tier": 3
-    },
-    "BP": {
-        "full": "BORING PLAYERS",
+    "ZOMB": {
+        "full": "Zomblers",
         "rank": 157,
         "norm_rank": 157,
         "region": "EU",
         "tier": 3
     },
-    "BL": {
-        "full": "brazylijski luz",
-        "rank": 237,
-        "norm_rank": 237,
+    "AAA": {
+        "full": "aAa",
+        "rank": 158,
+        "norm_rank": 158,
         "region": "EU",
         "tier": 3
     },
-    "ABYS": {
-        "full": "Abyssal",
+    "ALKA": {
+        "full": "ALKA",
         "rank": 159,
         "norm_rank": 159,
         "region": "EU",
         "tier": 3
     },
-    "P9": {
-        "full": "Project 91",
+    "FARM": {
+        "full": "FarmVille",
         "rank": 160,
         "norm_rank": 160,
         "region": "EU",
         "tier": 3
     },
-    "BERG": {
-        "full": "BERG",
-        "rank": 161,
-        "norm_rank": 161,
+    "BL": {
+        "full": "brazylijski luz",
+        "rank": 232,
+        "norm_rank": 232,
         "region": "EU",
         "tier": 3
     },
-    "TQ": {
-        "full": "The QUBE",
+    "BERG": {
+        "full": "BERG",
         "rank": 162,
         "norm_rank": 162,
         "region": "EU",
@@ -1126,211 +1126,204 @@
         "region": "EU",
         "tier": 3
     },
-    "EX-C": {
-        "full": "ex-CSDIILIT",
+    "LILM": {
+        "full": "Lilmix",
         "rank": 164,
         "norm_rank": 164,
         "region": "EU",
         "tier": 3
     },
-    "SAW": {
-        "full": "SAW",
+    "DRAM": {
+        "full": "Drama",
         "rank": 165,
         "norm_rank": 165,
         "region": "EU",
         "tier": 3
     },
-    "DRAM": {
-        "full": "Drama",
+    "EP": {
+        "full": "eternal premium",
         "rank": 166,
         "norm_rank": 166,
         "region": "EU",
         "tier": 3
     },
-    "OXUJ": {
-        "full": "Oxuji",
+    "WG": {
+        "full": "Wanted Goons",
         "rank": 167,
         "norm_rank": 167,
         "region": "EU",
         "tier": 3
     },
-    "EP": {
-        "full": "eternal premium",
+    "IA": {
+        "full": "Imperial Academy",
         "rank": 168,
         "norm_rank": 168,
         "region": "EU",
         "tier": 3
     },
-    "LILM": {
-        "full": "Lilmix",
+    "ABYS": {
+        "full": "Abyssal",
         "rank": 169,
         "norm_rank": 169,
         "region": "EU",
         "tier": 3
     },
-    "IA": {
-        "full": "Imperial Academy",
-        "rank": 170,
-        "norm_rank": 170,
-        "region": "EU",
-        "tier": 3
-    },
-    "BRUT": {
-        "full": "BRUTE",
+    "FRZ": {
+        "full": "FRZ",
         "rank": 171,
         "norm_rank": 171,
         "region": "EU",
         "tier": 3
     },
-    "ZOMB": {
-        "full": "Zomblers",
+    "LAGU": {
+        "full": "LAGUNA",
         "rank": 172,
         "norm_rank": 172,
         "region": "EU",
         "tier": 3
     },
-    "DONS": {
-        "full": "DONSTU",
-        "rank": 173,
-        "norm_rank": 173,
-        "region": "EU",
-        "tier": 3
-    },
-    "WG": {
-        "full": "Wanted Goons",
-        "rank": 175,
-        "norm_rank": 175,
-        "region": "EU",
-        "tier": 3
-    },
-    "FRZ": {
-        "full": "FRZ",
-        "rank": 176,
-        "norm_rank": 176,
-        "region": "EU",
-        "tier": 3
-    },
-    "LAGU": {
-        "full": "LAGUNA",
-        "rank": 177,
-        "norm_rank": 177,
-        "region": "EU",
-        "tier": 3
-    },
-    "HH": {
-        "full": "Haunted House",
-        "rank": 178,
-        "norm_rank": 178,
+    "PA": {
+        "full": "Phantom Academy",
+        "rank": 194,
+        "norm_rank": 194,
         "region": "EU",
         "tier": 3
     },
     "UR": {
         "full": "UR",
-        "rank": 179,
-        "norm_rank": 179,
-        "region": "EU",
-        "tier": 3
-    },
-    "PG": {
-        "full": "Persona Grata",
-        "rank": 180,
-        "norm_rank": 180,
+        "rank": 174,
+        "norm_rank": 174,
         "region": "EU",
         "tier": 3
     },
     "WROT": {
         "full": "WROTBERRY",
-        "rank": 181,
-        "norm_rank": 181,
+        "rank": 175,
+        "norm_rank": 175,
+        "region": "EU",
+        "tier": 3
+    },
+    "LEO": {
+        "full": "Leo",
+        "rank": 176,
+        "norm_rank": 176,
         "region": "EU",
         "tier": 3
     },
     "NV": {
         "full": "NEW VISION",
-        "rank": 182,
-        "norm_rank": 182,
+        "rank": 177,
+        "norm_rank": 177,
+        "region": "EU",
+        "tier": 3
+    },
+    "DONS": {
+        "full": "DONSTU",
+        "rank": 178,
+        "norm_rank": 178,
         "region": "EU",
         "tier": 3
     },
     "QUAZ": {
         "full": "QUAZAR",
-        "rank": 183,
-        "norm_rank": 183,
-        "region": "EU",
-        "tier": 3
-    },
-    "MTX": {
-        "full": "MTX",
-        "rank": 184,
-        "norm_rank": 184,
+        "rank": 179,
+        "norm_rank": 179,
         "region": "EU",
         "tier": 3
     },
     "BANK": {
         "full": "bankaPEPSI",
-        "rank": 185,
-        "norm_rank": 185,
+        "rank": 181,
+        "norm_rank": 181,
+        "region": "EU",
+        "tier": 3
+    },
+    "PURE": {
+        "full": "PURE",
+        "rank": 182,
+        "norm_rank": 182,
+        "region": "EU",
+        "tier": 3
+    },
+    "BP": {
+        "full": "BORING PLAYERS",
+        "rank": 183,
+        "norm_rank": 183,
         "region": "EU",
         "tier": 3
     },
     "EJ": {
         "full": "Endless Journey",
-        "rank": 186,
-        "norm_rank": 186,
-        "region": "EU",
-        "tier": 3
-    },
-    "CRAS": {
-        "full": "Crashers",
-        "rank": 187,
-        "norm_rank": 187,
+        "rank": 184,
+        "norm_rank": 184,
         "region": "EU",
         "tier": 3
     },
     "XI": {
         "full": "XI",
-        "rank": 188,
-        "norm_rank": 188,
+        "rank": 185,
+        "norm_rank": 185,
+        "region": "EU",
+        "tier": 3
+    },
+    "SAW": {
+        "full": "SAW",
+        "rank": 186,
+        "norm_rank": 186,
         "region": "EU",
         "tier": 3
     },
     "PART": {
         "full": "Partizan",
-        "rank": 190,
-        "norm_rank": 190,
+        "rank": 187,
+        "norm_rank": 187,
         "region": "EU",
         "tier": 3
     },
-    "KALE": {
-        "full": "Kaleido",
-        "rank": 191,
-        "norm_rank": 191,
-        "region": "EU",
-        "tier": 3
-    },
-    "YOUN": {
-        "full": "Younglings",
-        "rank": 192,
-        "norm_rank": 192,
-        "region": "EU",
-        "tier": 3
-    },
-    "DNK": {
-        "full": "DNK",
-        "rank": 193,
-        "norm_rank": 193,
-        "region": "EU",
-        "tier": 3
-    },
-    "PA": {
-        "full": "paiN Academy",
-        "rank": 207,
-        "norm_rank": 207,
+    "BG": {
+        "full": "benched gods",
+        "rank": 188,
+        "norm_rank": 188,
         "region": "EU",
         "tier": 3
     },
     "FAMA": {
         "full": "Famalic\u00e3o",
+        "rank": 189,
+        "norm_rank": 189,
+        "region": "EU",
+        "tier": 3
+    },
+    "HASH": {
+        "full": "Hashiras",
+        "rank": 190,
+        "norm_rank": 190,
+        "region": "EU",
+        "tier": 3
+    },
+    "YOUN": {
+        "full": "Younglings",
+        "rank": 191,
+        "norm_rank": 191,
+        "region": "EU",
+        "tier": 3
+    },
+    "DNK": {
+        "full": "DNK",
+        "rank": 192,
+        "norm_rank": 192,
+        "region": "EU",
+        "tier": 3
+    },
+    "MTX": {
+        "full": "MTX",
+        "rank": 193,
+        "norm_rank": 193,
+        "region": "EU",
+        "tier": 3
+    },
+    "NSN": {
+        "full": "NSN",
         "rank": 195,
         "norm_rank": 195,
         "region": "EU",
@@ -1343,29 +1336,36 @@
         "region": "EU",
         "tier": 3
     },
-    "C3": {
-        "full": "Club 333",
+    "VEXA": {
+        "full": "VEXA",
         "rank": 197,
         "norm_rank": 197,
         "region": "EU",
         "tier": 3
     },
-    "NAS": {
-        "full": "Nas",
+    "EX-C": {
+        "full": "ex-CSDIILIT",
         "rank": 198,
         "norm_rank": 198,
         "region": "EU",
         "tier": 3
     },
-    "OLYB": {
-        "full": "OlyBet",
+    "C3": {
+        "full": "Club 333",
+        "rank": 199,
+        "norm_rank": 199,
+        "region": "EU",
+        "tier": 3
+    },
+    "BMZ": {
+        "full": "BMZ",
         "rank": 200,
         "norm_rank": 200,
         "region": "EU",
         "tier": 3
     },
-    "ENJO": {
-        "full": "Enjoy",
+    "NAS": {
+        "full": "Nas",
         "rank": 201,
         "norm_rank": 201,
         "region": "EU",
@@ -1378,22 +1378,22 @@
         "region": "EU",
         "tier": 3
     },
-    "YNGO": {
-        "full": "yngods",
+    "ENJO": {
+        "full": "Enjoy",
         "rank": 203,
         "norm_rank": 203,
         "region": "EU",
         "tier": 3
     },
-    "DC": {
-        "full": "Ding Cuts",
+    "PG": {
+        "full": "Persona Grata",
         "rank": 204,
         "norm_rank": 204,
         "region": "EU",
         "tier": 3
     },
-    "MISA": {
-        "full": "Misa",
+    "DC": {
+        "full": "Ding Cuts",
         "rank": 205,
         "norm_rank": 205,
         "region": "EU",
@@ -1408,365 +1408,344 @@
     },
     "FOXT": {
         "full": "Foxtrot",
+        "rank": 207,
+        "norm_rank": 207,
+        "region": "EU",
+        "tier": 3
+    },
+    "OLYB": {
+        "full": "OlyBet",
         "rank": 208,
         "norm_rank": 208,
         "region": "EU",
         "tier": 3
     },
-    "ALKA": {
-        "full": "ALKA",
+    "TQ": {
+        "full": "The QUBE",
         "rank": 209,
         "norm_rank": 209,
         "region": "EU",
         "tier": 3
     },
-    "OMEG": {
-        "full": "Omega",
-        "rank": 211,
-        "norm_rank": 211,
-        "region": "EU",
-        "tier": 3
-    },
-    "MK": {
-        "full": "M1X KS",
-        "rank": 212,
-        "norm_rank": 212,
-        "region": "EU",
-        "tier": 3
-    },
-    "KUUS": {
-        "full": "KUUSAMO",
-        "rank": 213,
-        "norm_rank": 213,
-        "region": "EU",
-        "tier": 3
-    },
-    "BW": {
-        "full": "Bushido Wildcats",
-        "rank": 214,
-        "norm_rank": 214,
-        "region": "EU",
-        "tier": 3
-    },
-    "NSN": {
-        "full": "NSN",
-        "rank": 215,
-        "norm_rank": 215,
-        "region": "EU",
-        "tier": 3
-    },
-    "ARCA": {
-        "full": "Arcade",
-        "rank": 216,
-        "norm_rank": 216,
+    "YNGO": {
+        "full": "yngods",
+        "rank": 210,
+        "norm_rank": 210,
         "region": "EU",
         "tier": 3
     },
     "ALZO": {
         "full": "ALZON",
-        "rank": 217,
-        "norm_rank": 217,
-        "region": "EU",
-        "tier": 3
-    },
-    "DRIP": {
-        "full": "Dripmen",
-        "rank": 218,
-        "norm_rank": 218,
-        "region": "EU",
-        "tier": 3
-    },
-    "MASO": {
-        "full": "MASONIC",
-        "rank": 219,
-        "norm_rank": 219,
-        "region": "EU",
-        "tier": 3
-    },
-    "900F": {
-        "full": "900FPSvsECO",
-        "rank": 220,
-        "norm_rank": 220,
-        "region": "EU",
-        "tier": 3
-    },
-    "MEGO": {
-        "full": "megoshort",
-        "rank": 221,
-        "norm_rank": 221,
-        "region": "EU",
-        "tier": 3
-    },
-    "RETH": {
-        "full": "ReThink",
-        "rank": 222,
-        "norm_rank": 222,
-        "region": "EU",
-        "tier": 3
-    },
-    "PLAY": {
-        "full": "Players",
-        "rank": 223,
-        "norm_rank": 223,
-        "region": "EU",
-        "tier": 3
-    },
-    "100R": {
-        "full": "100RA",
-        "rank": 224,
-        "norm_rank": 224,
-        "region": "EU",
-        "tier": 3
-    },
-    "DXA": {
-        "full": "DXA",
-        "rank": 225,
-        "norm_rank": 225,
-        "region": "EU",
-        "tier": 3
-    },
-    "R2": {
-        "full": "R2",
-        "rank": 226,
-        "norm_rank": 226,
-        "region": "EU",
-        "tier": 3
-    },
-    "GUAR": {
-        "full": "GUARA",
-        "rank": 227,
-        "norm_rank": 227,
+        "rank": 211,
+        "norm_rank": 211,
         "region": "EU",
         "tier": 3
     },
     "PROC": {
         "full": "Procyon",
-        "rank": 228,
-        "norm_rank": 228,
-        "region": "EU",
-        "tier": 3
-    },
-    "INVI": {
-        "full": "Invicta",
-        "rank": 229,
-        "norm_rank": 229,
-        "region": "EU",
-        "tier": 3
-    },
-    "JUMB": {
-        "full": "JUMBO",
-        "rank": 230,
-        "norm_rank": 230,
-        "region": "EU",
-        "tier": 3
-    },
-    "LL": {
-        "full": "Linx Legacy",
-        "rank": 232,
-        "norm_rank": 232,
-        "region": "EU",
-        "tier": 3
-    },
-    "CARR": {
-        "full": "CarritoSpain",
-        "rank": 233,
-        "norm_rank": 233,
-        "region": "EU",
-        "tier": 3
-    },
-    "MOUS": {
-        "full": "mouse",
-        "rank": 234,
-        "norm_rank": 234,
-        "region": "EU",
-        "tier": 3
-    },
-    "DIAM": {
-        "full": "Diamant",
-        "rank": 235,
-        "norm_rank": 235,
-        "region": "EU",
-        "tier": 3
-    },
-    "SHIM": {
-        "full": "Shimmer",
-        "rank": 236,
-        "norm_rank": 236,
+        "rank": 212,
+        "norm_rank": 212,
         "region": "EU",
         "tier": 3
     },
     "SINQ": {
         "full": "SINQU",
-        "rank": 238,
-        "norm_rank": 238,
+        "rank": 213,
+        "norm_rank": 213,
         "region": "EU",
         "tier": 3
     },
-    "HAVE": {
-        "full": "HAVENs",
-        "rank": 239,
-        "norm_rank": 239,
+    "MISA": {
+        "full": "Misa",
+        "rank": 214,
+        "norm_rank": 214,
         "region": "EU",
         "tier": 3
     },
-    "CF": {
-        "full": "Clutchain fe",
-        "rank": 240,
-        "norm_rank": 240,
+    "900F": {
+        "full": "900FPSvsECO",
+        "rank": 216,
+        "norm_rank": 216,
         "region": "EU",
         "tier": 3
     },
-    "DAMA": {
-        "full": "DAMAJUANA",
-        "rank": 241,
-        "norm_rank": 241,
+    "MEGO": {
+        "full": "megoshort",
+        "rank": 217,
+        "norm_rank": 217,
+        "region": "EU",
+        "tier": 3
+    },
+    "OMEG": {
+        "full": "Omega",
+        "rank": 218,
+        "norm_rank": 218,
+        "region": "EU",
+        "tier": 3
+    },
+    "MK": {
+        "full": "M1X KS",
+        "rank": 219,
+        "norm_rank": 219,
+        "region": "EU",
+        "tier": 3
+    },
+    "R2": {
+        "full": "R2",
+        "rank": 220,
+        "norm_rank": 220,
+        "region": "EU",
+        "tier": 3
+    },
+    "RETH": {
+        "full": "ReThink",
+        "rank": 221,
+        "norm_rank": 221,
+        "region": "EU",
+        "tier": 3
+    },
+    "DXA": {
+        "full": "DXA",
+        "rank": 222,
+        "norm_rank": 222,
+        "region": "EU",
+        "tier": 3
+    },
+    "ARCA": {
+        "full": "Arcade",
+        "rank": 223,
+        "norm_rank": 223,
+        "region": "EU",
+        "tier": 3
+    },
+    "PLAY": {
+        "full": "Players",
+        "rank": 224,
+        "norm_rank": 224,
+        "region": "EU",
+        "tier": 3
+    },
+    "INVI": {
+        "full": "Invicta",
+        "rank": 225,
+        "norm_rank": 225,
+        "region": "EU",
+        "tier": 3
+    },
+    "JUMB": {
+        "full": "JUMBO",
+        "rank": 226,
+        "norm_rank": 226,
+        "region": "EU",
+        "tier": 3
+    },
+    "LL": {
+        "full": "Linx Legacy",
+        "rank": 227,
+        "norm_rank": 227,
+        "region": "EU",
+        "tier": 3
+    },
+    "CARR": {
+        "full": "CarritoSpain",
+        "rank": 228,
+        "norm_rank": 228,
+        "region": "EU",
+        "tier": 3
+    },
+    "MOUS": {
+        "full": "mouse",
+        "rank": 229,
+        "norm_rank": 229,
+        "region": "EU",
+        "tier": 3
+    },
+    "DRIP": {
+        "full": "Dripmen",
+        "rank": 230,
+        "norm_rank": 230,
+        "region": "EU",
+        "tier": 3
+    },
+    "P9": {
+        "full": "Project 91",
+        "rank": 231,
+        "norm_rank": 231,
         "region": "EU",
         "tier": 3
     },
     "LEGI": {
         "full": "Legion",
-        "rank": 242,
-        "norm_rank": 242,
+        "rank": 233,
+        "norm_rank": 233,
+        "region": "EU",
+        "tier": 3
+    },
+    "HAVE": {
+        "full": "HAVENs",
+        "rank": 234,
+        "norm_rank": 234,
+        "region": "EU",
+        "tier": 3
+    },
+    "CF": {
+        "full": "Clutchain fe",
+        "rank": 235,
+        "norm_rank": 235,
+        "region": "EU",
+        "tier": 3
+    },
+    "DAMA": {
+        "full": "DAMAJUANA",
+        "rank": 236,
+        "norm_rank": 236,
+        "region": "EU",
+        "tier": 3
+    },
+    "GUAR": {
+        "full": "GUARA",
+        "rank": 237,
+        "norm_rank": 237,
+        "region": "EU",
+        "tier": 3
+    },
+    "KUUS": {
+        "full": "KUUSAMO",
+        "rank": 238,
+        "norm_rank": 238,
+        "region": "EU",
+        "tier": 3
+    },
+    "SHIM": {
+        "full": "Shimmer",
+        "rank": 239,
+        "norm_rank": 239,
         "region": "EU",
         "tier": 3
     },
     "WAVE": {
         "full": "Wave",
-        "rank": 243,
-        "norm_rank": 243,
-        "region": "EU",
-        "tier": 3
-    },
-    "INFU": {
-        "full": "INFURITY",
-        "rank": 244,
-        "norm_rank": 244,
-        "region": "EU",
-        "tier": 3
-    },
-    "TU": {
-        "full": "THE UNIT",
-        "rank": 245,
-        "norm_rank": 245,
+        "rank": 240,
+        "norm_rank": 240,
         "region": "EU",
         "tier": 3
     },
     "SKEL": {
         "full": "Skele",
-        "rank": 246,
-        "norm_rank": 246,
+        "rank": 241,
+        "norm_rank": 241,
+        "region": "EU",
+        "tier": 3
+    },
+    "INFU": {
+        "full": "INFURITY",
+        "rank": 243,
+        "norm_rank": 243,
+        "region": "EU",
+        "tier": 3
+    },
+    "TU": {
+        "full": "THE UNIT",
+        "rank": 244,
+        "norm_rank": 244,
         "region": "EU",
         "tier": 3
     },
     "AYB": {
         "full": "Aurora Young Blud",
-        "rank": 247,
-        "norm_rank": 247,
+        "rank": 245,
+        "norm_rank": 245,
         "region": "EU",
         "tier": 3
     },
-    "TMA": {
-        "full": "The MongolZ Academy",
-        "rank": 248,
-        "norm_rank": 248,
-        "region": "EU",
-        "tier": 3
-    },
-    "OVER": {
-        "full": "OverKnight",
-        "rank": 249,
-        "norm_rank": 249,
+    "MF": {
+        "full": "MIBR fe",
+        "rank": 246,
+        "norm_rank": 246,
         "region": "EU",
         "tier": 3
     },
     "YT": {
         "full": "Young TigeRES",
-        "rank": 250,
-        "norm_rank": 250,
-        "region": "EU",
-        "tier": 3
-    },
-    "CTRL": {
-        "full": "CTRL",
-        "rank": 251,
-        "norm_rank": 251,
-        "region": "EU",
-        "tier": 3
-    },
-    "FR": {
-        "full": "FlyQuest RED",
-        "rank": 252,
-        "norm_rank": 252,
+        "rank": 247,
+        "norm_rank": 247,
         "region": "EU",
         "tier": 3
     },
     "TW": {
         "full": "Time Waves",
-        "rank": 253,
-        "norm_rank": 253,
+        "rank": 248,
+        "norm_rank": 248,
         "region": "EU",
         "tier": 3
     },
     "EXIL": {
         "full": "Exilium",
-        "rank": 254,
-        "norm_rank": 254,
+        "rank": 249,
+        "norm_rank": 249,
+        "region": "EU",
+        "tier": 3
+    },
+    "DIAM": {
+        "full": "Diamant",
+        "rank": 250,
+        "norm_rank": 250,
         "region": "EU",
         "tier": 3
     },
     "EB": {
         "full": "EC BANGA",
-        "rank": 255,
-        "norm_rank": 255,
+        "rank": 251,
+        "norm_rank": 251,
         "region": "EU",
         "tier": 3
     },
     "VP.P": {
         "full": "VP.Prodigy",
-        "rank": 256,
-        "norm_rank": 256,
+        "rank": 252,
+        "norm_rank": 252,
         "region": "EU",
         "tier": 3
     },
-    "VEXA": {
-        "full": "VEXA",
-        "rank": 257,
-        "norm_rank": 257,
+    "OVER": {
+        "full": "OverKnight",
+        "rank": 253,
+        "norm_rank": 253,
         "region": "EU",
         "tier": 3
     },
     "CLAY": {
         "full": "ClayMakers",
-        "rank": 258,
-        "norm_rank": 258,
+        "rank": 254,
+        "norm_rank": 254,
         "region": "EU",
         "tier": 3
     },
     "ARIS": {
         "full": "Arise",
-        "rank": 260,
-        "norm_rank": 260,
+        "rank": 256,
+        "norm_rank": 256,
+        "region": "EU",
+        "tier": 3
+    },
+    "FR": {
+        "full": "FlyQuest RED",
+        "rank": 257,
+        "norm_rank": 257,
         "region": "EU",
         "tier": 3
     },
     "AHK": {
         "full": "AKA HERO KAJO",
-        "rank": 261,
-        "norm_rank": 261,
-        "region": "EU",
-        "tier": 3
-    },
-    "HIND": {
-        "full": "hindsight",
-        "rank": 263,
-        "norm_rank": 263,
+        "rank": 258,
+        "norm_rank": 258,
         "region": "EU",
         "tier": 3
     },
     "ATRI": {
         "full": "Atrix",
-        "rank": 264,
-        "norm_rank": 264,
+        "rank": 260,
+        "norm_rank": 260,
         "region": "EU",
         "tier": 3
     }
