@@ -10,6 +10,7 @@ from itertools import combinations
 from groq import Groq
 from tavily import TavilyClient
 from datetime import datetime, timedelta
+import math
 
 def generate_ledger_stats(df):
     # Check if necessary columns exist
@@ -184,7 +185,7 @@ DOTA_GRAVITY = {
     "Pos 5": 0.35,  # Hard Support: Sacrificial lamb. Ward buyer. Lowest kill share.
 }
 
-VAL_GRAVITY = {"Duelist": 1.12, "Hybrid": 1.08, "Initiator": 1.00, "Controller": 0.88, "Sentinel": 0.80}
+VAL_GRAVITY = {"Duelist": 1.05, "Hybrid": 1.02, "Initiator": 1.00, "Controller": 0.96, "Sentinel": 0.92}
 
 AGENT_ROLES = {
     "Jett": "Duelist", "Raze": "Duelist", "Neon": "Duelist", "Phoenix": "Duelist", "Reyna": "Duelist", "Yoru": "Duelist", "Iso": "Duelist",
@@ -215,14 +216,20 @@ def lock_match_in_sheet(match_key):
             
             v_col = val_headers.index("LOCKED") + 1 if "LOCKED" in val_headers else None
             c_col = cs2_headers.index("LOCKED") + 1 if "LOCKED" in cs2_headers else None
+            
+            # 🎯 NEW: Find the Math State columns
+            v_state_col = val_headers.index("MATH STATE") + 1 if "MATH STATE" in val_headers else None
+            c_state_col = cs2_headers.index("MATH STATE") + 1 if "MATH STATE" in cs2_headers else None
 
             for item in st.session_state['sweep_results'][match_key]:
                 for card in item['data']:
                     if card.get('row_num'):
-                        if item['type'] == "VALORANT" and v_col: 
-                            updates_val.append(gspread.Cell(row=card['row_num'], col=v_col, value=True))
-                        elif item['type'] == "CS2" and c_col: 
-                            updates_cs2.append(gspread.Cell(row=card['row_num'], col=c_col, value=True))
+                        if item['type'] == "VALORANT": 
+                            if v_col: updates_val.append(gspread.Cell(row=card['row_num'], col=v_col, value=True))
+                            if v_state_col and 'math_state' in card: updates_val.append(gspread.Cell(row=card['row_num'], col=v_state_col, value=card['math_state']))
+                        elif item['type'] == "CS2": 
+                            if c_col: updates_cs2.append(gspread.Cell(row=card['row_num'], col=c_col, value=True))
+                            if c_state_col and 'math_state' in card: updates_cs2.append(gspread.Cell(row=card['row_num'], col=c_state_col, value=card['math_state']))
             
             if updates_val: val_sheet.update_cells(updates_val)
             if updates_cs2: cs2_sheet.update_cells(updates_cs2)
@@ -244,8 +251,8 @@ def apply_kill_economy_dampener(sweep_cards, fallback_r_total, theater="CS2"):
 
     # 🛡️ THE FIX: Differentiate ceilings based on the game meta
     if theater == "VALORANT":
-        base_ceiling = 125.0
-        base_rounds = 40.0
+        base_ceiling = 135.0 # Raised from 125 to allow natural overs
+        base_rounds = 42.0 
         ot_threshold = 48.0
     else:
         base_ceiling = 140.0
@@ -355,34 +362,42 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
 
     hist_kills = [safe_float(k) for k in data.get('last_10_kills', []) if safe_float(k) > 0]
 
-    if hr_override is not None and hr_override > 0: hr_val = hr_override
-    elif prop_type == "Headshots": hr_val = 50.0
+    # 🧠 1. ASYMMETRIC MULTIPLIERS (Calibrated via V2 70B Ledger Audit)
+    if rank_gap >= 50:
+        match_mult = 1.08
+    elif rank_gap >= 15:
+        match_mult = 1.04
+    elif rank_gap <= -50:
+        match_mult = 0.96  # Softened from 0.92 to prevent aggressive over-suffocation bleed
+    elif rank_gap <= -15:
+        match_mult = 0.98  # Softened from 0.96 to stabilize underdog under-projection
     else:
-        if hist_kills:
-            w = [1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1]
-            w_h, t_w = 0.0, 0.0
-            for i, k in enumerate(hist_kills):
-                wt = w[i] if i < len(w) else 0.1
-                t_w += wt
-                if k > u_line: w_h += wt
-            hr_val = (w_h / t_w) * 100
-        else: hr_val = 50.0
+        match_mult = 1.0
 
-    # 🧠 1. MULTIPLIERS (Regional & Pace)
-    match_mult = 1.08 if rank_gap >= 50 else 1.04 if rank_gap >= 15 else 0.92 if rank_gap <= -50 else 0.96 if rank_gap <= -15 else 1.0
     abs_gap = abs(rank_gap)
-    if theater == "CS2": pace_mod = max(0.85, 1.08 - (abs_gap / 250.0))
-    else: pace_mod = 1.15 if abs_gap <= 15 else 0.75 if abs_gap >= 45 else 1.0
+    if theater == "CS2": 
+        pace_mod = max(0.85, 1.08 - (abs_gap / 250.0))
+    else: 
+        pace_mod = max(0.85, 1.10 - (abs_gap / 300.0))
 
-    # 🧠 2. ROLE GRAVITY & IMPACT
+    # 🧠 2. ROLE GRAVITY & ASYMMETRIC IMPACT ADJUSTMENT
     if theater == "CS2":
         role = data.get('role', 'Rifler')
         volume_mod = CS2_GRAVITY.get(role, 1.0) 
         hs_mod = 0.65 if role == "Primary AWP" else 1.0 
-        impact_mult = 1.0 + (impact_stat * 0.005) 
+        
+        # Asymmetric Impact: Keep positive edge, buffer negative impact overreaction
+        if impact_stat >= 0:
+            impact_mult = 1.0 + (impact_stat * 0.005)
+        else:
+            impact_mult = 1.0 + (impact_stat * 0.0025) # Cut negative drag impact in half to stop the leak
+
+        # 🛡️ THE IMPACT CEILING (New Fix)
+        # Prevents extreme outlier stats from breaking the model's baseline
+        impact_mult = max(0.92, min(impact_mult, 1.08))
     else:
         volume_mod, hs_mod = 1.0, 1.0
-        impact_mult = 1.0 + ((impact_stat - 72.0) * 0.015)
+        impact_mult = 1.0 + ((impact_stat - 72.0) * 0.008) # Softened the KAST variance nerf
         
     combined_mult = volume_mod * impact_mult * pace_mod * match_mult
     if combined_mult > 1.25: combined_mult = 1.25 + (combined_mult - 1.25) * 0.3
@@ -390,10 +405,10 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
     
     # 🧠 3. DUAL REALITY BRANCHES (Bo5 Sensitive)
     if theater == "VALORANT":
-        pess_k, opt_k = raw_stat / 180.0, raw_stat / 150.0
-        # 🛡️ BO5 FIX: True round scaling for 3.5 to 4.5 expected maps
-        p_rounds = 72.0 if is_bo5 else (r_total * 0.85)
-        o_rounds = 88.0 if is_bo5 else r_total
+        pess_k, opt_k = raw_stat / 165.0, raw_stat / 145.0 # Tightened from 180/150
+        # 🛡️ Matched CS2 dynamic round stretching to account for Overtimes
+        p_rounds = 72.0 if is_bo5 else (r_total * 0.88)
+        o_rounds = 88.0 if is_bo5 else (r_total * 1.15)
     else:
         pess_k, opt_k = raw_stat / 1.10, raw_stat * 1.08
         p_rounds, o_rounds = (r_total * 0.88), (r_total * 1.15)
@@ -401,36 +416,47 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
     pess_maps, opt_maps = [], []
     for i in range(2):
         raw_m = m_vals[i]
-        if theater == "CS2" and raw_m > 3.0: raw_m = raw_m / 100
         
-        # 🗺️ --- THE MAP SPECIALIST UPGRADE --- 🗺️
-        if theater == "CS2":
+        # 🗺️ --- THE UNIFIED MAP SPECIALIST UPGRADE --- 🗺️
+        if theater in ["CS2", "VALORANT"]:
             # 1. Grab the specific sniped KPR (i == 0 is Map 1, i == 1 is Map 2)
             specific_kpr = data.get("m1_kpr", 0.0) if i == 0 else data.get("m2_kpr", 0.0)
             
-            # 2. Fallback: If it's a ghost town (0.0), use their baseline global KPR
-            active_kpr = specific_kpr if specific_kpr > 0.0 else raw_stat
+            # 2. Grab the specific sniped ADR for VALORANT
+            specific_adr = data.get("m1_adr", 0.0) if i == 0 else data.get("m2_adr", 0.0)
             
-            # 3. Establish the floor and ceiling per round for this specific map
-            p_m_kpr, o_m_kpr = active_kpr * 0.90, active_kpr * 1.10
-            
-            # 4. Standard Sovereign modifiers
-            r_mult = 1.0 * (opp_dpr / 0.65) # Map archetype handled inherently by exact KPR
-            heat_nerf = (1 - (heat / 100) * 0.25)
+            # 3. Handle VALORANT Logic
+            if theater == "VALORANT":
+                active_adr = specific_adr if specific_adr > 0.0 else (raw_m if raw_m > 0 else raw_stat)
+                active_kpr = specific_kpr if specific_kpr > 0.0 else (active_adr / 165.0) # Global fallback
+                
+                p_m_kpr, o_m_kpr = active_kpr * 0.92, active_kpr * 1.08
+                
+                t_map = str(targets[i]).strip().title()
+                spec_mult = VAL_GRAVITY.get(AGENT_ROLES.get(t_map, "Initiator"), 1.0)
+                
+                r_mult = spec_mult * (opp_dpr / 0.65)
+                heat_nerf = (1 - (heat / 100) * 0.25)
+                
+            # 4. Handle CS2 Logic
+            else:
+                if raw_m > 3.0: raw_m = raw_m / 100
+                active_kpr = specific_kpr if specific_kpr > 0.0 else raw_stat
+                
+                p_m_kpr, o_m_kpr = active_kpr * 0.90, active_kpr * 1.10
+                
+                r_mult = 1.0 * (opp_dpr / 0.65)
+                heat_nerf = (1 - (heat / 100) * 0.25)
             
             # 5. Project final volume
             pess_map = p_m_kpr * r_mult * heat_nerf * (p_rounds / 2)
             opt_map = o_m_kpr * r_mult * heat_nerf * (o_rounds / 2)
             
         else:
-            # (Standard VALORANT Logic remains untouched)
-            p_m_kpr, o_m_kpr = (raw_m/180.0, raw_m/150.0) if raw_m > 0 and theater == "VALORANT" else (raw_m/1.10, raw_m*1.08) if raw_m > 0 else (pess_k, opt_k)
-            t_map = str(targets[i]).strip().title()
-            spec_mult = VAL_GRAVITY.get(AGENT_ROLES.get(t_map, "Initiator"), 1.0)
-            
-            r_mult = spec_mult * (opp_dpr / 0.65)
+            # Fallback for unexpected theaters
+            p_m_kpr, o_m_kpr = (raw_m/1.10, raw_m*1.08) if raw_m > 0 else (pess_k, opt_k)
+            r_mult = (opp_dpr / 0.65)
             heat_nerf = (1 - (heat / 100) * 0.25)
-            
             pess_map = p_m_kpr * r_mult * heat_nerf * (p_rounds / 2)
             opt_map = o_m_kpr * r_mult * heat_nerf * (o_rounds / 2)
             
@@ -467,12 +493,31 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
             final_proj = master_raw 
             pick = "UNDER"
 
+    # 🧠 THE DYNAMIC MOMENTUM CALCULATION
+    if hr_override is not None and hr_override > 0: 
+        hr_val = hr_override 
+    elif prop_type == "Headshots": 
+        hr_val = 50.0
+    else:
+        if hist_kills:
+            w = [1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1]
+            w_h, t_w = 0.0, 0.0
+            for i, k in enumerate(hist_kills):
+                wt = w[i] if i < len(w) else 0.1
+                t_w += wt
+                if pick == "OVER" and k > u_line: w_h += wt
+                elif pick == "UNDER" and k < u_line: w_h += wt
+            hr_val = (w_h / t_w) * 100
+        else: 
+            hr_val = 50.0
+
     # 🧠 5. LOGARITHMIC GOVERNOR (STABILITY ANCHOR)
     if hist_kills:
         historical_avg = sum(hist_kills) / len(hist_kills)
         if is_bo5: historical_avg *= 1.85 
         
-        baseline_kills = (historical_avg + u_line)/2.0 if theater == "CS2" else historical_avg
+        # 🛡️ Fix: Both games now blend historicals WITH the sportsbook line for stability
+        baseline_kills = (historical_avg + u_line) / 2.0 
     else:
         baseline_kills = u_line
 
@@ -487,19 +532,20 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
     survived_edge = abs(delta)
 
    # 🧠 6. WIN PROBABILITY & GRADING
-    # 🎯 NEW: CS2 Variance Squeeze for MR12
     if prop_type == "Headshots": std_dev = 2.6
     elif theater == "CS2": std_dev = 4.2 
-    else: std_dev = 5.5
+    else: std_dev = 4.8 # Tightened from 5.5 to properly reflect Val edge density
     
-    win_prob = (np.random.normal(final_proj, std_dev, 10000) > u_line).mean() * 100
-    if delta < 0: win_prob = 100 - win_prob
+    # Use exact Cumulative Distribution Function (CDF) instead of slow np.random
+    z_score = (final_proj - u_line) / std_dev
+    over_prob = 0.5 * (1 + math.erf(z_score / math.sqrt(2))) * 100
+    win_prob = over_prob if delta > 0 else (100 - over_prob)
     
-    # 🎯 NEW: Loosened consistency threshold for CS2 Round Swings
     is_consistent = abs(impact_stat) <= 12.0 if theater == "CS2" else impact_stat >= 74.0
-    raw_conf = ((min(100.0, abs(win_prob - 50.0) * 2.0)) * 0.7) + (hr_val * 0.3)
+    
+    # Gentler confidence scaling curve
+    raw_conf = ((min(100.0, 50.0 + abs(win_prob - 50.0) * 1.5)) * 0.7) + (hr_val * 0.3)
 
-    # 🎯 NEW: CS2 Edge Scaling. A 2.5 Delta in CS2 is mathematically equivalent to a 3.2 in Valorant.
     edge_mod = 1.25 if theater == "CS2" else 1.0
     scaled_edge = survived_edge * edge_mod
 
@@ -524,17 +570,20 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
             grade, color, rec, rec_color = "C", "#555555", "🛑 PASS (LOW EDGE)", "#555555"
             conf = min(raw_conf, 52.0) 
     else:
-        # VALORANT THRESHOLDS (Peaks at 2.5 - 3.5, Traps at 4.0+)
-        if scaled_edge >= 4.0: 
+        # VALORANT THRESHOLDS (Unshackled)
+        if scaled_edge >= 6.5: # Raised the trap ceiling from 4.0 to 6.5
             grade, color, rec, rec_color = "C", "#FF4444", "🛑 BLOWOUT TRAP (50% WR)", "#FF4444"
             conf = 45.0
-        elif scaled_edge >= 3.0:
-            if is_consistent: grade, color, rec, rec_color = "S", "#9932CC", "☢️ PEAK EDGE (56.5% WR)", "#9932CC"
+        elif scaled_edge >= 4.0:
+            if is_consistent: grade, color, rec, rec_color = "S", "#9932CC", "☢️ NUKE PLAY (60%+ WR)", "#9932CC"
             else: grade, color, rec, rec_color = "A+", "#00FF7F", "🟢 SOLID (VOLATILE)", "#00FF7F"
             conf = raw_conf
-        elif scaled_edge >= 2.5:
+        elif scaled_edge >= 2.8:
             if is_consistent: grade, color, rec, rec_color = "A", "#00FF7F", "🟢 SWEET SPOT (56% WR)", "#00FF7F"
-            else: grade, color, rec, rec_color = "B", "#00ccff", "🟡 NEUTRAL (SPRINKLE)", "#00ccff"
+            else: grade, color, rec, rec_color = "B", "#00ccff", "🟡 NEUTRAL", "#00ccff"
+            conf = raw_conf
+        elif scaled_edge >= 2.0:
+            grade, color, rec, rec_color = "B", "#00ccff", "🟡 LEAN", "#00ccff"
             conf = raw_conf
         else:
             grade, color, rec, rec_color = "C", "#555555", "🛑 PASS (LOW EDGE)", "#555555"
@@ -543,8 +592,9 @@ def apply_sovereign_math(data, p_name, u_line, full_p, full_o, targets, m_vals, 
     return {
         "player": p_name.upper(), "full_team": full_p, "full_opp": full_o,
         "grade": grade, "color": color, "rec": rec, "rec_color": rec_color, "prob": win_prob, 
+        "math_state": f"[Base: {m_vals[0] if m_vals[0] > 0 else raw_stat:.2f} | Gap: {rank_gap:+.0f} | Mom: {hr_val:.0f}% | Impact: {impact_stat:.1f}]",
         "stat_baseline": m_vals[0] if m_vals[0] > 0 else raw_stat, 
-        "proj": final_proj, "delta": delta, 
+        "proj": final_proj, "delta": delta,
         "is_nuke": (grade in ["S+", "S"] and is_consistent), 
         "hr": f"{hr_val:.0f}%", "hr_raw": hr_val, "gap": rank_gap, "trace": f"M1: {targets[0]} | M2: {targets[1]}",
         "confidence": round(min(99.9, max(1.0, conf)), 1), "source": data.get("source", "UNKNOWN"), "line": u_line, 
@@ -593,6 +643,7 @@ def apply_dota_math(base_kills, role, opp_rank, line):
     return {
         "proj": round(final_proj, 1), 
         "delta": round(final_delta, 1), 
+        "math_state": f"[Base: {base_kills:.1f} | Role: {role} | O-Rank: {int(calc_o_rank)}]",
         "grade": grade, 
         "color": color,
         "rec": rec,
@@ -623,30 +674,32 @@ def generate_analytical_writeup(intel, theater_sel):
     if grade not in ["S+", "S", "A+", "A"]: return "⚠️ Reserved for premium graded props."
     
     sys_prompt = (
-        "You are the lead quantitative AI analyst for the 'Sleepy Kingdom' betting syndicate. "
-        "Your job is to write a sharp, 3-sentence mathematical conviction piece for a player prop bet. "
+        "You are the lead quantitative analyst for the 'Sleepy Kingdom' betting syndicate. "
+        "Your job is to write a highly natural, conversational, yet mathematically elite breakdown for a player prop. "
         "CRITICAL RULES: "
-        "1. Do NOT hallucinate or invent head-to-head history. "
-        "2. Do NOT invent team playstyles, narratives, or match background. "
-        "3. ONLY use the mathematical data points provided in the prompt. "
-        "4. NEVER confuse 'Kills' or 'Headshots' with 'Total Rounds'. This is strictly a player performance prop. "
-        "5. Keep it punchy, cold, and analytical. No bullet points."
+        "1. STRICT LENGTH LIMIT: Exactly 3 concise sentences. Do not ramble. Do not cut off mid-sentence. "
+        "2. Sound like a sharp, experienced sports bettor explaining a high-value spot to a friend. "
+        "3. NO BANNED WORDS: Do not use 'Nuke', 'Lock', 'Guaranteed', or 'Certain'. Use terms like 'Heavy mismatch', 'Statistical anomaly', or 'Top-tier edge'. "
+        "4. ESPORTS LOGIC: If a projection is shifting DOWN, explain if it is due to a 'Blowout' (favorable matchup ending too fast for high volume) or 'Suffocation' (facing an elite defense/rank gap). "
+        "5. THE MOMENTUM RULE: The 'L10 Momentum' percentage shows how often the player's recent form aligns with our specific PICK. If the momentum is HIGH (70%+), praise it as confirming the math engine's projection. ONLY if the momentum is neutral/stagnant (40-60%) should you explain that the V2 Math Engine is overriding their flat form due to a gross mispricing in the map pool."
+        "6. ONLY use the provided mathematical data points. Start directly with the analysis. No filler intros."
     )
     
     user_prompt = f"""
-    Draft a 3-sentence write-up for this {grade}-grade {theater_sel} player prop:
+    Draft the analysis for this {grade}-grade {theater_sel} player prop:
     - PLAYER: {intel['player']}
     - MATCHUP: {intel.get('full_team', 'UNK')} vs {intel['full_opp']}
     - PROP TARGET: {intel.get('prop_type', 'Kills')}
+    - PICK: {intel.get('pick', 'Under')}
     - SPORTSBOOK LINE: {intel['line']}
-    - ENGINE PROJECTION: {intel['proj']:.1f}
-    - MATHEMATICAL DELTA: {intel.get('delta', 0):+.1f}
-    - LAST 10 HIT RATE: {intel.get('hr', 'UNK')}
-    - BASELINE EFFICIENCY: {intel.get('stat_baseline', 0):.2f}
+    - DUAL-ENGINE PROJECTION: {intel['proj']:.1f}
+    - MATHEMATICAL EDGE (Delta): {intel.get('delta', 0):+.1f}
+    - BASELINE STAT: {intel.get('stat_baseline', 0):.2f}
+    - RANK GAP: {intel.get('gap', 0)} 
+    - L10 MOMENTUM: {intel.get('hr', 'UNK')}
     - MODEL WIN PROBABILITY: {intel.get('prob', 50):.1f}%
-    - ESTIMATED ROUNDS: {intel.get('rounds', 44)}
-
-    Format strictly as one short paragraph starting with '**The Sleeper Read:**'.
+    - ESTIMATED TOTAL ROUNDS: {intel.get('rounds', 44)}
+    - MAP POOL (M1/M2): {intel.get('trace', 'UNK')}
     """
     try:
         response = groq_client.chat.completions.create(
@@ -655,8 +708,8 @@ def generate_analytical_writeup(intel, theater_sel):
                 {"role": "system", "content": sys_prompt}, 
                 {"role": "user", "content": user_prompt}
             ],
-            temperature=0.2,
-            max_tokens=250
+            temperature=0.3,
+            max_tokens=200
         )
         return response.choices[0].message.content
     except Exception as e: 
@@ -686,7 +739,7 @@ def render_grade_card(i, theater_sel, is_dual=False, key_prefix="main"):
     <div class="card-content">
     {f'<div class="nuke-play-badge">🚀 NUKE PLAY: +10 DELTA LOCK</div>' if i.get('is_nuke', False) else ''}
     <div class="player-name" style="font-size: {name_size};">{i.get('player', 'UNK')} {ai_badge} {v_nerf} {l_badge}</div>
-    <div class="match-header"><span style="background-color: {t_color}; color: black; padding: 3px 8px; border-radius: 4px; font-size: 12px; margin-right: 8px; font-weight: 900;">{theater_sel}</span>{i.get('full_team', 'UNK')} vs {i.get('full_opp', 'UNK')} <span style="margin-left: 10px; color: #888; font-size: 10px;">[Rounds: {i.get('rounds', 'UNK')}]</span></div>
+    <div class="match-header"><span style="background-color: {t_color}; color: black; padding: 3px 8px; border-radius: 4px; font-size: 12px; margin-right: 8px; font-weight: 900;">{theater_sel}</span>{i.get('full_team', 'UNK')} vs {i.get('full_opp', 'UNK')} <span style="margin-left: 10px; color: #888; font-size: 10px;">[{i.get('trace', 'MAPS TBD')} | Rnds: {i.get('rounds', 'UNK')}]</span></div>
     <div style="display: flex; gap: 30px; justify-content: center; align-items: center;">
         <div><div class="stat-lbl">Win Prob</div><div class="stat-val" style="font-size: {val_size};">{i.get('prob', i.get('win_prob', 0.0)):.1f}%</div></div>
         <div><div class="stat-lbl">{i.get('prop_type', 'Prop').upper()} PROJ | LINE</div><div class="stat-val" style="line-height: 1.1;"><span style="color: {i.get('color', '#FFF')}; font-size: {val_size};">{i.get('proj', 0):.1f}</span><br><span style="color: rgba(255,255,255,0.6); font-size: 14px;">Line: {i.get('line', 0)}</span></div></div>
@@ -891,21 +944,24 @@ def generate_slip_writeup(slip):
         Prop: {l1['pick']} {l1['line']} {l1['prop_type']}
         Model Projection: {l1['proj']:.1f} (Edge: {l1['delta']:.1f})
         Matchup: Team Rank #{l1.get('t_rank', 'UNK')} vs Opponent Rank #{l1.get('o_rank', 'UNK')}
+        Map Pool: {l1.get('trace', 'UNK')}
         
         LEG 2 ({l2['theater']}): {l2['player']} ({l2['full_team']})
         Prop: {l2['pick']} {l2['line']} {l2['prop_type']}
         Model Projection: {l2['proj']:.1f} (Edge: {l2['delta']:.1f})
         Matchup: Team Rank #{l2.get('t_rank', 'UNK')} vs Opponent Rank #{l2.get('o_rank', 'UNK')}
+        Map Pool: {l2.get('trace', 'UNK')}
         
         Write a punchy, highly analytical, 3-sentence justification for why this specific 2-man slip has massive positive expected value (+EV). 
-        Focus strictly on the math, rank disparities, and the projection edge. 
+        Focus strictly on the math, rank disparities, the projection edge, and how the specific Map Pool favors these plays. 
+        If historical hit rates are ignored, briefly mention the model overriding them.
         Use an authoritative, professional tone. Do not use hashtags or emojis.
         """
         
         completion = groq_client.chat.completions.create(
             messages=[{"role": "user", "content": prompt}],
             model="llama-3.3-70b-versatile",
-            temperature=0.4,
+            temperature=0.3,
             max_tokens=150
         )
         return completion.choices[0].message.content.strip()
@@ -949,7 +1005,7 @@ with st.sidebar:
     st.header("📡 COMMAND CENTER")
     
     # --- DASHBOARD NAVIGATION ---
-    view_mode = st.radio("Navigation", ["🎯 Live Grader", "📊 Val Archive Ledger"])
+    view_mode = st.radio("Navigation", ["🎯 Live Grader", "📊 Archive Ledger"])
     st.divider()
 
     # 🛡️ BULLETPROOF DEFAULTS
@@ -1026,37 +1082,69 @@ with st.sidebar:
             execute_sweep = st.button("🔥 EXECUTE SYNDICATE SWEEP", use_container_width=True, type="primary")
 
 # --- 4. EXECUTION LOOP ---
-if view_mode == "📊 Val Archive Ledger":
-    st.title("📊 Sovereign Performance Ledger (Valorant)")
+if view_mode == "📊 Archive Ledger":
+    st.title("📊 Sovereign Performance Ledger")
+    
+    ledger_mode = st.radio("Select Archive View", ["Combined (All Games)", "Valorant", "CS2", "DOTA 2"], horizontal=True)
     
     try:
-        with st.spinner("Fetching data from Val Archive..."):
+        with st.spinner("Fetching data from PropVault Archives..."):
             google_creds = dict(st.secrets["gcp_service_account"])
             gc = gspread.service_account_from_dict(google_creds) 
             sh = gc.open_by_key("1xsxwRlnwF2MNkHwmSSRsOlKCV8H7W9iXemXyaTcIhlg")
-            archive_sheet = sh.worksheet("Val Data Archive")
-            data = archive_sheet.get_all_records()
-            df = pd.DataFrame(data)
-        
-        stats = generate_ledger_stats(df)
-        
-        if stats:
-            c1, c2, c3 = st.columns(3)
-            c1.metric("7-Day Hit Rate", stats['Weekly (7d)']['Win %'], f"{stats['Weekly (7d)']['Wins']}W - {stats['Weekly (7d)']['Losses']}L")
-            c2.metric("All-Time S-Tier Hit Rate", stats['All-Time']['S-Tier Win %'], stats['All-Time']['S-Tier Record'])
-            c3.metric("30-Day Volume", f"{stats['Monthly (30d)']['Total Props Graded']} Props Graded")
-
-            st.markdown("---")
-            st.subheader("Historical Hit Rate Breakdown")
-            st.dataframe(pd.DataFrame(stats).T, use_container_width=True)
             
-            with st.expander("🔍 View Raw Val Archive Data"):
-                st.dataframe(df)
-        else:
-            st.warning("Archive is empty or missing 'Date', 'Kill Result', or 'Kill Grade' columns.")
+            dfs = []
+            
+            if ledger_mode in ["Combined (All Games)", "Valorant"]:
+                try:
+                    val_ws = sh.worksheet("Val Data Archive")
+                    df_val = pd.DataFrame(val_ws.get_all_records())
+                    if not df_val.empty: 
+                        df_val['Theater'] = 'VALORANT'
+                        dfs.append(df_val)
+                except: pass
+                
+            if ledger_mode in ["Combined (All Games)", "CS2"]:
+                try:
+                    cs2_ws = sh.worksheet("CS2 Data Archive") # Change this if your CS2 sheet is named differently
+                    df_cs2 = pd.DataFrame(cs2_ws.get_all_records())
+                    if not df_cs2.empty: 
+                        df_cs2['Theater'] = 'CS2'
+                        dfs.append(df_cs2)
+                except: pass
+
+            if ledger_mode in ["Combined (All Games)", "DOTA 2"]:
+                try:
+                    dota_ws = sh.worksheet("Dota Data Archive") 
+                    df_dota = pd.DataFrame(dota_ws.get_all_records())
+                    if not df_dota.empty: 
+                        df_dota['Theater'] = 'DOTA 2'
+                        dfs.append(df_dota)
+                except: pass
+
+            if dfs:
+                df = pd.concat(dfs, ignore_index=True)
+                stats = generate_ledger_stats(df)
+                
+                if stats:
+                    c1, c2, c3 = st.columns(3)
+                    c1.metric("7-Day Hit Rate", stats['Weekly (7d)']['Win %'], f"{stats['Weekly (7d)']['Wins']}W - {stats['Weekly (7d)']['Losses']}L")
+                    c2.metric("All-Time S-Tier Hit Rate", stats['All-Time']['S-Tier Win %'], stats['All-Time']['S-Tier Record'])
+                    c3.metric("30-Day Volume", f"{stats['Monthly (30d)']['Total Props Graded']} Props Graded")
+
+                    st.markdown("---")
+                    st.subheader(f"Historical Hit Rate Breakdown: {ledger_mode}")
+                    st.dataframe(pd.DataFrame(stats).T, use_container_width=True)
+                    
+                    with st.expander("🔍 View Raw Archive Data"):
+                        st.dataframe(df)
+                else:
+                    st.warning("Archive is empty or missing 'Date', 'Kill Result', or 'Kill Grade' columns.")
+            else:
+                st.warning(f"No archive data found for {ledger_mode}. Check your Google Sheet names.")
             
     except Exception as e:
-        st.error(f"Could not load Val Archive: {e}")
+        st.error(f"Could not load Archives: {e}")
 
 elif view_mode == "🎯 Live Grader":
     if cmd_mode == "Single Target (Manual)":
@@ -1113,9 +1201,11 @@ elif cmd_mode == "Syndicate Sweep (API)" and execute_sweep:
                     "HEAT": get_v_col("PLAYER HEAT", "HEAT"), "L10_HR": get_v_col("L10 KILL HR", "L10 HR"),
                     "M1_AGENT": get_v_col("M1 AGENT"), "M2_AGENT": get_v_col("M2 AGENT"),
                     "M1_ADR": get_v_col("M1 ADR"), "M2_ADR": get_v_col("M2 ADR"),
-                    "ROUNDS": get_v_col("TOTAL ROUNDS", "ROUNDS", "EST ROUNDS"),
+                    "M1_MAP": get_v_col("M1 MAP"), "M2_MAP": get_v_col("M2 MAP"),  # 🎯 ADDED MAP NAMES
+                    "M1_KPR": get_v_col("M1 KPR"), "M2_KPR": get_v_col("M2 KPR"),  # 🎯 ADDED MAP KPRS
+                    "ROUNDS": get_v_col("PROJ ROUNDS", "TOTAL ROUNDS", "ROUNDS", "EST ROUNDS"),
                     "READY": get_v_col("READY"),
-                    "BO5": get_v_col("BO5") #
+                    "BO5": get_v_col("BO5")
                 }
                 
                 v_updates = []
@@ -1161,15 +1251,21 @@ elif cmd_mode == "Syndicate Sweep (API)" and execute_sweep:
                     sheet_rounds = safe_float(r_get("ROUNDS", 0))
                     active_rounds = sheet_rounds if sheet_rounds > 0 else r_total_v
 
+                    m1_kpr = safe_float(r_get('M1_KPR', default=0.0))
+                    m2_kpr = safe_float(r_get('M2_KPR', default=0.0))
+
                     p_data = {
                         "base_stat": base_adr, "source": "SHEET" if r_get("GLOBAL_STAT") else "CODEX AUTO",
-                        "p_rank": t_rank, "o_rank": o_rank, "last_10_kills": val_codex.get(p_lower, {}).get('l10_maps_1_and_2_kills', [])
+                        "p_rank": t_rank, "o_rank": o_rank, "last_10_kills": val_codex.get(p_lower, {}).get('l10_maps_1_and_2_kills', []),
+                        "m1_kpr": m1_kpr,  # 🎯 INJECTED MAP 1 KPR
+                        "m2_kpr": m2_kpr   # 🎯 INJECTED MAP 2 KPR
                     }
                     
                     if is_locked:
                         k_proj, k_line = safe_float(r_get("K_PROJ", 0)), safe_float(k_line_str)
                         k_delta = k_proj - k_line
-                        over_prob = (np.random.normal(k_proj, 5.5, 5000) > k_line).mean() * 100
+                        z_score = (k_proj - k_line) / 4.8
+                        over_prob = 0.5 * (1 + math.erf(z_score / math.sqrt(2))) * 100
                         win_prob = over_prob if k_delta > 0 else (100 - over_prob)
                         conf = min(99.9, max(1.0, (min(100.0, abs(win_prob - 50.0) * 2.0) * 0.7) + 15.0))
                         
@@ -1200,12 +1296,13 @@ elif cmd_mode == "Syndicate Sweep (API)" and execute_sweep:
 
                         res = apply_sovereign_math(
                             p_data, p_name, safe_float(k_line_str), t_abbr, o_abbr,
-                            [str(r_get('M1_AGENT', 'Unk')), str(r_get('M2_AGENT', 'Unk'))],
+                            # 🎯 Pass the Maps instead of the Agents!
+                            [str(r_get('M1_MAP', 'Unk')).upper(), str(r_get('M2_MAP', 'Unk')).upper()],
                             [safe_float(r_get('M1_ADR', 0)), safe_float(r_get('M2_ADR', 0))],
                             safe_float(r_get("HEAT")) or heat_val, safe_float(r_get("OPP_DPR")) or (raw_dpr_api/100 if raw_dpr_api > 2 else raw_dpr_api),
                             active_rounds, kast_val, "VALORANT", "Kills", [0.0, 0.0], 
                             rank_respect_val=rank_respect, hr_override=sheet_hr if sheet_hr > 0 else None,
-                            is_bo5_flag=sheet_bo5 # 🛡️ Pass it to the engine
+                            is_bo5_flag=sheet_bo5
                         )
                         res['Locked'], res['row_num'] = False, row_num
                     
@@ -1388,7 +1485,7 @@ elif cmd_mode == "Syndicate Sweep (API)" and execute_sweep:
                 sheet_heat = safe_float(r_get('PLAYER HEAT', 'HEAT', default=0))
                 player_heat = sheet_heat if sheet_heat > 0 else heat_val
                 
-                sheet_rounds = safe_float(r_get('TOTAL ROUNDS', 'ROUNDS', default=0))
+                sheet_rounds = safe_float(r_get('PROJ ROUNDS', 'TOTAL ROUNDS', 'ROUNDS', default=0))
                 active_rounds = sheet_rounds if sheet_rounds > 0 else r_total_cs2
 
                 is_locked = str(r_get('LOCKED', default='FALSE')).upper() == 'TRUE'
@@ -1415,7 +1512,8 @@ elif cmd_mode == "Syndicate Sweep (API)" and execute_sweep:
                         }
                         k_res["delta"] = k_res["proj"] - k_res["line"]
                         
-                        over_prob = (np.random.normal(k_res["proj"], 5.5, 5000) > k_res["line"]).mean() * 100
+                        z_score = (k_res["proj"] - k_res["line"]) / 4.2
+                        over_prob = 0.5 * (1 + math.erf(z_score / math.sqrt(2))) * 100
                         k_res["win_prob"] = over_prob if k_res["delta"] > 0 else (100 - over_prob)
                         k_res["confidence"] = min(99.9, max(1.0, (min(100.0, abs(k_res["win_prob"] - 50.0) * 2.0) * 0.7) + 15.0))
                     else:
@@ -1446,7 +1544,8 @@ elif cmd_mode == "Syndicate Sweep (API)" and execute_sweep:
                         }
                         h_res["delta"] = h_res["proj"] - h_res["line"]
                         
-                        over_prob = (np.random.normal(h_res["proj"], 5.5, 5000) > h_res["line"]).mean() * 100
+                        z_score = (h_res["proj"] - h_res["line"]) / 2.6
+                        over_prob = 0.5 * (1 + math.erf(z_score / math.sqrt(2))) * 100
                         h_res["win_prob"] = over_prob if h_res["delta"] > 0 else (100 - over_prob)
                         h_res["confidence"] = min(99.9, max(1.0, (min(100.0, abs(h_res["win_prob"] - 50.0) * 2.0) * 0.7) + 15.0))
                     else:
